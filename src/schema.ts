@@ -1,7 +1,7 @@
-import avro from 'avsc';
+import { Type } from 'avsc';
 
 
-export const replySchema = avro.Type.forSchema({
+export const replySchema = Type.forSchema({
   name: 'Replies',
   type: 'record',
   fields: [
@@ -27,7 +27,7 @@ export const replySchema = avro.Type.forSchema({
 });
 
 
-export const dictSchema = avro.Type.forSchema({
+export const dictSchema = Type.forSchema({
   name: 'Dictionary',
   type: 'record',
   fields: [
