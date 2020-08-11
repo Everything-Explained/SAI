@@ -7,91 +7,134 @@ import { cloneDeep as _cloneDeep,
 import { createGzipFile, createFolder, readReplyStore, readDictStore } from './file-ops';
 import { Replies } from './types';
 import { dictSchema, replySchema } from './schema';
+import { log } from 'console';
 
 
 export default class SAI {
 
-  #dataFolder : string;
-  #repliesPath: string;
-  #dictPath   : string;
-  #replies    : Replies;
-  #words      : string[][];
-  #wordsRef!  : string[];
+  private dataFolder : string;
+  private repliesPath: string;
+  private dictPath   : string;
+  private replies    : Replies;
+  private words      : string[][];
+  private wordsRef!  : string[];
 
 
-  get words(): string[][] {
-    return this.#words.slice();
+  get wordList(): string[][] {
+    return this.words.slice();
+  }
+
+  get wordsRefList(): string[] {
+    return this.wordsRef.slice();
   }
 
 
   constructor(dataFolderPath: string) {
-    this.#dataFolder  = dataFolderPath;
-    this.#repliesPath = `${dataFolderPath}/replies.said`;
-    this.#dictPath    = `${dataFolderPath}/dictionary.said`;
+    this.dataFolder  = dataFolderPath;
+    this.repliesPath = `${dataFolderPath}/replies.said`;
+    this.dictPath    = `${dataFolderPath}/dictionary.said`;
 
     createFolder(dataFolderPath);
-    createGzipFile(this.#repliesPath, replySchema.toBuffer({ replies: [] }));
-    createGzipFile(this.#dictPath, dictSchema.toBuffer({ words: [] }));
+    createGzipFile(this.repliesPath, replySchema.toBuffer({ replies: [] }));
+    createGzipFile(this.dictPath, dictSchema.toBuffer({ words: [] }));
 
-    this.#replies  = readReplyStore(this.#repliesPath, replySchema);
-    this.#words    = readDictStore(this.#dictPath, dictSchema);
+    this.replies = readReplyStore(this.repliesPath, replySchema);
+    this.words   = readDictStore(this.dictPath, dictSchema);
 
     this.updateWordsRef();
 
-    console.log(this.#replies);
-    console.log(this.#words);
+    // console.log(this.#replies);
+    // console.log(this.#words);
   }
 
 
-  addWord(word: string, index?: number): true | Error {
-    if (this.dictHasWord(word)) return new Error('Word already exists.');
-
-    if (typeof index != 'number') {
-      this.#words.push([word]);
-    }
-
-    if (typeof index == 'number') {
-      if (index < 0)           return new Error('Index must be greater than -1.');
-      if (!this.#words[index]) return new Error(`The index "${index}" does not exist.`);
-      this.#words[index].push(word);
-    }
-
-    this.updateWordsRef();
-    return true;
+  findWordIndex(index: number): [Error|null, string[]] {
+    const words = this.words[index];
+    return (
+      words
+        ? [null, this.words[index]]
+        : [Error(`${index} not found.`), []]
+    );
   }
 
 
-  delWord(word: string, index: number): boolean | Error {
-    if (index < 0) return new Error('Index must be greater than -1.');
+  findWord(word: string): [Error|null, string[], number, number] {
+    let i = this.words.length;
+    while (--i >= 0) {
+      const wordIndex = this.words[i].indexOf(word);
+      if (~wordIndex) {
+        return [null, this.words[i], i, wordIndex];
+      }
+    }
+    return [Error(`"${word}" not found.`), [], -1, -1];
+  }
 
-    if (!this.#words[index]) {
+
+  addWord(word: string): Error|null {
+    if (this.dictHasWord(word)) {
+      return Error('Word already exists.');
+    }
+    this.words.push([word]);
+    this.updateWordsRef();
+    return null;
+  }
+
+
+  addWordToIndex(word: string, index: number): Error|null {
+    if (this.dictHasWord(word)) {
+      return Error('Word already exists.');
+    }
+    if (index < 0) {
+      return Error('Index must be greater than -1.');
+    }
+    if (!this.words[index]) {
       return Error(`The index "${index}" does not exist.`);
     }
+    this.words[index].push(word);
+    this.updateWordsRef();
+    return null;
+  }
 
-    const wordIndex = this.#words[index].indexOf(word);
-    if (!~wordIndex) {
-      return new Error(`The word "${word}" does not exist at index "${index}".`);
+
+  delWord(word: string): Error|null {
+    const [err, words, x, y] = this.findWord(word);
+
+    if (err) {
+      return err;
     }
+    this.words[x].splice(y, 1);
 
-    this.#words[index].splice(wordIndex, 1);
-    // Delete entire array if it's empty
-    if (!this.#words[index].length) {
-      this.#words.splice(index, 1);
+    // Delete entire index if it's empty
+    if (!this.words[x].length) {
+      this.words.splice(x, 1);
     }
     this.updateWordsRef();
-    return true;
+    return null;
+  }
+
+
+  delWordsAtIndex(index: number): Error|null {
+    if (index < 0) {
+      return Error('Index must be greater than -1.');
+    }
+    if (!this.words[index]) {
+      return Error(`The index "${index}" does not exist.`);
+    }
+    this.words.splice(index, 1);
+    this.updateWordsRef();
+    return null;
   }
 
 
   private dictHasWord(word: string): boolean {
-    if (!this.#wordsRef.length) return false;
-    if (~this.#wordsRef.indexOf(word)) return true;
+    if (!this.wordsRef.length) return false;
+    if (~this.wordsRef.indexOf(word)) return true;
     return false;
   }
 
 
   private updateWordsRef() {
-    this.#wordsRef = _flatten(this.#words);
+    this.wordsRef = _flatten(this.words);
   }
 
 
