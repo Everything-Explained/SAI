@@ -1,6 +1,7 @@
 node_modules
 *.js
-/test
 *.txt
 *.gzip
 *.tsbuildinfo
+.nyc_output
+coverage
