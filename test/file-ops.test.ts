@@ -21,6 +21,7 @@ t('File Operations', async t => {
     del(folderPath);
   });
 
+
   t.test('createGzipFile()', async t => {
     let filePath = './test/test1.file';
     let gzipPath = `${filePath}.gzip`;
@@ -39,6 +40,7 @@ t('File Operations', async t => {
     del(gzipPath);
   });
 
+
   t.test('readReplyStore()', async t => {
     const fileName = 'replies.ext';
     const schema = replySchema.toBuffer([
@@ -55,6 +57,7 @@ t('File Operations', async t => {
     );
     del(`./test/${fileName}.gzip`);
   });
+
 
   t.test('readDictStore()', async t => {
     const fileName = 'dictionary.ext';

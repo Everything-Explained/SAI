@@ -48,12 +48,15 @@ export default class SAI {
   }
 
 
-  findWordIndex(index: number): [Error|null, string[]] {
+  findWordsAtIndex(index: number): [Error|null, string[]] {
+    if (index < 0) {
+      return [Error(`Index must be greater than -1`), []];
+    }
     const words = this.words[index];
     return (
       words
         ? [null, this.words[index]]
-        : [Error(`${index} not found.`), []]
+        : [Error(`The index "${index}" does not exist.`), []]
     );
   }
 
@@ -97,16 +100,13 @@ export default class SAI {
 
 
   delWord(word: string): Error|null {
-    const [err, words, x, y] = this.findWord(word);
-
-    if (err) {
-      return err;
-    }
-    this.words[x].splice(y, 1);
+    const [err, words, row, col] = this.findWord(word);
+    if (err) { return err; }
+    this.words[row].splice(col, 1);
 
     // Delete entire index if it's empty
-    if (!this.words[x].length) {
-      this.words.splice(x, 1);
+    if (!this.words[row].length) {
+      this.words.splice(row, 1);
     }
     this.updateWordsRef();
     return null;
@@ -114,12 +114,8 @@ export default class SAI {
 
 
   delWordsAtIndex(index: number): Error|null {
-    if (index < 0) {
-      return Error('Index must be greater than -1.');
-    }
-    if (!this.words[index]) {
-      return Error(`The index "${index}" does not exist.`);
-    }
+    const [err] = this.findWordsAtIndex(index);
+    if (err) { return err; }
     this.words.splice(index, 1);
     this.updateWordsRef();
     return null;
