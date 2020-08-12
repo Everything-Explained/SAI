@@ -35,8 +35,8 @@ export default class SAI {
     this.dictPath    = `${dataFolderPath}/dictionary.said`;
 
     createFolder(dataFolderPath);
-    createGzipFile(this.repliesPath, replySchema.toBuffer({ replies: [] }));
-    createGzipFile(this.dictPath, dictSchema.toBuffer({ words: [] }));
+    createGzipFile(this.repliesPath, replySchema.toBuffer([]));
+    createGzipFile(this.dictPath, dictSchema.toBuffer([]));
 
     this.replies = readReplyStore(this.repliesPath, replySchema);
     this.words   = readDictStore(this.dictPath, dictSchema);
@@ -140,7 +140,20 @@ export default class SAI {
 
 }
 
+// const sai = new SAI('./store');
 
+// sai.addWord('god');
+// sai.addWordToIndex('deity', 0);
+// sai.addWordToIndex('almighty', 0);
+// sai.addWord('pickles');
+// sai.addWordToIndex('cucumbers', 1);
+// log(sai.words);
+// log('delete word');
+// sai.delWord('god');
+// log(sai.words);
+// log('delete index');
+// log(sai.delWordsAtIndex(3));
+// log(sai.words);
 
 
 

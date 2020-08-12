@@ -38,13 +38,13 @@ export function createGzipFile(filePath: string, def: Buffer): boolean {
 export function readReplyStore(filePath: string, schema: avro.Type): Replies {
   const zippedReplies = readFileSync(`${filePath}.gzip`);
   const unzippedReplies = gunzipSync(zippedReplies);
-  return schema.fromBuffer(unzippedReplies).replies;
+  return schema.fromBuffer(unzippedReplies);
 }
 
 export function readDictStore(filePath: string, schema: avro.Type): string[][] {
   const zippedWords = readFileSync(`${filePath}.gzip`);
   const unzippedWords = gunzipSync(zippedWords);
-  return schema.fromBuffer(unzippedWords).words;
+  return schema.fromBuffer(unzippedWords);
 }
 
 

@@ -3,8 +3,6 @@ import del from 'del';
 import { existsSync } from "fs";
 import t from 'tape';
 import { dictSchema, replySchema } from "../src/schema";
-import { fileURLToPath } from "url";
-
 
 t('File Operations', async t => {
   t.test('createFolder()', async t => {
@@ -43,15 +41,13 @@ t('File Operations', async t => {
 
   t.test('readReplyStore()', async t => {
     const fileName = 'replies.ext';
-    const schema = replySchema.toBuffer({
-      replies: [
-        { questions: ['hello'],
-          answer: 'world',
-          hashes: [3812834],
-          dateCreated: 1234,
-          dateEdited: 4321 }
-      ]
-    });
+    const schema = replySchema.toBuffer([
+      { questions: ['hello'],
+        answer: 'world',
+        hashes: [3812834],
+        dateCreated: 1234,
+        dateEdited: 4321 }
+    ]);
     createGzipFile(`./test/${fileName}`, schema);
     const replyObj = readReplyStore(`./test/${fileName}`, replySchema);
     t.equal(replyObj[0].answer, 'world',
@@ -62,9 +58,9 @@ t('File Operations', async t => {
 
   t.test('readDictStore()', async t => {
     const fileName = 'dictionary.ext';
-    const schema = dictSchema.toBuffer({
-      words: [['god', 'pickles'], ['love', 'lobster']]
-    });
+    const schema = dictSchema.toBuffer([
+      ['god', 'pickles'], ['love', 'lobster']
+    ]);
     createGzipFile(`./test/${fileName}`, schema);
     const dictObj = readDictStore(`./test/${fileName}`, dictSchema);
     t.equal(dictObj[0][0], 'god',
