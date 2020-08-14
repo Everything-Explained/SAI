@@ -5,8 +5,8 @@ import { Replies } from "./types";
 import { promisify } from "util";
 
 
-const gzipPromise = promisify(gzip);
-const writeFilePromise = promisify(writeFile);
+const gzipAsync = promisify(gzip);
+const writeFileAsync = promisify(writeFile);
 
 
 export class FileOperations {
@@ -60,9 +60,9 @@ export class FileOperations {
     this.isSaving = true;
     try {
       const dataToSave =
-        compress ? await gzipPromise(data) as Buffer : data
+        compress ? await gzipAsync(data) as Buffer : data
       ;
-      await writeFilePromise(path, dataToSave, { encoding: 'binary' });
+      await writeFileAsync(path, dataToSave, { encoding: 'binary' });
       return Promise.resolve(null);
     }
     catch (e) { return Promise.reject(e); }

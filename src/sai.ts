@@ -37,21 +37,6 @@ export default class SAI {
   }
 
 
-  private async init(isReadyCallback: (err: Error|null) => void) {
-    try {
-      this.fileOps.createFolder(this.dataFolder);
-      await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
-      await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
-      this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
-      this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
-      this.updateWordsRef();
-      isReadyCallback(null);
-    }
-    catch(e) {
-      isReadyCallback(new Error(e.message));
-    }
-  }
-
   findWordsAtIndex(index: number): [Error|null, string[]] {
     if (index < 0) {
       return [Error(`Index must be greater than -1`), []];
@@ -120,6 +105,22 @@ export default class SAI {
     return null;
   }
 
+
+  private async init(isReadyCallback: (err: Error|null) => void) {
+    try {
+      this.fileOps.createFolder(this.dataFolder);
+      await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
+      await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
+      this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
+      this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
+      this.updateWordsRef();
+      isReadyCallback(null);
+    }
+    catch(e) {
+      isReadyCallback(new Error(e.message));
+    }
+  }
+
   private dictHasWord(word: string): boolean {
     if (!this.wordsRef.length) return false;
     if (~this.wordsRef.indexOf(word)) return true;
@@ -129,8 +130,6 @@ export default class SAI {
   private updateWordsRef() {
     this.wordsRef = _flatten(this.words);
   }
-
-
 }
 
 // const sai = new SAI('./store');
