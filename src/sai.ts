@@ -4,7 +4,7 @@ import { cloneDeep as _cloneDeep,
          flatten   as _flatten,
          flow      as _flow } from 'lodash/fp'
 ;
-import { createGzipFile, createFolder, readReplyStore, readDictStore } from './file-ops';
+import { FileOperations } from './file-ops';
 import { Replies } from './types';
 import { dictSchema, replySchema } from './schema';
 import { log } from 'console';
@@ -15,9 +15,10 @@ export default class SAI {
   private dataFolder : string;
   private repliesPath: string;
   private dictPath   : string;
-  private replies    : Replies;
-  private words      : string[][];
+  private replies!   : Replies;
+  private words!     : string[][];
   private wordsRef!  : string[];
+  private fileOps    : FileOperations;
 
 
   get wordList(): string[][] {
@@ -33,18 +34,19 @@ export default class SAI {
     this.dataFolder  = dataFolderPath;
     this.repliesPath = `${dataFolderPath}/replies.said`;
     this.dictPath    = `${dataFolderPath}/dictionary.said`;
+    this.fileOps     = new FileOperations();
 
-    createFolder(dataFolderPath);
-    createGzipFile(this.repliesPath, replySchema.toBuffer([]));
-    createGzipFile(this.dictPath, dictSchema.toBuffer([]));
+    this.fileOps.createFolder(dataFolderPath);
+    this.init();
+  }
 
-    this.replies = readReplyStore(this.repliesPath, replySchema);
-    this.words   = readDictStore(this.dictPath, dictSchema);
 
+  private async init() {
+    await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
+    await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
+    this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
+    this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
     this.updateWordsRef();
-
-    // console.log(this.#replies);
-    // console.log(this.#words);
   }
 
 
