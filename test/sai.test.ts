@@ -24,6 +24,14 @@ t('SAI Class', async t => {
         t.pass('executes isReady() callback after SAI{}.init()');
       });
 
+      t.test('init(): void', t => {
+        t.plan(1);
+        new SAI('./test/readonly', err => {
+          if (err) t.pass('bubbles up errors to callback.');
+          else t.fail('did not bubble up error to callback');
+        });
+      });
+
       t.test('addWord(): Error|null', async t => {
         t.same(sai.addWord('god'), null,
           'returns null on success.'

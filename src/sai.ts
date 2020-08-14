@@ -28,25 +28,29 @@ export default class SAI {
   }
 
 
-  constructor(dataFolderPath: string, isReady: () => void) {
+  constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
     this.dataFolder  = dataFolderPath;
     this.repliesPath = `${dataFolderPath}/replies.said.gzip`;
     this.dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
     this.fileOps     = new FileOperations();
-    this.fileOps.createFolder(dataFolderPath);
     this.init(isReady);
   }
 
 
-  private async init(isReadyCallback: () => void) {
-    await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
-    await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
-    this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
-    this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
-    this.updateWordsRef();
-    isReadyCallback();
+  private async init(isReadyCallback: (err: Error|null) => void) {
+    try {
+      this.fileOps.createFolder(this.dataFolder);
+      await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
+      await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
+      this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
+      this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
+      this.updateWordsRef();
+      isReadyCallback(null);
+    }
+    catch(e) {
+      isReadyCallback(new Error(e.message));
+    }
   }
-
 
   findWordsAtIndex(index: number): [Error|null, string[]] {
     if (index < 0) {
@@ -60,7 +64,6 @@ export default class SAI {
     );
   }
 
-
   findWord(word: string): [Error|null, string[], number, number] {
     let i = this.words.length;
     while (--i >= 0) {
@@ -72,7 +75,6 @@ export default class SAI {
     return [Error(`"${word}" not found.`), [], -1, -1];
   }
 
-
   addWord(word: string): Error|null {
     if (this.dictHasWord(word)) {
       return Error('Word already exists.');
@@ -81,7 +83,6 @@ export default class SAI {
     this.updateWordsRef();
     return null;
   }
-
 
   addWordToIndex(word: string, index: number): Error|null {
     if (this.dictHasWord(word)) {
@@ -98,7 +99,6 @@ export default class SAI {
     return null;
   }
 
-
   delWord(word: string): Error|null {
     const [err, words, row, col] = this.findWord(word);
     if (err) { return err; }
@@ -112,7 +112,6 @@ export default class SAI {
     return null;
   }
 
-
   delWordsAtIndex(index: number): Error|null {
     const [err] = this.findWordsAtIndex(index);
     if (err) { return err; }
@@ -121,13 +120,11 @@ export default class SAI {
     return null;
   }
 
-
   private dictHasWord(word: string): boolean {
     if (!this.wordsRef.length) return false;
     if (~this.wordsRef.indexOf(word)) return true;
     return false;
   }
-
 
   private updateWordsRef() {
     this.wordsRef = _flatten(this.words);
@@ -136,7 +133,11 @@ export default class SAI {
 
 }
 
-// const sai = new SAI('./store');
+const sai = new SAI('./store', (err) => {
+  if (err) {
+    console.log(err.stack);
+  }
+});
 
 // sai.addWord('god');
 // sai.addWordToIndex('deity', 0);
