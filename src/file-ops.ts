@@ -22,38 +22,17 @@ export class FileOperations {
     return true;
   }
 
-
-  save(path: string, schema: SchemaType, data: unknown, compress: boolean, limitSave = true): Promise<null> {
-    return new Promise((rs, rj) => {
-      const [bufErr, buf] = this.bufferFromSchema(data, schema);
-      if (bufErr) return rj(bufErr);
-
-      this.writeBinary(path, buf, compress, limitSave)
-        .then(() => rs(null))
-        .catch(err => rj(err))
-      ;
-    });
+  save(path: string, schema: SchemaType, data: unknown, compress: boolean, limitSave = true): Promise<unknown> {
+    const [bufErr, buf] = this.bufferFromSchema(data, schema);
+    if (bufErr) return Promise.reject(bufErr);
+    return this.writeBinary(path, buf, compress, limitSave);
   }
-
-  // saveRaw(path: string, data: unknown): Promise<null> {
-  //   return new Promise((rs, rj) => {
-  //     const isSaving = this.checkIsSaving();
-  //     if (isSaving) return rj(isSaving);
-
-  //     writeFile(path, JSON.stringify(data), fileErr => {
-  //       if (fileErr) rj(fileErr);
-  //       else rs(null);
-  //     });
-  //   });
-  // }
-
 
   readReplyStore(filePath: string, schema: SchemaType): Replies {
     const zippedReplies = readFileSync(filePath);
     const unzippedReplies = gunzipSync(zippedReplies);
     return schema.fromBuffer(unzippedReplies);
   }
-
 
   readDictStore(filePath: string, schema: SchemaType): string[][] {
     const zippedWords = readFileSync(filePath);
@@ -66,13 +45,11 @@ export class FileOperations {
     if (schema.isValid(data)) {
       return [null, schema.toBuffer(data)];
     }
-
     return [Error(
       'data fails schema validation; ' +
       'compare data with schema for inconsistencies.'
     ), Buffer.from('')];
   }
-
 
   private async writeBinary(path: string, data: Buffer, compress: boolean, limitSave: boolean) {
     if (limitSave && this.isSaving) {
@@ -80,14 +57,12 @@ export class FileOperations {
         Error('Cannot save until current save operation completes.')
       );
     }
-
     this.isSaving = true;
     const dataToSave =
       compress
         ? await gzipPromise(data) as Buffer
         : data
     ;
-
     return new Promise((rs, rj) => {
       writeFile(path, dataToSave, { encoding: 'binary' }, err => {
         this.isSaving = false;
@@ -96,16 +71,6 @@ export class FileOperations {
       });
     });
   }
-
-
-  // private checkIsSaving() {
-  //   return (
-  //     this.isSaving
-  //       ? Error('Cannot save until current save operation completes.')
-  //       : null
-  //   );
-  // }
-
 }
 
 
