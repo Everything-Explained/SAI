@@ -11,15 +11,13 @@ import { log } from 'console';
 
 
 export default class SAI {
-
   private dataFolder : string;
   private repliesPath: string;
   private dictPath   : string;
-  private replies!   : Replies;
-  private words!     : string[][];
-  private wordsRef!  : string[];
   private fileOps    : FileOperations;
-
+  private replies!   : Replies;     // set in init()
+  private words!     : string[][];  // set in init()
+  private wordsRef!  : string[];    // set in init()
 
   get wordList(): string[][] {
     return this.words.slice();
@@ -30,23 +28,23 @@ export default class SAI {
   }
 
 
-  constructor(dataFolderPath: string) {
+  constructor(dataFolderPath: string, isReady: () => void) {
     this.dataFolder  = dataFolderPath;
-    this.repliesPath = `${dataFolderPath}/replies.said`;
-    this.dictPath    = `${dataFolderPath}/dictionary.said`;
+    this.repliesPath = `${dataFolderPath}/replies.said.gzip`;
+    this.dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
     this.fileOps     = new FileOperations();
-
     this.fileOps.createFolder(dataFolderPath);
-    this.init();
+    this.init(isReady);
   }
 
 
-  private async init() {
+  private async init(isReadyCallback: () => void) {
     await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
     await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
     this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
     this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
     this.updateWordsRef();
+    isReadyCallback();
   }
 
 
