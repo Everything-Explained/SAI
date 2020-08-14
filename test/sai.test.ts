@@ -26,6 +26,7 @@ t('SAI Class', async t => {
 
       t.test('init(): void', t => {
         t.plan(1);
+        // A readonly folder must be created for this test
         new SAI('./test/readonly', err => {
           if (err) t.pass('bubbles up errors to callback.');
           else t.fail('did not bubble up error to callback');

@@ -6,10 +6,10 @@ import { promisify } from "util";
 
 
 const gzipPromise = promisify(gzip);
+const writeFilePromise = promisify(writeFile);
 
 
 export class FileOperations {
-
   private isSaving = false;
 
 
@@ -58,18 +58,15 @@ export class FileOperations {
       );
     }
     this.isSaving = true;
-    const dataToSave =
-      compress
-        ? await gzipPromise(data) as Buffer
-        : data
-    ;
-    return new Promise((rs, rj) => {
-      writeFile(path, dataToSave, { encoding: 'binary' }, err => {
-        this.isSaving = false;
-        if (err) rj(err);
-        else rs(null);
-      });
-    });
+    try {
+      const dataToSave =
+        compress ? await gzipPromise(data) as Buffer : data
+      ;
+      await writeFilePromise(path, dataToSave, { encoding: 'binary' });
+      return Promise.resolve(null);
+    }
+    catch (e) { return Promise.reject(e); }
+    finally   { this.isSaving = false; }
   }
 }
 

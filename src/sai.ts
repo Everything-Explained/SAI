@@ -133,11 +133,7 @@ export default class SAI {
 
 }
 
-const sai = new SAI('./store', (err) => {
-  if (err) {
-    console.log(err.stack);
-  }
-});
+// const sai = new SAI('./store');
 
 // sai.addWord('god');
 // sai.addWordToIndex('deity', 0);
