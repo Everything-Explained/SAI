@@ -15,9 +15,9 @@ export default class SAI {
   private repliesPath: string;
   private dictPath   : string;
   private fileOps    : FileOperations;
-  private replies!   : Replies;     // set in init()
-  private words!     : string[][];  // set in init()
-  private wordsRef!  : string[];    // set in init()
+  private replies!   : Replies;       // set in init()
+  private words!     : string[][];    // set in init()
+  private wordsRef!  : string[];      // set in init()
 
   get wordList(): string[][] {
     return this.words.slice();
@@ -61,26 +61,18 @@ export default class SAI {
   }
 
   addWord(word: string): Error|null {
-    if (this.dictHasWord(word)) {
-      return Error('Word already exists.');
-    }
+    if (this.hasWord(word)) { return Error('Word already exists.'); }
     this.words.push([word]);
-    this.updateWordsRef();
+    this.updateWordRef();
     return null;
   }
 
   addWordToIndex(word: string, index: number): Error|null {
-    if (this.dictHasWord(word)) {
-      return Error('Word already exists.');
-    }
-    if (index < 0) {
-      return Error('Index must be greater than -1.');
-    }
-    if (!this.words[index]) {
-      return Error(`The index "${index}" does not exist.`);
-    }
+    if (this.hasWord(word))     { return Error('Word already exists.'); }
+    if (index < 0)              { return Error('Index must be greater than -1.'); }
+    if (!this.words[index])     { return Error(`The index "${index}" does not exist.`); }
     this.words[index].push(word);
-    this.updateWordsRef();
+    this.updateWordRef();
     return null;
   }
 
@@ -93,7 +85,7 @@ export default class SAI {
     if (!this.words[row].length) {
       this.words.splice(row, 1);
     }
-    this.updateWordsRef();
+    this.updateWordRef();
     return null;
   }
 
@@ -101,7 +93,7 @@ export default class SAI {
     const [err] = this.findWordsAtIndex(index);
     if (err) { return err; }
     this.words.splice(index, 1);
-    this.updateWordsRef();
+    this.updateWordRef();
     return null;
   }
 
@@ -113,7 +105,7 @@ export default class SAI {
       await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
       this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
       this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
-      this.updateWordsRef();
+      this.updateWordRef();
       isReadyCallback(null);
     }
     catch(e) {
@@ -121,13 +113,13 @@ export default class SAI {
     }
   }
 
-  private dictHasWord(word: string): boolean {
+  private hasWord(word: string): boolean {
     if (!this.wordsRef.length) return false;
     if (~this.wordsRef.indexOf(word)) return true;
     return false;
   }
 
-  private updateWordsRef() {
+  private updateWordRef() {
     this.wordsRef = _flatten(this.words);
   }
 }
