@@ -4,9 +4,9 @@ import { cloneDeep as _cloneDeep,
          flatten   as _flatten,
          flow      as _flow } from 'lodash/fp'
 ;
-import { FileOperations } from './file-ops';
-import { Replies } from './types';
-import { dictSchema, replySchema } from './schema';
+import FileOps from './core/file-ops';
+import { Replies } from './variables/types';
+import { dictSchema, replySchema } from './variables/schema';
 import { log } from 'console';
 
 
@@ -14,10 +14,11 @@ export default class SAI {
   private dataFolder : string;
   private repliesPath: string;
   private dictPath   : string;
-  private fileOps    : FileOperations;
+  private fileOps    : FileOps;
   private replies!   : Replies;       // set in init()
   private words!     : string[][];    // set in init()
   private wordsRef!  : string[];      // set in init()
+  private hashesRef! : string[][];    // set in init()
 
   get wordList(): string[][] {
     return this.words.slice();
@@ -32,7 +33,7 @@ export default class SAI {
     this.dataFolder  = dataFolderPath;
     this.repliesPath = `${dataFolderPath}/replies.said.gzip`;
     this.dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
-    this.fileOps     = new FileOperations();
+    this.fileOps     = new FileOps();
     this.init(isReady);
   }
 

@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFile } from "fs";
 import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
-import { Replies } from "./types";
+import { Replies } from "../variables/types";
 import { promisify } from "util";
 
 
@@ -9,7 +9,7 @@ const gzipAsync = promisify(gzip);
 const writeFileAsync = promisify(writeFile);
 
 
-export class FileOperations {
+export default class FileOperations {
   private isSaving = false;
 
 
