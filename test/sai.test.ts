@@ -71,8 +71,8 @@ t('SAI Class', async t => {
       });
 
       t.test('findWord(): [Error|null, string[], number, number]', async t => {
-        const findWordGoodResult = sai.findWord('god');
-        const findWordErrorResult = sai.findWord('pickles');
+        const findWordGoodResult = sai.findWordPosition('god');
+        const findWordErrorResult = sai.findWordPosition('pickles');
 
         t.is(findWordGoodResult[0], null,
           'error index will be null if word is found.'

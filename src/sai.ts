@@ -49,15 +49,15 @@ export default class SAI {
     );
   }
 
-  findWord(word: string): [Error|null, string[], number, number] {
-    let i = this.words.length;
-    while (--i >= 0) {
-      const wordIndex = this.words[i].indexOf(word);
-      if (~wordIndex) {
-        return [null, this.words[i], i, wordIndex];
+  findWordPosition(word: string): null | [number, number] {
+    let row = this.words.length;
+    while (--row >= 0) {
+      const col = this.words[row].indexOf(word);
+      if (~col) {
+        return [row, col];
       }
     }
-    return [Error(`"${word}" not found.`), [], -1, -1];
+    return null;
   }
 
   addWord(word: string): Error|null {
