@@ -116,7 +116,7 @@ export default class SAI {
       isReadyCallback(null);
     }
     catch(e) {
-      isReadyCallback(new Error(e.message));
+      isReadyCallback(Error(e.message));
     }
   }
 
