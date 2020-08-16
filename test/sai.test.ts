@@ -24,6 +24,10 @@ t('SAI Class', async t => {
         t.pass('executes isReady() callback after SAI{}.init()');
       });
 
+      t.test('findReply(): undefined | IReply', async t => {
+        // to be implemented
+      });
+
       t.test('init(): void', t => {
         t.plan(1);
         // A readonly folder must be created for this test
@@ -74,51 +78,31 @@ t('SAI Class', async t => {
         const findWordGoodResult = sai.findWordPosition('god');
         const findWordErrorResult = sai.findWordPosition('pickles');
 
-        t.is(findWordGoodResult[0], null,
-          'error index will be null if word is found.'
-        );
-        t.same(findWordGoodResult[1], ['god', 'deity'],
-          'result index is an array of found words.'
-        );
-        t.equal(findWordGoodResult[2], 0,
+        t.equal(findWordGoodResult![0], 0,
           'row index is > -1 when a word is found.',
         );
-        t.equal(findWordGoodResult[3], 0,
+        t.equal(findWordGoodResult![1], 0,
           'column index is > -1 when a word is found.',
         );
-        t.ok(findWordErrorResult[0]!.message,
-          'error index is Error() when word not found.'
-        );
-        t.equal(findWordErrorResult[1].length, 0,
-          'result index will be an empty array if word not found.'
-        );
-        t.equal(findWordErrorResult[2], -1,
-          'row index is -1 when a word is NOT found.',
-        );
-        t.equal(findWordErrorResult[3], -1,
-          'column index is -1 when a word is NOT found.',
+        t.equal(findWordErrorResult, undefined,
+          'return undefined when word is NOT found.'
         );
       });
 
-      t.test('findWordsAtIndex(): [Error|null, string[]]', async t => {
+      t.test('findWordsAtIndex(): null | string[]', async t => {
         sai.addWord('god2');
+        sai.addWordToIndex('god3', 1);
         const goodWordResult = sai.findWordsAtIndex(1);
         const badWordResult = sai.findWordsAtIndex(10);
 
-        t.equal(goodWordResult[0], null,
-          'error index will be null if word is found.'
+        t.deepEqual(goodWordResult![1], 'god3',
+          'returns the array of words where the specified word was found.'
         );
-        t.deepEqual(goodWordResult[1], ['god2'],
-          'result index is populated with a found word array.'
+        t.equal(sai.findWordsAtIndex(-12), undefined,
+          'returns undefined on negative numbers as they are NOT truthy.'
         );
-        t.ok(sai.findWordsAtIndex(-12)[0]!.message,
-          'error index sets Error() when index is less than 0'
-        );
-        t.ok(badWordResult[0]!.message,
-          'error index sets Error() when word is not found.'
-        );
-        t.equal(badWordResult[1].length, 0,
-          'result index is set to an empty array if no word is found.'
+        t.equal(badWordResult, undefined,
+          'returns undefined when word is NOT found.'
         );
       });
 
@@ -142,7 +126,7 @@ t('SAI Class', async t => {
         );
 
         sai.delWord('god'); // god was first index (0)
-        t.same(sai.wordList[0], ['god2'], // god2 added by findWordIndex()
+        t.same(sai.wordList[0], ['god2', 'god3'], // god2 and god3 added by findWordIndex()
           'deletes row-index if word is the only column-index in row.'
         );
       });
@@ -151,7 +135,7 @@ t('SAI Class', async t => {
         t.ok(~sai.delWordsAtIndex(-1)!.message.indexOf('-1'),
           'returns Error when index is less than 0'
         );
-        t.ok(~sai.delWordsAtIndex(5)!.message.indexOf('not exist'),
+        t.ok(~sai.delWordsAtIndex(5)!.message.indexOf('NOT found'),
           'returns Error when index does NOT exist.'
         );
 

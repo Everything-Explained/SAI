@@ -37,19 +37,24 @@ export default class SAI {
   }
 
 
-  findWordsAtIndex(index: number): [Error|null, string[]] {
-    if (index < 0) {
-      return [Error(`Index must be greater than -1`), []];
+  findHashPosition(hash: string): [number, number] | undefined {
+    for (let i = 0, l = this.replies.length; i < l; i++) {
+      const hashPos = this.replies[i].hashes.indexOf(hash);
+      if (~hashPos) return [i, hashPos];
     }
+    return undefined;
+  }
+
+  findWordsAtIndex(index: number): undefined | string[] {
     const words = this.words[index];
     return (
       words
-        ? [null, this.words[index]]
-        : [Error(`The index "${index}" does not exist.`), []]
+        ? this.words[index].slice()
+        : undefined
     );
   }
 
-  findWordPosition(word: string): null | [number, number] {
+  findWordPosition(word: string): undefined | [number, number] {
     let row = this.words.length;
     while (--row >= 0) {
       const col = this.words[row].indexOf(word);
@@ -57,7 +62,7 @@ export default class SAI {
         return [row, col];
       }
     }
-    return null;
+    return undefined;
   }
 
   addWord(word: string): Error|null {
@@ -77,8 +82,9 @@ export default class SAI {
   }
 
   delWord(word: string): Error|null {
-    const [err, words, row, col] = this.findWord(word);
-    if (err) { return err; }
+    const wordPos = this.findWordPosition(word);
+    if (!wordPos) { return Error('Word does NOT exist at.'); }
+    const [row, col] = wordPos;
     this.words[row].splice(col, 1);
 
     // Delete entire index if it's empty
@@ -90,8 +96,8 @@ export default class SAI {
   }
 
   delWordsAtIndex(index: number): Error|null {
-    const [err] = this.findWordsAtIndex(index);
-    if (err) { return err; }
+    const words = this.findWordsAtIndex(index);
+    if (!words) { return Error(`Index "${index}" NOT found.`); }
     this.words.splice(index, 1);
     this.updateWordRef();
     return null;
