@@ -77,9 +77,9 @@ export class Dictionary {
   }
 
   addWordToIndex(word: string, index: number): Error|null {
-    if (this.hasWord(word))     { return Error('Word already exists.'); }
-    if (index < 0)              { return Error('Index must be greater than -1.'); }
-    if (!this.words[index])     { return Error(`The index "${index}" does NOT exist.`); }
+    if (this.hasWord(word)) { return Error('Word already exists.'); }
+    if (index < 0)          { return Error('Index must be greater than -1.'); }
+    if (!this.words[index]) { return Error(`The index "${index}" does NOT exist.`); }
     this.words[index].push(word);
     this.updateWordRef();
     return null;
@@ -90,7 +90,6 @@ export class Dictionary {
     if (!wordPos) { return Error('Word does NOT exist at.'); }
     const [row, col] = wordPos;
     this.words[row].splice(col, 1);
-
     // Delete entire index if it's empty
     if (!this.words[row].length) {
       this.words.splice(row, 1);

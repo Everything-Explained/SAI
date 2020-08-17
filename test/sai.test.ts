@@ -7,7 +7,6 @@ import t from 'tape';
 
 
 t('SAI Class', async t => {
-
   const folderPath = './test/test';
   new SAI(folderPath,
     (err) => {
