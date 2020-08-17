@@ -1,10 +1,11 @@
 import { FileOperations } from "../src/core/file-ops";
 import del from 'del';
-import { existsSync } from "fs";
+import { existsSync, writeFile } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
-import { replySchema } from "../src/variables/schema";
 import { dictSchema } from "../src/database/dictionary";
+import { replySchema } from "../src/database/replies";
+import { promisify } from "util";
 
 
 const fileOps = new FileOperations();
@@ -12,6 +13,7 @@ const testScheme = AvroType.forSchema({
   name: 'test',
   type: 'array', items: 'string'
 });
+const writeFileAsync = promisify(writeFile);
 
 
 t('File Operations', async t => {
@@ -81,7 +83,8 @@ t('File Operations', async t => {
   });
 
   t.test('readReplyStore()', async t => {
-    const filePath = './test/replies.gzip';
+    const goodPath = './test/replies.gzip';
+    const badPath = './test/badReplies.gzip';
     const data = [
       { questions: ['hello'],
         answer: 'world',
@@ -89,23 +92,34 @@ t('File Operations', async t => {
         dateCreated: 1234,
         dateEdited: 4321 }
     ];
-    await fileOps.save(filePath, replySchema, data, true, false);
-    const replyObj = fileOps.readReplyStore(filePath, replySchema);
+    await fileOps.save(goodPath, replySchema, data, true, false);
+    await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
+    const replyObj = fileOps.readReplyStore(goodPath);
     t.equal(replyObj[0].answer, 'world',
       'reads a reply buffer into a JSON object'
     );
-    del(filePath);
+    t.throws(() => fileOps.readReplyStore(badPath),
+      /(truncated buffer)|(incorrect header)/g,
+      'throws an error if data fails schema conversion.'
+    );
+    del([goodPath, badPath]);
   });
 
 
   t.test('readDictStore()', async t => {
-    const filePath = './test/dictionary.gzip';
+    const goodPath = './test/dictionary.gzip';
+    const badPath = './test/badDictionary.gzip';
     const data = [['god', 'pickles'], ['love', 'lobster']];
-    await fileOps.save(filePath, dictSchema, data, true, false);
-    const dictObj = fileOps.readDictStore(filePath, dictSchema);
+    await fileOps.save(goodPath, dictSchema, data, true, false);
+    await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
+    const dictObj = fileOps.readDictStore(goodPath);
     t.equal(dictObj[0][0], 'god',
       'reads a dictionary buffer into a JSON object'
     );
-    del(filePath);
+    t.throws(() => fileOps.readDictStore(badPath),
+      /(truncated buffer)|(incorrect header)/g,
+      'throws an error if data fails schema conversion.'
+    );
+    del([goodPath, badPath]);
   });
 });

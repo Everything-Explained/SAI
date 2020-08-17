@@ -1,8 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFile } from "fs";
 import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
-import { Replies } from "../variables/types";
 import { promisify } from "util";
+import { dictSchema } from "../database/dictionary";
+import { Reply, replySchema } from "../database/replies";
 
 
 const gzipAsync = promisify(gzip);
@@ -28,16 +29,16 @@ export class FileOperations {
     return this.writeBinary(path, buf, compress, limitSave);
   }
 
-  readReplyStore(filePath: string, schema: SchemaType): Replies {
+  readReplyStore(filePath: string): Reply[] {
     const zippedReplies = readFileSync(filePath);
     const unzippedReplies = gunzipSync(zippedReplies);
-    return schema.fromBuffer(unzippedReplies);
+    return replySchema.fromBuffer(unzippedReplies);
   }
 
-  readDictStore(filePath: string, schema: SchemaType): string[][] {
+  readDictStore(filePath: string): string[][] {
     const zippedWords = readFileSync(filePath);
     const unzippedWords = gunzipSync(zippedWords);
-    return schema.fromBuffer(unzippedWords);
+    return dictSchema.fromBuffer(unzippedWords);
   }
 
 
