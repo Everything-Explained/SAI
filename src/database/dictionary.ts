@@ -1,5 +1,4 @@
 import { FileOps } from "../core/file-ops";
-import { flatten as _flatten } from 'lodash/fp';
 import { existsSync } from 'fs';
 import { Type as AvroType } from 'avsc';
 
@@ -26,11 +25,11 @@ export class Dictionary {
   }
 
   get wordList(): string[][] {
-    return this.words.slice();
+    return [...this.words];
   }
 
   get wordsRefList(): string[] {
-    return this.wordsRef.slice();
+    return [...this.wordsRefList];
   }
 
 
@@ -107,7 +106,7 @@ export class Dictionary {
   }
 
   private updateWordRef() {
-    this.wordsRef = _flatten(this.words);
+    this.wordsRef = this.words.flat();
   }
 
 

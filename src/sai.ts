@@ -4,18 +4,17 @@ import { cloneDeep as _cloneDeep,
          flow      as _flow } from 'lodash/fp'
 ;
 import { FileOps } from './core/file-ops';
-import { Replies } from './variables/types';
-import { replySchema } from './variables/schema';
-import { dictSchema } from './database/dictionary';
+import { Dictionary, dictSchema } from './database/dictionary';
+import { Replies, replySchema } from './database/replies';
 
 
 export class SAI {
   private dataFolder : string;
   private repliesPath: string;
   private dictPath   : string;
+  private dict!      : Dictionary; // set in init()
+  private replies!   : Replies;    // set in init()
   private fileOps    : FileOps;
-  private replies!   : Replies;       // set in init()
-  private hashesRef! : string[][];    // set in init()
 
 
   constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
@@ -31,25 +30,13 @@ export class SAI {
     throw Error('Not Implemented.');
   }
 
-  findReply(hash: string) {
-    return this.replies.find(r => ~r.hashes.indexOf(hash));
-  }
-
-  findHashPosition(hash: string): [number, number] | undefined {
-    for (let i = 0, l = this.replies.length; i < l; i++) {
-      const hashPos = this.replies[i].hashes.indexOf(hash);
-      if (~hashPos) return [i, hashPos];
-    }
-    return undefined;
-  }
-
   private async init(isReadyCallback: (err: Error|null) => void) {
     try {
       this.fileOps.createFolder(this.dataFolder);
       await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
       await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
-      this.replies = this.fileOps.readReplyStore(this.repliesPath, replySchema);
-      // this.words   = this.fileOps.readDictStore(this.dictPath, dictSchema);
+      this.replies = new Replies(this.fileOps, this.repliesPath);
+      this.dict = new Dictionary(this.fileOps, this.dictPath);
       isReadyCallback(null);
     }
     catch(e) {
