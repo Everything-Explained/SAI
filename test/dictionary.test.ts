@@ -1,9 +1,9 @@
 import t from 'tape';
-import { FileOperations } from '../src/core/file-ops';
+import { FileOps } from '../src/core/file-ops';
 import { Dictionary, dictSchema } from '../src/database/dictionary';
 import del from 'del';
 
-const fileOps = new FileOperations();
+const fileOps = new FileOps();
 fileOps.createFolder('./test/dict');
 fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
 .then(() => {

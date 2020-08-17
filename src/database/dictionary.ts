@@ -1,4 +1,4 @@
-import { FileOperations } from "../core/file-ops";
+import { FileOps } from "../core/file-ops";
 import { flatten as _flatten } from 'lodash/fp';
 import { existsSync } from 'fs';
 import { Type as AvroType } from 'avsc';
@@ -34,11 +34,11 @@ export class Dictionary {
   }
 
 
-  constructor(private fileOps: FileOperations, path: string) {
+  constructor(private fileOps: FileOps, path: string) {
     if (!existsSync(path))
       throw Error(`Path to dictionary: "${path}" does NOT exist.`)
     ;
-    this.words = fileOps.readDictStore(path, dictSchema);
+    this.words = fileOps.readDictStore(path);
     this.updateWordRef();
   }
 

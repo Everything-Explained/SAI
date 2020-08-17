@@ -10,7 +10,7 @@ const gzipAsync = promisify(gzip);
 const writeFileAsync = promisify(writeFile);
 
 
-export class FileOperations {
+export class FileOps {
   private isSaving = false;
 
 

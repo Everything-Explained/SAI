@@ -1,4 +1,4 @@
-import { FileOperations } from "../src/core/file-ops";
+import { FileOps } from "../src/core/file-ops";
 import del from 'del';
 import { existsSync, writeFile } from "fs";
 import t from 'tape';
@@ -8,7 +8,7 @@ import { replySchema } from "../src/database/replies";
 import { promisify } from "util";
 
 
-const fileOps = new FileOperations();
+const fileOps = new FileOps();
 const testScheme = AvroType.forSchema({
   name: 'test',
   type: 'array', items: 'string'

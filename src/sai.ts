@@ -3,7 +3,7 @@ import { cloneDeep as _cloneDeep,
          flatten   as _flatten,
          flow      as _flow } from 'lodash/fp'
 ;
-import { FileOperations } from './core/file-ops';
+import { FileOps } from './core/file-ops';
 import { Replies } from './variables/types';
 import { replySchema } from './variables/schema';
 import { dictSchema } from './database/dictionary';
@@ -13,7 +13,7 @@ export class SAI {
   private dataFolder : string;
   private repliesPath: string;
   private dictPath   : string;
-  private fileOps    : FileOperations;
+  private fileOps    : FileOps;
   private replies!   : Replies;       // set in init()
   private hashesRef! : string[][];    // set in init()
 
@@ -22,7 +22,7 @@ export class SAI {
     this.dataFolder  = dataFolderPath;
     this.repliesPath = `${dataFolderPath}/replies.said.gzip`;
     this.dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
-    this.fileOps     = new FileOperations();
+    this.fileOps     = new FileOps();
     this.init(isReady);
   }
 
