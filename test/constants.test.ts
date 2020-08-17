@@ -66,10 +66,12 @@ t('Constants', async t => {
       tokensAreUnique(queryTokens, 'query'),
       'are unique.'
     );
-
     t.ok(
       tokensHaveNoSpaces(queryTokens, 'query'),
       'contain no spaces.'
+    );
+    t.ok(queryTokens.length < 26,
+      'should have less than 26 items.'
     );
   });
 

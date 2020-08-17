@@ -1,12 +1,13 @@
-import FileOps from "../src/core/file-ops";
+import { FileOperations } from "../src/core/file-ops";
 import del from 'del';
 import { existsSync } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
-import { dictSchema, replySchema } from "../src/variables/schema";
+import { replySchema } from "../src/variables/schema";
+import { dictSchema } from "../src/database/dictionary";
 
 
-const fileOps = new FileOps();
+const fileOps = new FileOperations();
 const testScheme = AvroType.forSchema({
   name: 'test',
   type: 'array', items: 'string'

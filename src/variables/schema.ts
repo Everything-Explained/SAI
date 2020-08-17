@@ -19,7 +19,4 @@ export const replySchema = Type.forSchema({
 });
 
 
-export const dictSchema = Type.forSchema({
-  name: 'dictionary',
-  type: 'array', items: { type: 'array', items: 'string' }
-});
+
