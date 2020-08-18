@@ -10,16 +10,16 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
   const dict = new Dictionary(fileOps, './test/dict/dictionary.said.gzip');
   t('Dictionary{}', async t => {
     t.test('addWord(): Error|null', async t => {
-      t.same(dict.addWord('god'), null,
+      t.is(dict.addWord('test'), null,
         'returns null if no errors occur.'
       );
-      t.ok(dict.addWord('god')!.message,
+      t.ok(dict.addWord('test'),
         'returns Error() if word exists.'
       );
-      t.same(dict.wordList, [['god']],
+      t.same(dict.wordList, [['test']],
         'adds a word to the internal word list.'
       );
-      t.is(dict.wordsRefList[0], 'god',
+      t.is(dict.wordsRefList[0], 'test',
         'updates wordsRefList with added word.'
       );
     });
@@ -27,7 +27,7 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
     t.test('addWordToIndex(): Error|null', async t => {
       dict.wordList = [['test']];
       const goodWordAdd = dict.addWordToIndex('test2', 0);
-      t.equal(goodWordAdd, null,
+      t.is(goodWordAdd, null,
         'returns null on success.'
       );
       t.ok(~dict.addWordToIndex('blah', -1)!.message.indexOf('-1'),
@@ -55,7 +55,12 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
       t.ok(goodResult![0] == 1 && goodResult![1] == 2,
         'returns the exact row and column of a found word.'
       );
-      t.equal(errorResult, undefined,
+      t.is(dict.findWordPosition('test')![0], 0,
+        'finds word at beginning of array.'
+      );
+      t.is(dict.findWordPosition('test3')![0], 2,
+        'finds word at end of array.');
+      t.is(errorResult, undefined,
         'returns undefined when word is NOT found.'
       );
     });
@@ -71,10 +76,10 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
       t.notEqual(goodResult, dict.wordList[1],
         'returns a new array.'
       );
-      t.equal(dict.findWordsAtIndex(-12), undefined,
+      t.is(dict.findWordsAtIndex(-12), undefined,
         'returns undefined on negative numbers as they are NOT truthy.'
       );
-      t.equal(badResult, undefined,
+      t.is(badResult, undefined,
         'returns undefined when word is NOT found.'
       );
     });
@@ -84,7 +89,7 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
       t.ok(dict.delWord('test7')!.message,
         'returns an Error() if word does NOT exist.'
       );
-      t.equal(dict.delWord('test2'), null,
+      t.is(dict.delWord('test2'), null,
         'returns null if word was deleted.'
       );
       t.notOk(dict.wordList[1].includes('test2'),
@@ -109,16 +114,16 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
       t.ok(~dict.delWordsAtIndex(5)!.message.indexOf('NOT found'),
         'returns Error() when index NOT found.'
       );
-      t.equal(goodDelete, null,
+      t.is(goodDelete, null,
         'returns null on success.'
       );
       t.same(dict.wordList[1], ['test4'],
         'deletes row index when word is found.'
       );
-      t.equal(dict.wordList.length, 2,
+      t.is(dict.wordList.length, 2,
         'deletes words from word list'
       );
-      t.equal(dict.wordsRefList.length, 2,
+      t.is(dict.wordsRefList.length, 2,
         'deletes words from word list reference.'
       );
     });
