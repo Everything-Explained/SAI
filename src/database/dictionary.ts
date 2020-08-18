@@ -29,7 +29,7 @@ export class Dictionary {
   }
 
   get wordsRefList(): string[] {
-    return [...this.wordsRefList];
+    return [...this.wordsRef];
   }
 
 
@@ -59,7 +59,7 @@ export class Dictionary {
 
   findWordPosition(word: string): [number, number] | undefined {
     let row = this.words.length;
-    while (--row >= 0) {
+    while (row--) {
       const col = this.words[row].indexOf(word);
       if (~col) {
         return [row, col];
