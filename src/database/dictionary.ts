@@ -19,14 +19,14 @@ export class Dictionary {
    * Sets or gets the word list. Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*
    */
+  get wordList(): string[][] {
+    return [...this.words];
+  }
   set wordList(val: string[][]) {
     this.words = val;
     this.updateWordRef();
   }
 
-  get wordList(): string[][] {
-    return [...this.words];
-  }
 
   get wordsRefList(): string[] {
     return [...this.wordsRef];
@@ -109,5 +109,7 @@ export class Dictionary {
     this.wordsRef = this.words.flat();
   }
 
-
 }
+
+
+
