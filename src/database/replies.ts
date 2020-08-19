@@ -53,7 +53,7 @@ export class Replies {
 
   constructor(private fileOps: FileOps, private dict: Dictionary, path: string) {
     if (!existsSync(path))
-      throw Error(`Path to dictionary: "${path}" does NOT exist.`)
+      throw Error(`Path to replies: "${path}" does NOT exist.`)
     ;
     this.replies = fileOps.readReplyStore(path);
     this.brain = new Brain(dict);
