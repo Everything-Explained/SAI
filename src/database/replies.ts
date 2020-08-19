@@ -1,7 +1,7 @@
 import { FileOps } from "../core/file-ops";
 import { Type as AvroType } from 'avsc';
 import { existsSync } from "fs";
-import Brain from "../core/brain";
+import { Brain } from "../core/brain";
 import { Dictionary } from "./dictionary";
 
 
@@ -103,7 +103,7 @@ export class Replies {
     ;
     const qTokens =
       q.split(crlf)  // create question array
-       .slice(0, -1) // remove empty last index
+       .slice(0, -1) // remove empty index
     ;
     return [qTokens, ans];
   }

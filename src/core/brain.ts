@@ -11,7 +11,7 @@ import { h32 } from 'xxhashjs';
 import { flow as _flow } from 'lodash/fp';
 
 
-export default class Brain {
+export class Brain {
   constructor(private dict: Dictionary) {  }
 
   queryToHash(tokens: string[], checkQuery = true) {

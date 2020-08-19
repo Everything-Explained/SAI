@@ -35,8 +35,8 @@ export class SAI {
       this.fileOps.createFolder(this.dataFolder);
       await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
       await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
-      this.replies = new Replies(this.fileOps, this.repliesPath);
       this.dict = new Dictionary(this.fileOps, this.dictPath);
+      this.replies = new Replies(this.fileOps, this.dict, this.repliesPath);
       isReadyCallback(null);
     }
     catch(e) {

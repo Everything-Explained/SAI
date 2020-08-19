@@ -1,4 +1,4 @@
-import Brain from "../src/core/brain";
+import { Brain } from "../src/core/brain";
 import t from 'tape';
 import { contextTokens, queryTokens } from "../src/variables/constants";
 import { Dictionary, dictSchema } from "../src/database/dictionary";
