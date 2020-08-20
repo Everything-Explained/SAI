@@ -91,15 +91,15 @@ export class Replies {
     const doc = replyDoc.trim();
     const crlf = this.getWhitespaceStrategy(doc);
     const separator = `/@\\${crlf}`;
-    const sepRegEx = /^\/@\\(\r|\n)/g
+    const sepRegEx = /\n\/@\\(\r|\n)/g
     ;
-    if (!doc)                 return Error('Empty Document...');
+    if (!doc)                 return Error('Empty Document.');
     if (!crlf)                return Error('Invalid Document.');
     if (!doc.match(sepRegEx)) return Error('Separator is missing or malformed.')
     ;
     const [q, ans] = doc.split(separator);
-    if (!q || !ans)                  return Error('Missing questions or answer.');
-    if (q.match(/[^a-z?(\n|\r)]+/g)) return Error('Questions contain INVALID characters.')
+    if (!q || !ans)                 return Error('Missing questions or answer.');
+    if (q.match(/[^a-z(\n|\r)]+/g)) return Error('Questions contain Invalid chars.')
     ;
     const qTokens =
       q.split(crlf)  // create question array
