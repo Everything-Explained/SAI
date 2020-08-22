@@ -50,14 +50,14 @@ fileOps.save(`${folderPath}/replies.said.gzip`, replySchema, testData, true, fal
     });
 
     t.test('parseReplyDoc(): Error | [string[], string]', async t => {
-      const emptyTest = readFileSync(`${mockupDir}/emptyTest.txt`, 'utf-8');
-      const crlfTest = readFileSync(`${mockupDir}/CRLFTest.txt`, 'utf-8');
-      const sepTest = readFileSync(`${mockupDir}/separatorTest1.txt`, 'utf-8');
-      const missingQ = readFileSync(`${mockupDir}/missingQTest.txt`, 'utf-8');
-      const missingA = readFileSync(`${mockupDir}/missingATest.txt`, 'utf-8');
+      const emptyTest       = readFileSync(`${mockupDir}/emptyTest.txt`, 'utf-8');
+      const crlfTest        = readFileSync(`${mockupDir}/CRLFTest.txt`, 'utf-8');
+      const sepTest         = readFileSync(`${mockupDir}/separatorTest1.txt`, 'utf-8');
+      const missingQ        = readFileSync(`${mockupDir}/missingQTest.txt`, 'utf-8');
+      const missingA        = readFileSync(`${mockupDir}/missingATest.txt`, 'utf-8');
       const invalidCharTest = readFileSync(`${mockupDir}/invalidCharsTest.txt`, 'utf-8');
-      const passingDoc = readFileSync(`${mockupDir}/passingDocTest.txt`, 'utf-8');
-      const passingVal = replies.parseReplyDoc(passingDoc);
+      const passingDoc      = readFileSync(`${mockupDir}/passingDocTest.txt`, 'utf-8');
+      const passingVal      = replies.parseReplyDoc(passingDoc);
       t.ok(
         (replies.parseReplyDoc(emptyTest) as Error).message.includes('Empty'),
         'returns Error on white-space-only documents.'
@@ -107,12 +107,12 @@ fileOps.save(`${folderPath}/replies.said.gzip`, replySchema, testData, true, fal
     });
 
     t.test('hashQuestions(): Error|number', async t => {
-      const questions = ['what is this', 'what is that', 'what is what'];
-      const hashes = replies.hashQuestions(questions);
+      const questions     = ['what is this', 'what is that', 'what is what'];
+      const hashes        = replies.hashQuestions(questions);
       const identicalQDoc = readFileSync(`${mockupDir}/qTruncatedTest.txt`, 'utf-8');
-      const invalidQDoc = readFileSync(`${mockupDir}/qInvalidTest.txt`, 'utf-8');
-      dict.wordList = [['large', 'big', 'enormous', 'giant']];
-      const identicalVal = (replies.addDocReply(identicalQDoc) as Error);
+      const invalidQDoc   = readFileSync(`${mockupDir}/qInvalidTest.txt`, 'utf-8');
+            dict.wordList = [['large', 'big', 'enormous', 'giant']];
+      const identicalVal  = (replies.addDocReply(identicalQDoc) as Error);
       t.ok(Array.isArray(hashes),
         'returns an array of hashes on success.'
       );
