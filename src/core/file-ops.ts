@@ -29,6 +29,14 @@ export class FileOps {
     return this.writeBinary(path, buf, compress, limitSave);
   }
 
+  saveReplies(path: string, data: unknown, limitSave = true) {
+    return this.save(path, replySchema, data, true, limitSave);
+  }
+
+  saveDictionary(path: string, data: unknown, limitSave = true) {
+    return this.save(path, dictSchema, data, true, limitSave);
+  }
+
   readReplyStore(filePath: string): Reply[] {
     const zippedReplies = readFileSync(filePath);
     const unzippedReplies = gunzipSync(zippedReplies);
