@@ -39,7 +39,7 @@ t('SAI Class', async t => {
           else t.fail('did not bubble up error to callback');
         });
       });
-      // del(folderPath);
+      del(folderPath);
     })
   ;
 });
