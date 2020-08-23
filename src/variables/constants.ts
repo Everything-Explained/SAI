@@ -26,15 +26,15 @@ export const optionalTokens = [
 
 
 export const contractionCorrections: [RegExp, string][] = [
-  [/haven't/g, 'have not'],
-  [/aren't/g,  'are not'],
-  [/won't/g,   'will not'],
-  [/mustn't/g, 'must not'],
-  [/can't/g,   'can not'],
-  [/cannot/g,  'can not'],
-  [/n't/g,     ' not'],
-  [/'ll/g,     ' will'],
-  [/'s/g,      ' is']
+  [/haven't/g , 'have not'],
+  [/aren't/g  , 'are not'],
+  [/won't/g   , 'will not'],
+  [/mustn't/g , 'must not'],
+  [/can't/g   , 'can not'],
+  [/cannot/g  , 'can not'],
+  [/n't/g     , ' not'],
+  [/'ll/g     , ' will'],
+  [/'s/g      , ' is']
 ];
 
 
