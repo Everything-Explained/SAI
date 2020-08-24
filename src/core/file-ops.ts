@@ -3,7 +3,7 @@ import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
 import { dictSchema } from "../database/dictionary";
-import { Reply, replySchema } from "../database/replies";
+import { Reply, replySchema } from "../database/repository";
 
 
 const gzipAsync = promisify(gzip);

@@ -4,7 +4,7 @@ import { existsSync, writeFile } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
 import { dictSchema } from "../src/database/dictionary";
-import { replySchema } from "../src/database/replies";
+import { replySchema } from "../src/database/repository";
 import { promisify } from "util";
 
 

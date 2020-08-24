@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import t from 'tape';
 import { FileOps } from '../src/core/file-ops';
 import { Dictionary, dictSchema } from '../src/database/dictionary';
-import { Replies, Reply, replySchema } from '../src/database/replies';
+import { Repository, Reply, replySchema } from '../src/database/repository';
 
 
 
@@ -28,12 +28,12 @@ fileOps.save(`${folderPath}/replies.said.gzip`, replySchema, testData, true, fal
   }
   const dict = new Dictionary(fileOps, `${folderPath}/dictionary.said.gzip`);
   t('Replies{}', async t => {
-    let replies: Replies;
+    let replies: Repository;
     const mockupDir = './test/mockups';
 
     t.test('contructor()', async t => {
       t.doesNotThrow(
-        () => replies = new Replies(fileOps, dict, `${folderPath}/replies.said.gzip`),
+        () => replies = new Repository(fileOps, dict, `${folderPath}/replies.said.gzip`),
         'finds existing replies path.'
       );
     });
@@ -111,7 +111,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, replySchema, testData, true, fal
       const hashes        = replies.hashQuestions(questions);
       const identicalQDoc = readFileSync(`${mockupDir}/qTruncatedTest.txt`, 'utf-8');
       const invalidQDoc   = readFileSync(`${mockupDir}/qInvalidTest.txt`, 'utf-8');
-            dict.wordList = [['large', 'big', 'enormous', 'giant']];
+            dict.listWords = [['large', 'big', 'enormous', 'giant']];
       const identicalVal  = (replies.addDocReply(identicalQDoc) as Error);
       t.ok(Array.isArray(hashes),
         'returns an array of hashes on success.'

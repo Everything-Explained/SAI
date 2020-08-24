@@ -5,7 +5,7 @@ import { cloneDeep as _cloneDeep,
 ;
 import { FileOps } from './core/file-ops';
 import { Dictionary, dictSchema } from './database/dictionary';
-import { Replies, replySchema } from './database/replies';
+import { Repository, replySchema } from './database/repository';
 
 
 export class SAI {
@@ -13,7 +13,7 @@ export class SAI {
   private repliesPath: string;
   private dictPath   : string;
   private dict!      : Dictionary; // set in init()
-  private replies!   : Replies;    // set in init()
+  private replies!   : Repository;    // set in init()
   private fileOps    : FileOps;
 
 
@@ -25,10 +25,10 @@ export class SAI {
     this.init(isReady);
   }
 
-  ask(question: string) {
-    // Should convert question to hash and lookup hash in database.
-    throw Error('Not Implemented.');
-  }
+  // ask(question: string) {
+  //   // Should convert question to hash and lookup hash in database.
+  //   throw Error('Not Implemented.');
+  // }
 
   private async init(isReadyCallback: (err: Error|null) => void) {
     try {
@@ -36,7 +36,7 @@ export class SAI {
       await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
       await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
       this.dict = new Dictionary(this.fileOps, this.dictPath);
-      this.replies = new Replies(this.fileOps, this.dict, this.repliesPath);
+      this.replies = new Repository(this.fileOps, this.dict, this.repliesPath);
       isReadyCallback(null);
     }
     catch(e) {
