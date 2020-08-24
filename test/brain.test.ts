@@ -91,7 +91,7 @@ fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('setDictCode(): string[]', async t => {
-      dict.wordList = [
+      dict.listWords = [
         ['test0', 'sidetest0'],
         ['test1', 'sidetest1'],
         ['test2'], ['test3'], ['test4'], ['test5'], ['test6'],
@@ -116,7 +116,7 @@ fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('queryToHash(): number', async t => {
-      dict.wordList = [['good', 'right', 'proper']];
+      dict.listWords = [['good', 'right', 'proper']];
       t.is(brain.queryToHash(['not', 'a', 'question']), undefined,
         'returns undefined if question NOT detected.'
       );
