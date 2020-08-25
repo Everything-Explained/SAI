@@ -26,10 +26,10 @@ fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('filterContractions()', async t => {
-      const testTokens = `I cannot won't don't can't and haven't`.split(' ');
+      const testTokens = `I cannot won't don't can't and haven't they're`.split(' ');
       t.same(
         brain.filterContractions(testTokens),
-        ['I', 'can', 'not', 'will', 'not', 'do', 'not', 'can', 'not', 'and', 'have', 'not'],
+        ['I', 'can', 'not', 'will', 'not', 'do', 'not', 'can', 'not', 'and', 'have', 'not', 'they', 'are'],
         'returns an array with contractions normalized.'
       );
       t.isNot(brain.filterContractions(testTokens), testTokens,

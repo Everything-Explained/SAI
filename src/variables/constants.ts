@@ -26,13 +26,12 @@ export const optionalTokens = [
 
 
 export const contractionCorrections: [RegExp, string][] = [
-  [/won't/g   , 'will not'],
-  [/can't/g   , 'can not'],
-  [/cannot/g  , 'can not'],
-  [/n't/g     , ' not'],
-  [/'ll/g     , ' will'],
-  [/'s/g      , ' is'],
-  [/'re/g     , ' are']
+  [/won't/g        , 'will not'],
+  [/can't|cannot/g , 'can not'],
+  [/n't/g          , ' not'],
+  [/'ll/g          , ' will'],
+  [/'s/g           , ' is'],
+  [/'re/g          , ' are']
 ];
 
 
