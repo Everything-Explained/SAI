@@ -26,10 +26,10 @@ fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('filterContractions()', async t => {
-      const testTokens = `I cannot won't don't and haven't`.split(' ');
+      const testTokens = `I cannot won't don't can't and haven't`.split(' ');
       t.same(
         brain.filterContractions(testTokens),
-        ['I', 'can', 'not', 'will', 'not', 'do', 'not', 'and', 'have', 'not'],
+        ['I', 'can', 'not', 'will', 'not', 'do', 'not', 'can', 'not', 'and', 'have', 'not'],
         'returns an array with contractions normalized.'
       );
       t.isNot(brain.filterContractions(testTokens), testTokens,
@@ -38,11 +38,11 @@ fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('stripUnknown(): string[]', async t => {
-      const testTokens = '!+=A@#a\\$%^&B/*@#&$.b%^&*C:(),[}<>c?'.split('');
+      const testTokens = '!+=t@#a\\$%^&,/e*@#&$.b%^&*l:(),[}<>c?'.split('');
       t.is(
         brain.stripUnknown(testTokens).join(''),
-        'AaBbCc',
-        'enforces a-z and A-Z characters only.'
+        'taeblc',
+        'Allows lowercase characters only.'
       );
       t.isNot(brain.stripUnknown(testTokens), testTokens,
         'returns a new array.'

@@ -1,20 +1,20 @@
 export const queryTokens = [
-    'how', 'has', 'what', 'when',
-  'where', 'why',  'who', 'does',
-    'can', 'are', 'tell',   'is',
-     'do', 'did', 'will',
+    'how',  'has', 'what', 'when',
+  'where',  'why',  'who', 'does',
+    'can',  'are',   'is',   'do',
+    'did', 'will',
 ];
 
 
 export const contextTokens = [
   'this',   'was',  'like',     'i',
-    'of',  'much',  'have',   'and',
+    'of',  'have',   'and',  'here',
     'in',   'you',    'me',  'your',
   'from',    'we', 'about',  'know',
    'how',   'not',  'whom',    'us',
   'what',    'am',    'be',  'when',
   'them',    'to',   'has', 'there',
-   'our', 'those',  'here',
+   'our', 'those',
 ];
 
 
@@ -26,19 +26,17 @@ export const optionalTokens = [
 
 
 export const contractionCorrections: [RegExp, string][] = [
-  [/haven't/g , 'have not'],
-  [/aren't/g  , 'are not'],
   [/won't/g   , 'will not'],
-  [/mustn't/g , 'must not'],
   [/can't/g   , 'can not'],
   [/cannot/g  , 'can not'],
   [/n't/g     , ' not'],
   [/'ll/g     , ' will'],
-  [/'s/g      , ' is']
+  [/'s/g      , ' is'],
+  [/'re/g     , ' are']
 ];
 
 
-export const matchInvalidChars = /[^a-zA-Z]/g;
+export const matchInvalidChars = /[^a-z]/g;
 
 
 export const hashSeed = 0xAE10;
