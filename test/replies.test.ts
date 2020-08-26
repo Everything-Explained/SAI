@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import t from 'tape';
 import { FileOps } from '../src/core/file-ops';
 import { Dictionary, dictSchema } from '../src/database/dictionary';
-import { Repository, Reply, replySchema } from '../src/database/repository';
+import { Repository, Reply, repositoryScheme } from '../src/database/repository';
 
 
 
@@ -20,7 +20,7 @@ const testData = [
 
 fileOps.createFolder(folderPath);
 fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true, false);
-fileOps.save(`${folderPath}/replies.said.gzip`, replySchema, testData, true, false)
+fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true, false)
 .then(err => {
   if (err) {
     console.log(err);

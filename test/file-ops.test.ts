@@ -4,7 +4,7 @@ import { existsSync, writeFile } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
 import { dictSchema } from "../src/database/dictionary";
-import { replySchema } from "../src/database/repository";
+import { repositoryScheme } from "../src/database/repository";
 import { promisify } from "util";
 
 
@@ -92,7 +92,7 @@ t('File Operations', async t => {
         dateCreated: 1234,
         dateEdited: 4321 }
     ];
-    await fileOps.save(goodPath, replySchema, data, true, false);
+    await fileOps.save(goodPath, repositoryScheme, data, true, false);
     await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
     const replyObj = fileOps.readReplyStore(goodPath);
     t.equal(replyObj[0].answer, 'world',

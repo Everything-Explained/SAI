@@ -5,7 +5,7 @@ import { cloneDeep as _cloneDeep,
 ;
 import { FileOps } from './core/file-ops';
 import { Dictionary, dictSchema } from './database/dictionary';
-import { Repository, replySchema } from './database/repository';
+import { Repository, repositoryScheme } from './database/repository';
 
 
 export class SAI {
@@ -33,7 +33,7 @@ export class SAI {
   private async init(isReadyCallback: (err: Error|null) => void) {
     try {
       this.fileOps.createFolder(this.dataFolder);
-      await this.fileOps.save(this.repliesPath, replySchema, [], true, false);
+      await this.fileOps.save(this.repliesPath, repositoryScheme, [], true, false);
       await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
       this.dict = new Dictionary(this.fileOps, this.dictPath);
       this.replies = new Repository(this.fileOps, this.dict, this.repliesPath);

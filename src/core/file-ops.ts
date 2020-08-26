@@ -3,7 +3,7 @@ import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
 import { dictSchema } from "../database/dictionary";
-import { Reply, replySchema } from "../database/repository";
+import { Reply, repositoryScheme } from "../database/repository";
 
 
 const gzipAsync = promisify(gzip);
@@ -30,7 +30,7 @@ export class FileOps {
   }
 
   saveReplies(path: string, data: unknown, limitSave = true) {
-    return this.save(path, replySchema, data, true, limitSave);
+    return this.save(path, repositoryScheme, data, true, limitSave);
   }
 
   saveDictionary(path: string, data: unknown, limitSave = true) {
@@ -40,7 +40,7 @@ export class FileOps {
   readReplyStore(filePath: string): Reply[] {
     const zippedReplies = readFileSync(filePath);
     const unzippedReplies = gunzipSync(zippedReplies);
-    return replySchema.fromBuffer(unzippedReplies);
+    return repositoryScheme.fromBuffer(unzippedReplies);
   }
 
   readDictStore(filePath: string): string[][] {
