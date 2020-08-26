@@ -146,6 +146,11 @@ em, .cm-em {
   margin-bottom: 0.2em;
 }
 
+.markdown-preview-view th {
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
 .markdown-embed-title {
   font-weight: 600;
   font-size: 1.3em;
