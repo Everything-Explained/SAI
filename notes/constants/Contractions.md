@@ -29,11 +29,10 @@ An example of a word unaffected by this, is `haven't` where the word `have` does
 Each of the [[Contractions#Words|words]] in the list above, is actually part of a [Regular Expression]. When a contraction/word is matched, it is then replaced by its corresponding word along with a space. The space is necessary, to separate the new word from the word that is no longer a contraction.
 
 #### Examples
-Without filter: `why can't I see it`.
-With the filter: `why can not I see it`
-
-Without filter: `where's it gone, I'm sure it's there`.
-With the filter: `where has it gone, I am sure it is there`.
+Original | Filtered
+---------|----------
+why can't i see it | why can not I see it
+where's it gone, I'm sure it's there | where has it gone, I am sure it is there
 
 The filtered form is much easier to parse, as we now have words we can either remove entirely or encode.
 
