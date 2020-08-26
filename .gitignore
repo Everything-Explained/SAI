@@ -5,3 +5,4 @@ node_modules
 *.tsbuildinfo
 .nyc_output
 coverage
+notes/.obsidian/cache
