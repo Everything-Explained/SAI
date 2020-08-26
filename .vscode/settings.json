@@ -2,4 +2,15 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
+  "files.exclude": {
+    "notes": true,
+    "coverage": true,
+    ".nyc_output": true,
+    "**.txt": true,
+    "**.gzip": true,
+    "**.tsbuildinfo": true
+  },
+  "cSpell.words": [
+    "hasher"
+  ],
 }
