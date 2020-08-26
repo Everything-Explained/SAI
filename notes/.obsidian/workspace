@@ -4,16 +4,31 @@
     "type": "split",
     "children": [
       {
-        "id": "502bdd1414636990",
+        "id": "f83412e59488b1b6",
         "type": "leaf",
+        "dimension": 41.91044776119403,
         "active": true,
         "state": {
           "type": "markdown",
           "state": {
-            "file": "concepts/Question.md",
+            "file": "concepts/Repository Item.md",
             "mode": "source"
           }
-        }
+        },
+        "group": "d3b5c4b8676eb832"
+      },
+      {
+        "id": "d0f2fbce4144606e",
+        "type": "leaf",
+        "dimension": 58.08955223880597,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "concepts/Repository Item.md",
+            "mode": "preview"
+          }
+        },
+        "group": "d3b5c4b8676eb832"
       }
     ],
     "direction": "vertical"
@@ -46,7 +61,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "94d1b53219cb950f",
@@ -62,7 +78,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "concepts/Question.md"
+                "file": "concepts/Repository Item.md"
               }
             }
           },
@@ -72,7 +88,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "concepts/Question.md"
+                "file": "concepts/Repository Item.md"
               }
             }
           }
@@ -85,10 +101,10 @@
     "collapsed": true
   },
   "lastOpenFiles": [
+    "concepts/Repository Item.md",
+    "concepts/AVRO.md",
+    "concepts/Contextual Words.md",
     "concepts/Question.md",
-    "concepts/Query Words.md",
-    "concepts/Query Processing.md",
-    "classes/Contemplator{}.md",
-    "classes/Dictionary{}.md"
+    "classes/Repository{}.md"
   ]
 }

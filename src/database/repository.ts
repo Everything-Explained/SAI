@@ -21,11 +21,14 @@ export const repositoryScheme = AvroType.forSchema({
       type: 'record',
       name: 'RepoItem',
       fields: [
-        { name: 'questions', type: { type: 'array', items: 'string'}},
-        { name: 'answer', type: 'string' },
-        { name: 'hashes', type: { type: 'array', items: 'long'}},
-        { name: 'dateCreated', type: 'long' },
-        { name: 'dateEdited', type: 'long' },
+        { name: 'questions'   , type: { type: 'array', items: 'string'}},
+        { name: 'answer'      , type: 'string' },
+        { name: 'hashes'      , type: { type: 'array', items: 'int'}},
+        { name: 'tags'        , type: { type: 'array', items: 'string'}},
+        { name: 'author'      , type: { type: 'array', items: 'string'}},
+        { name: 'levels'      , type: { type: 'array', items: 'int'}},
+        { name: 'dateCreated' , type: 'long' },
+        { name: 'dateEdited'  , type: 'long' },
       ]
     }
   ]
