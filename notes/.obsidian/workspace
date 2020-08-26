@@ -1,0 +1,94 @@
+{
+  "main": {
+    "id": "2fde3e724c607acf",
+    "type": "split",
+    "children": [
+      {
+        "id": "502bdd1414636990",
+        "type": "leaf",
+        "active": true,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "concepts/Question.md",
+            "mode": "source"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "895334538f084203",
+    "type": "split",
+    "children": [
+      {
+        "id": "87a788ab554763ec",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "afaf966f7fe61fc4",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "71daf0c4aa390a9d",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "94d1b53219cb950f",
+    "type": "split",
+    "children": [
+      {
+        "id": "7a364fe3ebb28918",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f05a161334d3c025",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "concepts/Question.md"
+              }
+            }
+          },
+          {
+            "id": "e43b95a7d63e6652",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "concepts/Question.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 210.363525390625,
+    "collapsed": true
+  },
+  "lastOpenFiles": [
+    "concepts/Question.md",
+    "concepts/Query Words.md",
+    "concepts/Query Processing.md",
+    "classes/Contemplator{}.md",
+    "classes/Dictionary{}.md"
+  ]
+}

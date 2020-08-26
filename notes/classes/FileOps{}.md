@@ -1,0 +1,1 @@
+This Class contains all necessary functionality for manipulating the file system.

@@ -1,0 +1,32 @@
+{
+  "theme": "obsidian",
+  "pluginEnabledStatus": {
+    "file-explorer": true,
+    "global-search": true,
+    "switcher": true,
+    "graph": true,
+    "backlink": true,
+    "command-palette": true,
+    "markdown-importer": true,
+    "word-count": true,
+    "custom-css": true,
+    "page-preview": true,
+    "outline": true
+  },
+  "spellcheck": true,
+  "foldHeading": true,
+  "spellcheckDictionary": [
+    "dev",
+    "minifying",
+    "programmatically",
+    "instantiation",
+    "RepoItem",
+    "dateCreated",
+    "dateEdited",
+    "analyzation",
+    "queryToHash",
+    "isQuery",
+    "knowledgebase"
+  ],
+  "alwaysUpdateLinks": true
+}
