@@ -109,6 +109,10 @@ em, .cm-em {
   font-weight: 300;
 }
 
+.theme-dark .token.number {
+  color: rgb(255, 221, 68);
+}
+
 /* now, the fun stuff */
 /* headers */
 .cm-s-obsidian .cm-header, h1, h2, h3, h4, h5, h6 {
