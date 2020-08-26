@@ -109,19 +109,24 @@ fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
       );
     });
 
-    t.test('toHashNumber(): number', async t => {
-      t.ok(typeof brain.toHashNumber(['hello', 'world']) == 'number',
-        'returns a number.'
+    t.test('toHash(): () => number', async t => {
+      const toHash = brain.toHash(brain.hasher);
+      const result = toHash(['hello', 'world']);
+      t.ok(typeof result == 'number',
+        'returns a hash number.'
+      );
+      t.is(result, 43083855,
+        'returns a predictable hash.'
       );
     });
 
     t.test('queryToHash(): number', async t => {
       dict.listWords = [['good', 'right', 'proper']];
+      const res1 = brain.queryToHash(['what', 'is', 'good']);
+      const res2 = brain.queryToHash(['what', 'is', 'proper']);
       t.is(brain.queryToHash(['not', 'a', 'question']), undefined,
         'returns undefined if question NOT detected.'
       );
-      const res1 = brain.queryToHash(['what', 'is', 'good']);
-      const res2 = brain.queryToHash(['what', 'is', 'proper']);
       t.ok(typeof res1 == 'number',
         'converts a question to a number.'
       );

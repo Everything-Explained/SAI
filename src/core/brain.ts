@@ -7,12 +7,23 @@ import {
   optionalTokens,
   queryTokens
 } from "../variables/constants";
-import { h32 } from 'xxhashjs';
+import { XXHash32, HashObject } from 'xxhash-addon';
 import { flow as _flow } from 'lodash/fp';
 
 
+
 export class Brain {
-  constructor(private dict: Dictionary) {  }
+  private hash32: HashObject;
+
+  get hasher() {
+    return this.hash32;
+  }
+
+
+  constructor(private dict: Dictionary) {
+    this.hash32 = new XXHash32(hashSeed);
+   }
+
 
   queryToHash(tokens: string[], checkQuery = true) {
     if (checkQuery && !this.isQuery(tokens)) return undefined;
@@ -22,7 +33,7 @@ export class Brain {
       this.setQueryCode,
       this.setContextCode,
       this.setDictCode(this.dict),
-      this.toHashNumber,
+      this.toHash(this.hash32),
     )(tokens);
   }
 
@@ -84,8 +95,10 @@ export class Brain {
     };
   }
 
-  toHashNumber(tokens: string[]) {
-    return h32(tokens.join(''), hashSeed).toNumber();
+  toHash(hasher: HashObject) {
+    return (tokens: string[]) => {
+      return hasher.hash(Buffer.from(tokens.join(''))).readInt32BE();
+    };
   }
 }
 
