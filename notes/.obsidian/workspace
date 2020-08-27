@@ -10,8 +10,8 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "concepts/Query Processing.md",
-            "mode": "preview"
+            "file": "SAI.md",
+            "mode": "source"
           }
         }
       }
@@ -62,7 +62,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "concepts/Query Processing.md"
+                "file": "SAI.md"
               }
             }
           },
@@ -72,7 +72,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "concepts/Query Processing.md"
+                "file": "SAI.md"
               }
             }
           }
@@ -85,10 +85,10 @@
     "collapsed": true
   },
   "lastOpenFiles": [
+    "SAI.md",
     "concepts/Query Processing.md",
     "concepts/Hash.md",
     "constants/Hash Seed.md",
-    "constants/Query Words.md",
-    "constants/Untitled.md"
+    "constants/Query Words.md"
   ]
 }

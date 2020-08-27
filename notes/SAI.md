@@ -14,6 +14,12 @@
 	-	[[Query Words]]
 	-	[[Question]]
 	-	[[Repository Item]]
+- Constants
+	- [[Contextual Words]]
+	- [[Contractions]]
+	- [[Hash Seed]]
+	- [[Optional Words]]
+	- [[Query Words]]
 
 
 # Simple AI
