@@ -34,12 +34,11 @@ The Dictionary is a Class which contains methods for not only retrieving the wor
 Using the dictionary, words are converted to a code that reflects where a words position is, in the Dictionaries word list. If a words position is 1, than the code `&01` replaces that word in the question.
 
 Let's take this question: `how large is the sun`
-At this point, with the current processes we've talked about, this question would turn into this: `A &01 sun`.
+At this point, with the current processes we've talked about, this question would turn into this code: `A &01 sun`.
 
 All that's changed is that now we have an index reference to a Dictionary position.
 
 #### Hashing
-The last process this question goes through is [[Hash|hashing]]. The question is split into its words, so it would look like this: `["A", "&01", "sun"]` and joined together to form a code: `A&01sun`. This code is then converted into a [[Hash|hash]], using a custom seed value for the algorithm.
+The last process this question goes through is [[Hash|hashing]]. The question is split into its words, so it would look like this: `["A", "&01", "sun"]` and joined together to form a code: `A&01sun`. This code is then converted into a [[Hash|hash]], using a custom [[Hash Seed#Seed|seed  value]] for the algorithm.
 
-`A&01sun` becomes `837306532`
-As a hash it becomes: `duidus`
+`A&01sun` becomes `241225492`

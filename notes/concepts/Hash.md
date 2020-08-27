@@ -1,7 +1,14 @@
-An algorithmic process of converting some (usually) alphanumeric content, into a number. This number is then usually converted into a smaller base to be represented as letters and numbers. 
+An algorithmic process of converting a Buffer (binary data) into a potentially unique number. The reason I say *potentially*, is because there is the possibility of collisions, though when using a very small data-set coupled with short-length inputs, the theoretical amount of collisions is close to Zero.
 
-Using one of these algorithms, I can turn: `alpha1234` into `3966122707`. This might look manageable, but it's usually best to convert it to a *base36* number: `1tlbrv7`. 
+## Requirements
+[[SAI#Simple AI|SAI]] uses the [xxhash] algorithm to create the hashes. Although we have our pick of either the *64-bit* or *32-bit* versions, we're using the *32-bit* since the amount of questions should not exceed the theoretical collision threshold.
 
-> For the purposes of [[SAI]], the number is left unconverted.
+A [[Hash Seed#Seed|Hash Seed]] is also required to instantiate the object, although this is mostly a benign feature for our use-case.
 
-These hashes are unique to the data they represent, which makes them ideal to use as identifiers. The cost in CPU cycles is also very low for conversion, unlike other algorithms in the same vein.
+## Why are we using them?
+As discussed in the [[Query Processing]] document, we are already generating a unique code for each question, so...? It turns out Binary data is much more compact when working with integers. Converting each question-code into a unique number, means we can store that number with up to ~85% compression versus the original string-based code.
+
+> *The longer the question, the greater the savings*.
+
+
+[xxhash]: https://github.com/Cyan4973/xxHash#xxhash---extremely-fast-hash-algorithm

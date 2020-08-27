@@ -4,31 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "f83412e59488b1b6",
+        "id": "7d08bed5a79ec155",
         "type": "leaf",
-        "dimension": 41.91044776119403,
         "active": true,
         "state": {
           "type": "markdown",
           "state": {
-            "file": "concepts/Repository Item.md",
-            "mode": "source"
-          }
-        },
-        "group": "d3b5c4b8676eb832"
-      },
-      {
-        "id": "d0f2fbce4144606e",
-        "type": "leaf",
-        "dimension": 58.08955223880597,
-        "state": {
-          "type": "markdown",
-          "state": {
-            "file": "concepts/Repository Item.md",
+            "file": "concepts/Query Processing.md",
             "mode": "preview"
           }
-        },
-        "group": "d3b5c4b8676eb832"
+        }
       }
     ],
     "direction": "vertical"
@@ -61,8 +46,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "94d1b53219cb950f",
@@ -78,7 +62,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "concepts/Repository Item.md"
+                "file": "concepts/Query Processing.md"
               }
             }
           },
@@ -88,7 +72,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "concepts/Repository Item.md"
+                "file": "concepts/Query Processing.md"
               }
             }
           }
@@ -101,10 +85,10 @@
     "collapsed": true
   },
   "lastOpenFiles": [
-    "concepts/Repository Item.md",
-    "concepts/AVRO.md",
-    "concepts/Contextual Words.md",
-    "concepts/Question.md",
-    "classes/Repository{}.md"
+    "concepts/Query Processing.md",
+    "concepts/Hash.md",
+    "constants/Hash Seed.md",
+    "constants/Query Words.md",
+    "constants/Untitled.md"
   ]
 }
