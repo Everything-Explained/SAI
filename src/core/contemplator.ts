@@ -81,17 +81,7 @@ export class Contemplator {
 
   setDictCode(dict: Dictionary) {
     return (tokens: string[]) => {
-      return tokens.map(token => {
-        const wordPos = dict.findWordPosition(token);
-        if (wordPos) {
-          return (
-            wordPos[0] < 10
-              ? `&0${wordPos[0]}`
-              : `&${wordPos[0]}`
-          );
-        }
-        return token;
-      });
+      return tokens.map(token => dict.encodeWord(token));
     };
   }
 

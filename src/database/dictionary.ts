@@ -27,7 +27,6 @@ export class Dictionary {
     this.updateWordRef();
   }
 
-
   get wordsRefList(): string[] {
     return [...this.wordsRef];
   }
@@ -103,6 +102,12 @@ export class Dictionary {
     this.words.splice(index, 1);
     this.updateWordRef();
     return null;
+  }
+
+  encodeWord(word: string) {
+    const pos = this.findWordPosition(word);
+    if (!pos) return word;
+    return pos[0] < 10 ? `&0${pos[0]}` : `&${pos[0]}`;
   }
 
   private updateWordRef() {

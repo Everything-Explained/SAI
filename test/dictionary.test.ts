@@ -128,6 +128,21 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
       );
     });
 
+    t.test('encodeWord(): string', async t => {
+      dict.listWords = [['a'],['b'],['c'],['d'],['e'],['f'],['g'],['h'],['i'],['j'],['k']];
+      t.is(dict.encodeWord('z'), 'z',
+        'returns the word unmodified if not in Dictionary.'
+      );
+      t.is(dict.encodeWord('a'), '&00',
+        'encodes a word based on its index position.'
+      );
+      t.is(dict.encodeWord('d'), '&03',
+        'will pad encodings that are found with an index < 10.'
+      );
+      t.is(dict.encodeWord('k'), '&10',
+        'will stop padding values when index > 9.'
+      );
+    });
     del('./test/dict');
   });
 });
