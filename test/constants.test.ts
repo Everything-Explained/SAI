@@ -1,6 +1,5 @@
 import { contextTokens, hashSeed, optionalTokens, queryTokens } from "../src/variables/constants";
 import { intersection as _intersection } from 'lodash/fp';
-import del from 'del';
 import t from 'tape';
 
 
@@ -57,7 +56,7 @@ t('Constants', async t => {
 
 
   t.test('hashSeed', async t => {
-    t.equal(hashSeed, 0xAE10, 'is 0xAE10.');
+    t.equal(hashSeed, 0x541, 'is 0x541.');
   });
 
 

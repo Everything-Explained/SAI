@@ -38,4 +38,4 @@ export const contractionCorrections: [RegExp, string][] = [
 export const matchInvalidChars = /[^a-z]/g;
 
 
-export const hashSeed = 0xAE10;
+export const hashSeed = 0x541;

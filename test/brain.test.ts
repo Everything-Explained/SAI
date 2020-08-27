@@ -115,7 +115,7 @@ fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
       t.ok(typeof result == 'number',
         'returns a hash number.'
       );
-      t.is(result, 43083855,
+      t.is(result, -1951427130,
         'returns a predictable hash.'
       );
     });
