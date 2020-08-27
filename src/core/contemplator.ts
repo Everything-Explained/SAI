@@ -12,7 +12,7 @@ import { flow as _flow } from 'lodash/fp';
 
 
 
-export class Brain {
+export class Contemplator {
   private hash32: HashObject;
 
   get hasher() {

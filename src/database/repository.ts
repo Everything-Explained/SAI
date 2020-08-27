@@ -1,7 +1,7 @@
 import { FileOps } from "../core/file-ops";
 import { Type as AvroType } from 'avsc';
 import { existsSync } from "fs";
-import { Brain } from "../core/brain";
+import { Contemplator } from "../core/contemplator";
 import { Dictionary } from "./dictionary";
 
 
@@ -38,7 +38,7 @@ export const repositoryScheme = AvroType.forSchema({
 
 export class Repository {
   private replies: Reply[];
-  private brain: Brain;
+  private brain: Contemplator;
 
   /**
    * Gets or sets replies. Setting this value is **destructive**.
@@ -61,7 +61,7 @@ export class Repository {
       throw Error(`Path to replies: "${path}" does NOT exist.`)
     ;
     this.replies = fileOps.readReplyStore(path);
-    this.brain = new Brain(dict);
+    this.brain = new Contemplator(dict);
     this.list;
   }
 

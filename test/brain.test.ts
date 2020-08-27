@@ -1,4 +1,4 @@
-import { Brain } from "../src/core/brain";
+import { Contemplator } from "../src/core/contemplator";
 import t from 'tape';
 import { contextTokens, queryTokens } from "../src/variables/constants";
 import { Dictionary, dictSchema } from "../src/database/dictionary";
@@ -11,7 +11,7 @@ fileOps.createFolder('./test/brain');
 fileOps.save('./test/brain/dictionary.said.gzip', dictSchema, [], true)
 .then((err) => {
   const dict = new Dictionary(fileOps, './test/brain/dictionary.said.gzip');
-  const brain = new Brain(dict);
+  const brain = new Contemplator(dict);
   t('Brain{}', async t => {
     t.test('isQuery(): boolean', async t => {
       t.is(brain.isQuery([`what's`]), false,
