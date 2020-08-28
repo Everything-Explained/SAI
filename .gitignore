@@ -1,6 +1,5 @@
 node_modules
 *.js
-*.txt
 *.gzip
 *.tsbuildinfo
 .nyc_output
