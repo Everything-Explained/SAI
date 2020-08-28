@@ -13,7 +13,7 @@ Name | Description
 `encodeWord()` | Encodes a specified word if it exists within the Dictionary. The current encoding archetype is: `&<word index>`
 
 ## Purpose
-[[SAI#Simple AI|SAI]] uses the Dictionary to lighten the load of the developer. A traditional dictionary is one that holds many definitions of many words, but in this case, that's *not* the case. This Dictionary stores words in arrays of synonyms. In other words, if you had a word like "large" for instance, it would store this word like so: `[["large"]]`.
+SAI uses the Dictionary to lighten the load of the developer. A traditional dictionary is one that holds many definitions of many words, but in this case, that's *not* the case. This Dictionary stores words in arrays of synonyms. In other words, if you had a word like "large" for instance, it would store this word like so: `[["large"]]`.
 
 An array of arrays is how this storage is organized. Each array, instead of holding a definition, is holding synonyms. In the case of `[["large"]]`, we now have an index of Zero that contains a single array with a value of `["large"]`. If we were to add the word "big" to the Dictionary, we would place it alongside "large" and have an array looking like this: `[["large", "big"]]`.
 

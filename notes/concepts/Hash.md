@@ -1,7 +1,7 @@
 An algorithmic process of converting a Buffer (binary data) into a potentially unique number. The reason I say *potentially*, is because there is the possibility of collisions, though when using a very small data-set coupled with short-length inputs, the theoretical amount of collisions is close to Zero.
 
 ## Requirements
-[[SAI#Simple AI|SAI]] uses the [xxhash] algorithm to create the hashes. Although we have our pick of either the *64-bit* or *32-bit* versions, we're using the *32-bit* since the amount of questions should not exceed the theoretical collision threshold.
+SAI uses the [xxhash] algorithm to create the hashes. Although we have our pick of either the *64-bit* or *32-bit* versions, we're using the *32-bit* since the amount of questions should not exceed the theoretical collision threshold.
 
 A [[Hash Seed#Seed|Hash Seed]] is also required to instantiate the object, although this is mostly a benign feature for our use-case.
 

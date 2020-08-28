@@ -26,7 +26,11 @@
     "analyzation",
     "queryToHash",
     "isQuery",
-    "knowledgebase"
+    "knowledgebase",
+    "xxhash",
+    "Aelo",
+    "Noumenae"
   ],
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "hotkeys": {}
 }

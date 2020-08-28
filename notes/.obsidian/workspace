@@ -4,15 +4,12 @@
     "type": "split",
     "children": [
       {
-        "id": "7d08bed5a79ec155",
+        "id": "96840a6020d7dbab",
         "type": "leaf",
         "active": true,
         "state": {
-          "type": "markdown",
-          "state": {
-            "file": "SAI.md",
-            "mode": "source"
-          }
+          "type": "graph",
+          "state": {}
         }
       }
     ],
@@ -61,9 +58,7 @@
             "type": "leaf",
             "state": {
               "type": "backlink",
-              "state": {
-                "file": "SAI.md"
-              }
+              "state": {}
             }
           },
           {
@@ -71,9 +66,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "SAI.md"
-              }
+              "state": {}
             }
           }
         ],
@@ -85,10 +78,10 @@
     "collapsed": true
   },
   "lastOpenFiles": [
-    "SAI.md",
-    "concepts/Query Processing.md",
-    "concepts/Hash.md",
+    "constants/Query Words.md",
+    "constants/Optional Words.md",
     "constants/Hash Seed.md",
-    "constants/Query Words.md"
+    "constants/Contractions.md",
+    "constants/Contextual Words.md"
   ]
 }

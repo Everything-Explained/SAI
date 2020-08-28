@@ -13,7 +13,7 @@ These are words that build a context for a question. These words are processed s
 ]
 ```
 #### Necessity
-[[SAI|SAI]]  doesn't actually need to go through the encoding process for these words, since they can be encoded in plain-text form, but because these words are so common when describing context, it can reduce memory/space requirements when they are encoded.
+SAI doesn't actually need to go through the encoding process for these words, since they can be encoded in plain-text form, but because these words are so common when describing context, it can reduce memory/space requirements when they are encoded.
 
 Another more obscure reason, is that certain words when combined, can potentially form similar combinations of characters which may collide with existing hashes. More than likely the chance of this happening is almost Zero but encoding common contextual words with unique identifiers reduces these potential conflicts.
 

@@ -1,7 +1,7 @@
 A Question is a sentence that starts with any of the following: Who, What, When, Where, and Why. You can see the [[Query Words#Words|list of words]] that are used to deduce a question.
 
 ## Nature
-All questions are composites of other words which have a subject and context. [[SAI#Simple AI|SAI]] does its best to extract only the relevant parts of a question and converting them into a code, which can then be accessed later to reference an answer to that question.
+All questions are composites of other words which have a subject and context. SAI does its best to extract only the relevant parts of a question and converting them into a code, which can then be accessed later to reference an answer to that question.
 
 ## Restraints
 Questions, when written, usually have a question-mark at the end to signify that it's a question. This is also nice when chatting back and forth with someone online. Sometimes someone will say something that, without a question-mark, might be too ambiguous to recognize as a question.
