@@ -82,7 +82,61 @@ t('File Operations', async t => {
         del(path);
       })
     ;
+  });
 
+  t.test('saveRepository(): Promise<null>', t => {
+    const path = `${testDir}/saveRepository`;
+    fileOps.createFolder(path);
+    t.plan(2);
+    const validData: RepoItem[] = [{
+      questions: ['asdf'],
+      answer: 'asdflkasdf lkasjdf lkjasdf lkjasdf ',
+      hashes: [12381234, 213432134],
+      dateCreated: 2341234,
+      dateEdited: 12342834,
+      authors: [],
+      tags: [],
+      level: 0
+    }];
+    const invalidData = [['hello']];
+    t.plan(2);
+    fileOps.saveRepository(`${path}/saverepo.said.gzip`, validData)
+      .then(resp => {
+        t.is(resp, null, 'returns null on successful save.');
+        del(path);
+      })
+    ;
+    fileOps.saveRepository(`${path}/saverepo1.said.gzip`, invalidData)
+      .then(() => {
+        t.fail('throws an error on invalid data.');
+      })
+      .catch(() => {
+        t.pass('throws an error on invalid data.');
+      })
+    ;
+  });
+
+  t.test('saveDictionary(): Promise<null>', t => {
+    const path = `${testDir}/saveDictionary`;
+    fileOps.createFolder(path);
+    t.plan(2);
+    const validData = [['word00', 'word01'], ['word10']];
+    const invalidData = [[3]];
+    t.plan(2);
+    fileOps.saveDictionary(`${path}/savedict.said.gzip`, validData)
+      .then(resp => {
+        t.is(resp, null, 'returns null on successful save.');
+        del(path);
+      })
+    ;
+    fileOps.saveDictionary(`${path}/savedict1.said.gzip`, invalidData)
+      .then(() => {
+        t.fail('throws an error on invalid data.');
+      })
+      .catch(() => {
+        t.pass('throws an error on invalid data.');
+      })
+    ;
   });
 
   t.test('readRepoStore()', async t => {
