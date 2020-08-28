@@ -5,10 +5,13 @@ import { Contemplator } from "../core/contemplator";
 import { Dictionary } from "./dictionary";
 
 
-export interface Reply {
+export interface RepoItem {
   questions: string[];
   answer: string;
   hashes: number[];
+  tags: string[];
+  authors: string[];
+  level: number;
   dateCreated: number;
   dateEdited: number;
 }
@@ -25,8 +28,8 @@ export const repositoryScheme = AvroType.forSchema({
         { name: 'answer'      , type: 'string' },
         { name: 'hashes'      , type: { type: 'array', items: 'int'}},
         { name: 'tags'        , type: { type: 'array', items: 'string'}},
-        { name: 'author'      , type: { type: 'array', items: 'string'}},
-        { name: 'levels'      , type: { type: 'array', items: 'int'}},
+        { name: 'authors'     , type: { type: 'array', items: 'string'}},
+        { name: 'level'       , type: 'int' },
         { name: 'dateCreated' , type: 'long' },
         { name: 'dateEdited'  , type: 'long' },
       ]
@@ -37,46 +40,41 @@ export const repositoryScheme = AvroType.forSchema({
 
 
 export class Repository {
-  private replies: Reply[];
-  private brain: Contemplator;
+  private items: RepoItem[];
+  private contemplate: Contemplator;
 
   /**
-   * Gets or sets replies. Setting this value is **destructive**.
+   * Gets or sets repository items. Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*
    */
-  get list() {
-    return this.replies.slice();
+  get itemList() {
+    return this.items.slice();
   }
-  set list(val: Reply[]) {
-    this.replies = val;
+  set itemList(val: RepoItem[]) {
+    this.items = val;
   }
 
-  get brainInstance() {
-    return this.brain;
+  get contemplatorInstance() {
+    return this.contemplate;
   }
 
 
   constructor(private fileOps: FileOps, private dict: Dictionary, path: string) {
     if (!existsSync(path))
-      throw Error(`Path to replies: "${path}" does NOT exist.`)
+      throw Error(`Path to repository: "${path}" does NOT exist.`)
     ;
-    this.replies = fileOps.readReplyStore(path);
-    this.brain = new Contemplator(dict);
-    this.list;
+    this.items = fileOps.readRepoStore(path);
+    this.contemplate = new Contemplator(dict);
+    this.itemList;
   }
 
 
-  findReply(hash: number) {
-    return this.replies.find(r => ~r.hashes.indexOf(hash));
+  findItem(hash: number) {
+    return this.items.find(r => ~r.hashes.indexOf(hash));
   }
 
-
-  /**
-   *
-   * @param replyDoc A user-written document.
-   */
-  addDocReply(replyDoc: string): Error|null {
-    const parsedDoc = this.parseReplyDoc(replyDoc);
+  addDocItem(itemDoc: string): Error|null {
+    const parsedDoc = this.parseItemDoc(itemDoc);
     if (!Array.isArray(parsedDoc)) return parsedDoc
     ;
     const [questions, answer] = parsedDoc;
@@ -84,19 +82,22 @@ export class Repository {
     if (!Array.isArray(hashes))
       return hashes
     ;
-    this.replies.push({
+    this.items.push({
       questions,
       answer,
       hashes,
+      authors: [],
+      tags: [],
+      level: 0,
       dateCreated: Date.now(),
       dateEdited: Date.now()
     });
     return null;
   }
 
-  parseReplyDoc(replyDoc: string): Error | [string[], string] {
-    const doc = replyDoc.trim();
-    const crlf = this.getWhitespaceStrategy(doc);
+  parseItemDoc(itemDoc: string): Error | [string[], string] {
+    const doc = itemDoc.trim();
+    const crlf = this.whiteSpaceStrat(doc);
     const separator = `/@\\`;
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
     ;
@@ -111,17 +112,16 @@ export class Repository {
     return [q.split(crlf).map(q => q.trim()), ans];
   }
 
-  getWhitespaceStrategy(doc: string) {
+  whiteSpaceStrat(doc: string) {
     if (!doc.includes('\n')) return undefined;
     return doc.includes('\r') ? '\r\n' : '\n';
   }
-
 
   hashQuestions(questions: string[]): Error|number[]  {
     const hashes: number[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const hash = this.brain.queryToHash(q.split(' '));
+      const hash = this.contemplate.queryToHash(q.split(' '));
       if (!hash) return Error(`"${q}" is Invalid.`)
       ;
       const hashIndex = hashes.indexOf(hash);

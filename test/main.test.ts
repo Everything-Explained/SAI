@@ -18,8 +18,8 @@ t('SAI Class', async t => {
         t.ok(existsSync(folderPath),
           'creates test folder'
         );
-        t.ok(existsSync(`${folderPath}/replies.said.gzip`),
-          'creates replies file.'
+        t.ok(existsSync(`${folderPath}/repository.said.gzip`),
+          'creates repository file.'
         );
         t.ok(existsSync(`${folderPath}/dictionary.said.gzip`),
           'creates a dictionary file.'
@@ -27,7 +27,7 @@ t('SAI Class', async t => {
         t.pass('executes isReady() callback after SAI{}.init()');
       });
 
-      t.test('findReply(): undefined | IReply', async t => {
+      t.test('findItem(): undefined | RepoItem', async t => {
         // to be implemented
       });
 

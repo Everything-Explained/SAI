@@ -4,7 +4,7 @@ import { existsSync, writeFile } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
 import { dictSchema } from "../src/database/dictionary";
-import { repositoryScheme } from "../src/database/repository";
+import { RepoItem, repositoryScheme } from "../src/database/repository";
 import { promisify } from "util";
 
 
@@ -82,29 +82,31 @@ t('File Operations', async t => {
 
   });
 
-  t.test('readReplyStore()', async t => {
-    const goodPath = './test/replies.gzip';
-    const badPath = './test/badReplies.gzip';
+  t.test('readRepoStore()', async t => {
+    const goodPath = './test/repository.gzip';
+    const badPath = './test/badRepo.gzip';
     const data = [
       { questions: ['hello'],
         answer: 'world',
         hashes: [3812834],
+        tags: [],
+        authors: [],
+        level: 0,
         dateCreated: 1234,
         dateEdited: 4321 }
-    ];
+    ] as RepoItem[];
     await fileOps.save(goodPath, repositoryScheme, data, true, false);
     await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
-    const replyObj = fileOps.readReplyStore(goodPath);
-    t.equal(replyObj[0].answer, 'world',
-      'reads a reply buffer into a JSON object'
+    const repo = fileOps.readRepoStore(goodPath);
+    t.equal(repo[0].answer, 'world',
+      'reads the repository buffer into a JSON object'
     );
-    t.throws(() => fileOps.readReplyStore(badPath),
+    t.throws(() => fileOps.readRepoStore(badPath),
       /(truncated buffer)|(incorrect header)/g,
       'throws an error if data fails schema conversion.'
     );
     del([goodPath, badPath]);
   });
-
 
   t.test('readDictStore()', async t => {
     const goodPath = './test/dictionary.gzip';

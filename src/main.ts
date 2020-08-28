@@ -10,16 +10,16 @@ import { Repository, repositoryScheme } from './database/repository';
 
 export class SAI {
   private dataFolder : string;
-  private repliesPath: string;
+  private repoPath: string;
   private dictPath   : string;
   private dict!      : Dictionary; // set in init()
-  private replies!   : Repository;    // set in init()
+  private repo!   : Repository;    // set in init()
   private fileOps    : FileOps;
 
 
   constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
     this.dataFolder  = dataFolderPath;
-    this.repliesPath = `${dataFolderPath}/replies.said.gzip`;
+    this.repoPath = `${dataFolderPath}/repository.said.gzip`;
     this.dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
     this.fileOps     = new FileOps();
     this.init(isReady);
@@ -33,10 +33,10 @@ export class SAI {
   private async init(isReadyCallback: (err: Error|null) => void) {
     try {
       this.fileOps.createFolder(this.dataFolder);
-      await this.fileOps.save(this.repliesPath, repositoryScheme, [], true, false);
+      await this.fileOps.save(this.repoPath, repositoryScheme, [], true, false);
       await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
       this.dict = new Dictionary(this.fileOps, this.dictPath);
-      this.replies = new Repository(this.fileOps, this.dict, this.repliesPath);
+      this.repo = new Repository(this.fileOps, this.dict, this.repoPath);
       isReadyCallback(null);
     }
     catch(e) {

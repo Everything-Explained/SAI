@@ -19,10 +19,10 @@ export class Dictionary {
    * Sets or gets the word list. Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*
    */
-  get listWords(): string[][] {
+  get wordList(): string[][] {
     return [...this.words];
   }
-  set listWords(val: string[][]) {
+  set wordList(val: string[][]) {
     this.words = val;
     this.updateWordRef();
   }

@@ -3,7 +3,7 @@ import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
 import { dictSchema } from "../database/dictionary";
-import { Reply, repositoryScheme } from "../database/repository";
+import { RepoItem, repositoryScheme } from "../database/repository";
 
 
 const gzipAsync = promisify(gzip);
@@ -23,13 +23,13 @@ export class FileOps {
     return true;
   }
 
-  save(path: string, schema: SchemaType, data: unknown, compress: boolean, limitSave = true): Promise<unknown> {
+  save(path: string, schema: SchemaType, data: unknown, compress: boolean, limitSave = true): Promise<null> {
     const [bufErr, buf] = this.bufferFromSchema(data, schema);
     if (bufErr) return Promise.reject(bufErr);
     return this.writeBinary(path, buf, compress, limitSave);
   }
 
-  saveReplies(path: string, data: unknown, limitSave = true) {
+  saveRepository(path: string, data: unknown, limitSave = true) {
     return this.save(path, repositoryScheme, data, true, limitSave);
   }
 
@@ -37,10 +37,10 @@ export class FileOps {
     return this.save(path, dictSchema, data, true, limitSave);
   }
 
-  readReplyStore(filePath: string): Reply[] {
-    const zippedReplies = readFileSync(filePath);
-    const unzippedReplies = gunzipSync(zippedReplies);
-    return repositoryScheme.fromBuffer(unzippedReplies);
+  readRepoStore(filePath: string): RepoItem[] {
+    const zippedItems = readFileSync(filePath);
+    const unzippedItems = gunzipSync(zippedItems);
+    return repositoryScheme.fromBuffer(unzippedItems);
   }
 
   readDictStore(filePath: string): string[][] {
