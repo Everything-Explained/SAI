@@ -1,7 +1,7 @@
-A single instance of an object containing questions, an answer, hashes, and date properties, is a Repository Item.
+A single instance of an object containing information about an answer to listed questions, along with relevant properties pertaining to the creation of that information.
 
-## Scheme
-Within SAI, data is structured by Scheme's, which are AVRO-instantiated objects. The following is the current Repository Scheme:
+## Schema
+A Repository Item is structured by a Schema, which are [[AVRO]]-instantiated objects. The following is the current Repository Schema:
 ```js
 {
   type: 'record',
@@ -12,7 +12,7 @@ Within SAI, data is structured by Scheme's, which are AVRO-instantiated objects.
     { name: 'hashes' , type: { type: 'array', items: 'int'}},
     { name: 'tags'   , type: { type: 'array', items: 'string'}},
     { name: 'authors', type: { type: 'array', items: 'string'}},
-    { name: 'levels' , type: { type: 'array', items: 'int'}},
+    { name: 'level'  , type: 'int' },
     { name: 'dateCreated', type: 'long' },
     { name: 'dateEdited' , type: 'long' },
   ]
@@ -40,11 +40,11 @@ Unique tags created by an *author* of the RepoItem. Tags are programmatically en
 
 #### Authors
 `authors: string[]`
-Names of those who have edited the RepoItem. The first *author* in the Array is the creator, followed by secondary and tertiary Authors coming after.
+Names of those who have edited the RepoItem. The first *author* in the Array is the creator, followed by secondary and tertiary Authors coming after. Since Authors are proper nouns, they can be uppercase.
 
-#### Levels
-`levels: int32[]`
-Holds answer levels that range from 0, the lowest level, to 8, the highest level. Each level represents a certain degree of awareness that is required to understand the *answer*.
+#### Level
+`level: int32`
+Holds an arbitrary level or priority value specified by the developer. If arbitrary criteria is required to access an **answer**, than this property can be used to limit access.
 
 > int32 refers to a **32-bit signed integer** value as discussed in the [[AVRO]] specification.
 
@@ -59,7 +59,7 @@ The time in milliseconds that the RepoItem was Edited.
 ## Save Format
 This data is converted to a binary buffer which is ready to be saved as either an [AVRO container] or [raw AVRO] data. 
 
-> [[SAI]] saves this data in raw [[AVRO]] without a container, which is actually smaller than using a container.
+> SAI saves this data in raw [[AVRO]] without a container, which is actually smaller than using a container.
 
 
 [AVRO container]:https://avro.apache.org/docs/current/spec.html#Object+Container+Files

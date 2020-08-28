@@ -29,7 +29,8 @@
     "knowledgebase",
     "xxhash",
     "Aelo",
-    "Noumenae"
+    "Noumenae",
+    "frictionless"
   ],
   "alwaysUpdateLinks": true,
   "hotkeys": {}

@@ -1,7 +1,7 @@
-A [binary-encoding library] that works with [JSON]. It not only provides a faster serialization algorithm, but also a smaller size when saving the data, than traditional [JSON].
+A [binary-encoding library] that works with [JSON]. It not only provides a faster serialization algorithm, but also a smaller size when saving the data than traditional [JSON].
 
-### Schemes
-In order for AVRO to reduce the size of your data, it needs to know what type of data you're representing. It supports Integer, String, Float, Boolean, and Long primitive types.
+### Schema
+In order for AVRO to reduce the size of your data, it needs to know what type of data you're representing. It supports Integer, String, Float, Boolean, and Long primitive types, among some other complex types which are not used.
 
 **Strings** unfortunately cannot be reduced in size, because each character in a string will always take up exactly 1 byte.
 
@@ -11,7 +11,7 @@ In order for AVRO to reduce the size of your data, it needs to know what type of
 
 **Floats** are represented by up to 4 bytes and are converted to 32-bit integers using [Java's floatToIntBits]
 
-**Boolean** is represented by a single bit, that is either 1 or 0.
+**Boolean** is represented by a single byte, that is either 1 or 0.
 
 
 
