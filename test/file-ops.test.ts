@@ -6,6 +6,7 @@ import { Type as AvroType } from 'avsc';
 import { dictSchema } from "../src/database/dictionary";
 import { RepoItem, repositoryScheme } from "../src/database/repository";
 import { promisify } from "util";
+import { testDir } from "../src/variables/constants";
 
 
 const fileOps = new FileOps();
@@ -19,14 +20,14 @@ const writeFileAsync = promisify(writeFile);
 t('File Operations', async t => {
 
   t.test('createFolder()', async t => {
-    let folderPath = './test/newfolder1';
+    let folderPath = `${testDir}/createFolder`;
     fileOps.createFolder(folderPath);
     t.ok(existsSync(folderPath),
       'will create specified folder.'
     );
     del(folderPath);
 
-    folderPath = './test/newfolder2';
+    folderPath = `${testDir}/folderPath2`;
     fileOps.createFolder(folderPath);
     t.ok(fileOps.createFolder(folderPath),
       'returns if folder already exists.'
@@ -35,8 +36,10 @@ t('File Operations', async t => {
   });
 
   t.test('save(): Promise<null>', t => {
-    const validPath = `./test/test1.test`;
-    const validPath2 = `./test/test2.gzip`;
+    const path = `${testDir}/save`;
+    fileOps.createFolder(path);
+    const validPath = `${path}/test1.test`;
+    const validPath2 = `${path}/test2.gzip`;
     const invalidPath = `./blah/blah.test`;
     const validValue = ['valid value'];
     const invalidValue = ['valid value', ['invalid value']];
@@ -76,15 +79,17 @@ t('File Operations', async t => {
         t.equal(resp, null,
           'resolves null on file compression and save.'
         );
-        del(validPath2);
+        del(path);
       })
     ;
 
   });
 
   t.test('readRepoStore()', async t => {
-    const goodPath = './test/repository.gzip';
-    const badPath = './test/badRepo.gzip';
+    const path = `${testDir}/readRepoStore`;
+    fileOps.createFolder(path);
+    const goodPath = `${path}/repository.gzip`;
+    const badPath = `${path}/badRepo.gzip`;
     const data = [
       { questions: ['hello'],
         answer: 'world',
@@ -105,12 +110,14 @@ t('File Operations', async t => {
       /(truncated buffer)|(incorrect header)/g,
       'throws an error if data fails schema conversion.'
     );
-    del([goodPath, badPath]);
+    del(path);
   });
 
   t.test('readDictStore()', async t => {
-    const goodPath = './test/dictionary.gzip';
-    const badPath = './test/badDictionary.gzip';
+    const path = `${testDir}/readDictStore`;
+    fileOps.createFolder(path);
+    const goodPath = `${path}/dictionary.gzip`;
+    const badPath = `${path}/badDictionary.gzip`;
     const data = [['god', 'pickles'], ['love', 'lobster']];
     await fileOps.save(goodPath, dictSchema, data, true, false);
     await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
@@ -122,6 +129,6 @@ t('File Operations', async t => {
       /(truncated buffer)|(incorrect header)/g,
       'throws an error if data fails schema conversion.'
     );
-    del([goodPath, badPath]);
+    del(path);
   });
 });
