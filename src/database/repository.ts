@@ -105,7 +105,7 @@ export class Repository {
     if (!crlf)                 return Error('Invalid Document.');
     if (!~doc.indexOf('/@\\')) return Error('Separator is missing.')
     ;
-    const [q, ans] = doc.split(separator).map(v => v.trim());
+    const [q, ans] = doc.split(separator, 2).map(v => v.trim());
     if (!q || !ans)            return Error('Missing question or answer blocks.');
     if (q.match(matchInvalid)) return Error('Questions contain Invalid chars.')
     ;
