@@ -1,4 +1,4 @@
-A single instance of an object containing information about an answer to listed questions, along with relevant properties pertaining to the creation of that information.
+A single instance of an object containing a specific data structure, which SAI uses to determine answers to questions.
 
 ## Schema
 A Repository Item is structured by a Schema, which are [[AVRO]]-instantiated objects. The following is the current Repository Schema:
