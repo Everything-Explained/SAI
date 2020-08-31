@@ -12,23 +12,23 @@ export const dictSchema = AvroType.forSchema({
 
 
 export class Dictionary {
-  private words!     : string[][];    // set in init()
-  private wordsRef!  : string[];      // set in init()
+  private _words!     : string[][];    // set in init()
+  private _wordsRef!  : string[];      // set in init()
 
   /**
    * Sets or gets the word list. Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*
    */
-  get wordList(): string[][] {
-    return [...this.words];
+  get words(): string[][] {
+    return [...this._words];
   }
-  set wordList(val: string[][]) {
-    this.words = val;
+  set words(val: string[][]) {
+    this._words = val;
     this.updateWordRef();
   }
 
-  get wordsRefList(): string[] {
-    return [...this.wordsRef];
+  get flatWords(): string[] {
+    return [...this._wordsRef];
   }
 
 
@@ -36,30 +36,30 @@ export class Dictionary {
     if (!existsSync(path))
       throw Error(`Path to dictionary: "${path}" does NOT exist.`)
     ;
-    this.words = fileOps.readDictStore(path);
+    this._words = fileOps.readDictStore(path);
     this.updateWordRef();
   }
 
 
   hasWord(word: string): boolean {
-    if (!this.wordsRef.length) return false;
-    if (~this.wordsRef.indexOf(word)) return true;
+    if (!this._wordsRef.length) return false;
+    if (~this._wordsRef.indexOf(word)) return true;
     return false;
   }
 
   findWordsAtIndex(index: number): undefined | string[] {
-    const words = this.words[index];
+    const words = this._words[index];
     return (
       words
-        ? this.words[index].slice()
+        ? this._words[index].slice()
         : undefined
     );
   }
 
   findWordPosition(word: string): [number, number] | undefined {
-    let row = this.words.length;
+    let row = this._words.length;
     while (row--) {
-      const col = this.words[row].indexOf(word);
+      const col = this._words[row].indexOf(word);
       if (~col) {
         return [row, col];
       }
@@ -69,7 +69,7 @@ export class Dictionary {
 
   addWord(word: string): Error|null {
     if (this.hasWord(word)) { return Error('Word already exists.'); }
-    this.words.push([word]);
+    this._words.push([word]);
     this.updateWordRef();
     return null;
   }
@@ -77,8 +77,8 @@ export class Dictionary {
   addWordToIndex(word: string, index: number): Error|null {
     if (this.hasWord(word)) { return Error('Word already exists.'); }
     if (index < 0)          { return Error('Index must be greater than -1.'); }
-    if (!this.words[index]) { return Error(`The index "${index}" does NOT exist.`); }
-    this.words[index].push(word);
+    if (!this._words[index]) { return Error(`The index "${index}" does NOT exist.`); }
+    this._words[index].push(word);
     this.updateWordRef();
     return null;
   }
@@ -87,10 +87,10 @@ export class Dictionary {
     const wordPos = this.findWordPosition(word);
     if (!wordPos) { return Error('Word does NOT exist at.'); }
     const [row, col] = wordPos;
-    this.words[row].splice(col, 1);
+    this._words[row].splice(col, 1);
     // Delete entire index if it's empty
-    if (!this.words[row].length) {
-      this.words.splice(row, 1);
+    if (!this._words[row].length) {
+      this._words.splice(row, 1);
     }
     this.updateWordRef();
     return null;
@@ -99,7 +99,7 @@ export class Dictionary {
   delWordsAtIndex(index: number): Error|null {
     const words = this.findWordsAtIndex(index);
     if (!words) { return Error(`Index "${index}" NOT found.`); }
-    this.words.splice(index, 1);
+    this._words.splice(index, 1);
     this.updateWordRef();
     return null;
   }
@@ -111,7 +111,7 @@ export class Dictionary {
   }
 
   private updateWordRef() {
-    this.wordsRef = this.words.flat();
+    this._wordsRef = this._words.flat();
   }
 
 }

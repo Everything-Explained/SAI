@@ -91,7 +91,7 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('setDictCode(): string[]', async t => {
-      dict.wordList = [
+      dict.words = [
         ['test0', 'sidetest0'],
         ['test1', 'sidetest1'],
         ['test2'], ['test3'], ['test4'], ['test5'], ['test6'],
@@ -110,7 +110,7 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('toHash(): () => number', async t => {
-      const toHash = contemplate.toHash(contemplate.hasher);
+      const toHash = contemplate.toHash(contemplate.hashObj);
       const result = toHash(['hello', 'world']);
       t.ok(typeof result == 'number',
         'returns a hash number.'
@@ -121,7 +121,7 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('queryToHash(): number', async t => {
-      dict.wordList = [['good', 'right', 'proper']];
+      dict.words = [['good', 'right', 'proper']];
       const res1 = contemplate.queryToHash(['what', 'is', 'good']);
       const res2 = contemplate.queryToHash(['what', 'is', 'proper']);
       t.is(contemplate.queryToHash(['not', 'a', 'question']), undefined,

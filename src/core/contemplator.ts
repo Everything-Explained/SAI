@@ -13,15 +13,15 @@ import { flow as _flow } from 'lodash/fp';
 
 
 export class Contemplator {
-  private hash32: HashObject;
+  private _hash32: HashObject;
 
-  get hasher() {
-    return this.hash32;
+  get hashObj() {
+    return this._hash32;
   }
 
 
   constructor(private dict: Dictionary) {
-    this.hash32 = new XXHash32(hashSeed);
+    this._hash32 = new XXHash32(hashSeed);
    }
 
 
@@ -33,7 +33,7 @@ export class Contemplator {
       this.setQueryCode,
       this.setContextCode,
       this.setDictCode(this.dict),
-      this.toHash(this.hash32),
+      this.toHash(this._hash32),
     )(tokens);
   }
 

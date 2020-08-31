@@ -11,7 +11,7 @@ const writeFileAsync = promisify(writeFile);
 
 
 export class FileOps {
-  private isSaving = false;
+  private _isSaving = false;
 
 
   constructor() { return; }
@@ -61,12 +61,12 @@ export class FileOps {
   }
 
   private async writeBinary(path: string, data: Buffer, compress: boolean, limitSave: boolean) {
-    if (limitSave && this.isSaving) {
+    if (limitSave && this._isSaving) {
       return Promise.reject(
         Error('Cannot save until current save operation completes.')
       );
     }
-    this.isSaving = true;
+    this._isSaving = true;
     try {
       const dataToSave =
         compress ? await gzipAsync(data) as Buffer : data
@@ -75,7 +75,7 @@ export class FileOps {
       return Promise.resolve(null);
     }
     catch (e) { return Promise.reject(e); }
-    finally   { this.isSaving = false; }
+    finally   { this._isSaving = false; }
   }
 }
 

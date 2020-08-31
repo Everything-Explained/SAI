@@ -6,14 +6,14 @@ import { Dictionary } from "./dictionary";
 
 
 export interface RepoItem {
-  questions: string[];
-  answer: string;
-  hashes: number[];
-  tags: string[];
-  authors: string[];
-  level: number;
-  dateCreated: number;
-  dateEdited: number;
+  questions   : string[];
+  answer      : string;
+  hashes      : number[];
+  tags        : string[];
+  authors     : string[];
+  level       : number;
+  dateCreated : number;
+  dateEdited  : number;
 }
 
 
@@ -40,22 +40,22 @@ export const repositoryScheme = AvroType.forSchema({
 
 
 export class Repository {
-  private items: RepoItem[];
-  private contemplate: Contemplator;
+  private _items: RepoItem[];
+  private _contemplate: Contemplator;
 
   /**
    * Gets or sets repository items. Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*
    */
-  get itemList() {
-    return this.items.slice();
+  get items() {
+    return this._items.slice();
   }
-  set itemList(val: RepoItem[]) {
-    this.items = val;
+  set items(val: RepoItem[]) {
+    this._items = val;
   }
 
   get contemplatorInstance() {
-    return this.contemplate;
+    return this._contemplate;
   }
 
 
@@ -63,14 +63,14 @@ export class Repository {
     if (!existsSync(path))
       throw Error(`Path to repository: "${path}" does NOT exist.`)
     ;
-    this.items = fileOps.readRepoStore(path);
-    this.contemplate = new Contemplator(dict);
-    this.itemList;
+    this._items = fileOps.readRepoStore(path);
+    this._contemplate = new Contemplator(dict);
+    this.items;
   }
 
 
   findItem(hash: number) {
-    return this.items.find(r => ~r.hashes.indexOf(hash));
+    return this._items.find(r => ~r.hashes.indexOf(hash));
   }
 
   addDocItem(itemDoc: string): Error|null {
@@ -82,7 +82,7 @@ export class Repository {
     if (!Array.isArray(hashes))
       return hashes
     ;
-    this.items.push({
+    this._items.push({
       questions,
       answer,
       hashes,
@@ -121,7 +121,7 @@ export class Repository {
     const hashes: number[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const hash = this.contemplate.queryToHash(q.split(' '));
+      const hash = this._contemplate.queryToHash(q.split(' '));
       if (!hash) return Error(`"${q}" is Invalid.`)
       ;
       const hashIndex = hashes.indexOf(hash);

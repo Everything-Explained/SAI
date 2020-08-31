@@ -48,7 +48,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.equal(repo.findItem(58519234), undefined,
         'returns undefined when reply not found.'
       );
-      repo.itemList = [];
+      repo.items = [];
     });
 
     t.test('parseItemDoc(): Error | [string[], string]', async t => {
@@ -98,7 +98,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       const passingDoc = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`, 'utf-8');
-      dict.wordList       = [['large', 'big', 'enormous', 'giant']];
+      dict.words       = [['large', 'big', 'enormous', 'giant']];
       const identicalVal  = (repo.addDocItem(identicalQDoc) as Error);
       t.ok(
         (repo.addDocItem(errorDoc) as Error).message.includes('Invalid chars'),
@@ -107,7 +107,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.is(repo.addDocItem(passingDoc), null,
         'returns null when reply doc added successfully.'
       );
-      t.is(repo.itemList[0].hashes.length, 4,
+      t.is(repo.items[0].hashes.length, 4,
         'adds a hash for every question in document.'
       );
       t.ok(
