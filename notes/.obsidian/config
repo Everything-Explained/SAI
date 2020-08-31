@@ -30,7 +30,13 @@
     "xxhash",
     "Aelo",
     "Noumenae",
-    "frictionless"
+    "frictionless",
+    "whiteSpaceStrat",
+    "hashQuestions",
+    "parseItemDoc",
+    "addDocItem",
+    "findItemsByTag",
+    "findItem"
   ],
   "alwaysUpdateLinks": true,
   "hotkeys": {}
