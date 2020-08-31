@@ -11,12 +11,14 @@ These are words which form the basis for starting a question in the English lang
 Encoding these words is not particularly needed, but doing so saves a little bit of memory/space while using a marginal amount of CPU power to do so.
 #### Processing
 Each [[Query Words#Words|Query-Word]] is converted into an uppercase character based on its position in the array. The following table will illustrate:
+
 word | code
 ------|------
 what | A
 when | B
 where | C
 how | D
+
 They are then appended to the question in place of the word as follows:
 `what is chicken` becomes `A is chicken`
 
