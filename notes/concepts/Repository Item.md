@@ -20,39 +20,39 @@ A Repository Item is structured by a Schema, which are [[AVRO]]-instantiated obj
 ```
 
 # Properties
-#### Questions
+### Questions
 `string[]` 
 Valid [[Question|questions]] that pertain to the saved *answer*. Because of the subjective nature of questions, this is a many-to-one relationship with the *answer*.
 
-#### Answer
+### Answer
 `string` 
 A hand-crafted response by an *author*. That *author* can be either a user or developer, depending on the use-case of SAI. The answer can contain any characters other than the pattern `/@\`, which is used for parsing the header of a [[RepoDoc]]
 
-#### Hashes
+### Hashes
 `int32[]`
 Unique identifiers with an index that correlates precisely to the *questions* Array. In other words, `hashes[0]` is the hashed representation of `question[0]`. 
 
 > int32 refers to a **32-bit signed integer** value as discussed in the [[AVRO]] specification.
 
-#### ==WIP== Tags
+### ==WIP== Tags
 `string[]` 
 An Array of Strings that convey relation to the subject-matter of a RepoItem. Duplicates will be caught as an error during the RepoItem submission process. One process is described [[Item Document|Here]]
 
-#### ==WIP== Authors
+### ==WIP== Authors
 `string[]`
 Names of those who have edited a RepoItem. The first *author* in the Array is the creator, followed by secondary and tertiary Authors coming after. Since Authors are proper nouns, they can be uppercase.
 
-#### ==WIP== Level
+### ==WIP== Level
 `int32`
 Holds an arbitrary level or priority value specified by the developer. If arbitrary criteria is required to access an **answer**, than this property can be used to limit access.
 
 > int32 refers to a **32-bit signed integer** value as discussed in the [[AVRO]] specification.
 
-#### Date Created
+### Date Created
 `Long`
 The time in Milliseconds that the RepoItem was Created.
 
-#### Date Edited
+### Date Edited
 `Long`
 The time in milliseconds that the RepoItem was Edited.
 

@@ -55,7 +55,8 @@
     "delWord",
     "delWordsAtIndex",
     "encodeWord",
-    "findWordsAtIndex"
+    "findWordsAtIndex",
+    "hashObj"
   ],
   "alwaysUpdateLinks": true,
   "hotkeys": {}

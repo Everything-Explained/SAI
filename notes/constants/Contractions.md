@@ -28,7 +28,7 @@ An example of a word unaffected by this, is `haven't` where the word `have` does
 ## Processing
 Each of the [[Contractions#Words|words]] in the list above, is actually part of a [Regular Expression]. When a contraction/word is matched, it is then replaced by its corresponding word along with a space. The space is necessary, to separate the new word from the word that is no longer a contraction.
 
-#### Examples
+### Examples
 Original | Filtered
 ---------|----------
 why can't i see it | why can not i see it

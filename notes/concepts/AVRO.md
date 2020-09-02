@@ -1,6 +1,6 @@
 A [binary-encoding library] that works with [JSON]. It not only provides a faster serialization algorithm, but also a smaller size when saving the data than traditional [JSON].
 
-### Schema
+## Schema
 In order for AVRO to reduce the size of your data, it needs to know what type of data you're representing. It supports Integer, String, Float, Boolean, and Long primitive types, among some other complex types which are not used.
 
 **Strings** unfortunately cannot be reduced in size, because each character in a string will always take up exactly 1 byte.

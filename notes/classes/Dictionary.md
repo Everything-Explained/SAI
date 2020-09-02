@@ -1,36 +1,35 @@
 This Class controls the input and output of words within the dictionary store. On instantiation, it will make sure that there is a valid storage path to read from.
 
 # Methods
-
-#### hasWord()
+### hasWord()
 `boolean`
 Returns true if the specified word is found in the [[Dictionary]].
 
-#### findWordsAtIndex()
+### findWordsAtIndex()
 `string[]|undefined`
 Returns the words found at the specified index, otherwise it returns *undefined*.
 
-#### findWordPosition()
+### findWordPosition()
 `[number, number]|undefined`
 Returns the *row* and *column* of a specified word, otherwise it returns *undefined*.
 
-#### addWord()
+### addWord()
 `null|Error`
 Adds a word to the Dictionary if it doesn't already exist, otherwise it reports any errors that occur.
 
-#### addWordToIndex()
+### addWordToIndex()
 `null|Error`
 Adds a word to an existing index if that index exists in the Dictionary.
 
-#### delWord()
+### delWord()
 `null|Error`
 Deletes a word from the Dictionary if it exists, otherwise it reports any errors that occur.
 
-#### delWordsAtIndex()
+### delWordsAtIndex()
 `null|Error`
 Deletes all words at the specified index, if that index exists within the Dictionary, otherwise it reports any Errors that occur.
 
-#### encodeWord()
+### encodeWord()
 `string`
 Encodes a specified word if it exists within the Dictionary. The current encoding archetype is: `&<word row-index>`. If the word does not exist, it is returned unmodified.
 
