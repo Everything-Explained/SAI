@@ -40,11 +40,11 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
     t.test('stripUnknown(): string[]', async t => {
       const testTokens = '!+=t@#a\\$%^&,/e*@#&$.b%^&*l:(),[}<>c?'.split('');
       t.is(
-        contemplate.stripUnknown(testTokens).join(''),
+        contemplate.filterUnknown(testTokens).join(''),
         'taeblc',
         'Allows lowercase characters only.'
       );
-      t.isNot(contemplate.stripUnknown(testTokens), testTokens,
+      t.isNot(contemplate.filterUnknown(testTokens), testTokens,
         'returns a new array.'
       );
     });

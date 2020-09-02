@@ -29,7 +29,7 @@ export class Contemplator {
     if (checkQuery && !this.isQuery(tokens)) return undefined;
     return _flow(
       this.filterContractions,
-      this.stripUnknown,
+      this.filterUnknown,
       this.setQueryCode,
       this.setContextCode,
       this.setDictCode(this.dict),
@@ -51,7 +51,7 @@ export class Contemplator {
     ).split(' ');
   }
 
-  stripUnknown(tokens: string[]) {
+  filterUnknown(tokens: string[]) {
     return tokens.map(v => v.replace(matchInvalidChars, ''));
   }
 
