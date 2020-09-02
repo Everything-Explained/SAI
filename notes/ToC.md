@@ -1,10 +1,10 @@
 # Table of Contents
 - [[SAI]]
 - Classes
-	- [[Contemplator{}]]
-	- [[Dictionary{}]]
-	- [[FileOps{}]]
-	- [[Repository{}]]
+	- [[Contemplator]]
+	- [[Dictionary]]
+	- [[FileOps]]
+	- [[Repository]]
 -	Concepts
 	-	[[AVRO]]
 	-	[[Contextual Words]]

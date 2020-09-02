@@ -7,7 +7,7 @@ Returns a copy of the [[Repository Item]] Array.
 
 #### contemplate 
 `Contemplator`
-Returns the instance of the [[Contemplator{}]] Class which is used within the Repository.
+Returns the instance of the [[Contemplator]] Class which is used within the Repository.
 
 ---
 

@@ -1,7 +1,7 @@
-A Question is a sentence that starts with any of the following: Who, What, When, Where, and Why. You can see the [[Query Words#Words|list of words]] that are used to deduce a question.
+A Question is a sentence that starts with any of the following: Who, What, When, Where, and Why. You can see the full [[Query Words#Words|list of words]] that are used to deduce a question.
 
 ## Nature
-All questions are composites of other words which have a subject and context. SAI does its best to extract only the relevant parts of a question and converting them into a code, which can then be accessed later to reference an answer to that question.
+All questions are composed of words which convey a subject and context. SAI does its best to extract only the relevant parts of a question and convert them into a code, which can then be accessed later to reference an answer to that question.
 
 ## Restraints
 Questions, when written, usually have a question-mark at the end to signify that it's a question. In order to force a predictable pattern of questioning, question-marks are ignored in favor of [[Query Words#Words|Query Words]]. Any sentence that starts with these words are considered questions and will be parsed as such.
@@ -18,7 +18,9 @@ One of the unfortunate caveats of computers, is that they don't have the ability
 You'll notice that all these *proper* questions have an obvious [[Query Words#Words|Query Word]] and subject. This is absolutely necessary for SAI to parse the input properly.
 
 `whErE DoeS GoD residE`
-This may not look like a valid question, but since the input from SAI is converted to lowercase, writing questions like this are completely valid.
+This may not look like a valid question, but since the input from SAI is converted to lowercase, writing questions like this are completely valid. 
+
+> Within an [[Item Document]] however, **this is NOT a valid question**.
 
 `what does flabergasted mean?`
 This is a valid question even though the question-mark is ignored.

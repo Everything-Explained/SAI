@@ -1,6 +1,6 @@
 A single instance of an object containing a specific data structure, which SAI uses to determine answers to questions.
 
-## Schema
+# Schema
 A Repository Item is structured by a Schema, which are [[AVRO]]-instantiated objects. The following is the current Repository Schema:
 ```js
 {
@@ -19,7 +19,7 @@ A Repository Item is structured by a Schema, which are [[AVRO]]-instantiated obj
 }
 ```
 
-## Properties
+# Properties
 #### Questions
 `string[]` 
 Valid [[Question|questions]] that pertain to the saved *answer*. Because of the subjective nature of questions, this is a many-to-one relationship with the *answer*.
@@ -34,15 +34,15 @@ Unique identifiers with an index that correlates precisely to the *questions* Ar
 
 > int32 refers to a **32-bit signed integer** value as discussed in the [[AVRO]] specification.
 
-#### Tags
+#### ==WIP== Tags
 `string[]` 
-Unique tags created by an *author* of the RepoItem. Tags are programmatically enforced to be unique, which means no duplicates will ever be allowed, even if an *author* tries.
+An Array of Strings that convey relation to the subject-matter of a RepoItem. Duplicates will be caught as an error during the RepoItem submission process. One process is described [[Item Document|Here]]
 
-#### Authors
+#### ==WIP== Authors
 `string[]`
-Names of those who have edited the RepoItem. The first *author* in the Array is the creator, followed by secondary and tertiary Authors coming after. Since Authors are proper nouns, they can be uppercase.
+Names of those who have edited a RepoItem. The first *author* in the Array is the creator, followed by secondary and tertiary Authors coming after. Since Authors are proper nouns, they can be uppercase.
 
-#### Level
+#### ==WIP== Level
 `int32`
 Holds an arbitrary level or priority value specified by the developer. If arbitrary criteria is required to access an **answer**, than this property can be used to limit access.
 
@@ -56,7 +56,7 @@ The time in Milliseconds that the RepoItem was Created.
 `Long`
 The time in milliseconds that the RepoItem was Edited.
 
-## Save Format
+# Save Format
 This data is converted to a binary buffer which is ready to be saved as either an [AVRO container] or [raw AVRO] data. 
 
 > SAI saves this data in raw [[AVRO]] without a container, which is actually smaller than using a container.

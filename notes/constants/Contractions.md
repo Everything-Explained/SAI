@@ -31,8 +31,8 @@ Each of the [[Contractions#Words|words]] in the list above, is actually part of 
 #### Examples
 Original | Filtered
 ---------|----------
-why can't i see it | why can not I see it
-where's it gone, I'm sure it's there | where has it gone, I am sure it is there
+why can't i see it | why can not i see it
+where's it gone, i'm sure it's there | where has it gone, i am sure it is there
 
 The filtered form is much easier to parse, as we now have words we can either remove entirely or encode.
 
