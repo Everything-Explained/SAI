@@ -1,5 +1,9 @@
+---
+sidebar:
+  nav: docs-en
+---
 # Simple AI
-SAI stands for *Simple Artificial Intelligence*. Most people when they think of AI, they think of how "aware" it is, rather than actually how intelligent it is. Intelligence in the context of an artificial mechanism more often than not, means only that it can process information in an **intelligent** way. 
+SAI stands for *Simple Artificial Intelligence*. Most people when they think of AI, they think of how "aware" it is, rather than actually how intelligent it is. Intelligence in the context of an artificial mechanism more often than not, means only that it can process information in an **intelligent** way.
 
 Technically speaking, AI has been around as long as computers have. From the beginning, computers have been used to calculate intelligently articulated responses from input; that input now however, is parsed largely through [Machine Learning] algorithms instead of hand-crafted human ingenuity. Ironically, even the most advanced Machine Learning systems are curbed by human intelligence, called *Supervised Learning*, in order to influence results with a specific bias.
 
@@ -12,7 +16,7 @@ Let's say we have a question: `how big is the earth?`. Unfortunately, in normal 
 So although the developer has to do the work of crafting the questions, SAI tries to mitigate as much menial work as possible within that task.
 
 ## History
-This was originally going to be a project for Noumenae which would facilitate basic moderation and user interaction. I realized however, that the **AI** behind **SAI** was useful in its own module, apart from just being a glorified chat-bot. 
+This was originally going to be a project for Noumenae which would facilitate basic moderation and user interaction. I realized however, that the **AI** behind **SAI** was useful in its own module, apart from just being a glorified chat-bot.
 
 ## Training
 SAI is not designed to learn by itself, it needs constant input from a developer. Since the developer has the autonomy to pinpoint precisely what the AI can know, this reduces the amount of false-positives to roughly Zero.
