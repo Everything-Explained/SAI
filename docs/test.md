@@ -3,7 +3,7 @@ layout: article
 sidebar:
   nav: docs-en
 ---
-H1
+# H1
 ## H2
 ### H3
 #### H4
@@ -17,11 +17,11 @@ Aute sit eu est aliquip quis ad cupidatat ex mollit. In incididunt fugiat velit 
   * more sublist
   * and more sublist
 
-  ```javascript
-  let obj = {
-    testvar: 'hello',
-    testvar2: 100,
-    testvar3: true,
-    testvar4: ['hello', 100, false]
-  }
-  ```
+```javascript
+let obj = {
+  testvar: 'hello',
+  testvar2: 100,
+  testvar3: true,
+  testvar4: ['hello', 100, false]
+}
+```
