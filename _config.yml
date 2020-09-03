@@ -182,7 +182,7 @@ analytics:
 ##############################
 markdown    : kramdown
 highlighter : rouge
-permalink   : date
+permalink   : # no permalinks
 
 exclude:
   - CHANGELOG.md
