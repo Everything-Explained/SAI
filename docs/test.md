@@ -1,9 +1,9 @@
 ---
-layout: page
+layout: article
 sidebar:
   nav: docs-en
 ---
-# H1
+H1
 ## H2
 ### H3
 #### H4
