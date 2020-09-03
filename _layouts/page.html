@@ -5,7 +5,9 @@ layout: base
 {%- assign _page_type = page.type | default: layout.type | default: site.data.variables.default.page.type -%}
 {%- assign _article_header_type = page.article_header.type | default: layout.article_header.type -%}
 
-
+{%- include snippets/assign.html
+  target=layout.header source0=page.header -%}
+{%- assign _header = __return -%}
 
 {%- include snippets/assign.html
   target=layout.footer source0=page.footer -%}
