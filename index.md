@@ -24,7 +24,7 @@ SAI is not designed to learn by itself, it needs constant input from a developer
 
 To facilitate the learning process, logs are generated from SAI based on questions it could not answer. These questions can then be decided upon by a dev, as to whether or not they benefit their application or not.
 
-> As of this writing, logs are not currently generated. ==SAI is still a WIP==
+> As of this writing, logs are not currently generated. `SAI is still a WIP`{:.warning}
 
 ## Future Potential
 - **Custom Functions**: Instead of responding only with predefined answers stored in a database, the bot could be programmed to respond with a function result. In other words, the input could pass through a function first, instead of as a query to the database.
