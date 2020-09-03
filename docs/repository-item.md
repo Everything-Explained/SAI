@@ -49,7 +49,7 @@ Holds an arbitrary level or priority value specified by the developer. If arbitr
 
 > int32 refers to a **32-bit signed integer** value as discussed in the [AVRO] specification.
 
-### Date Created`Long
+### Date Created `Long`
 The time in Milliseconds that the RepoItem was Created.
 
 ### Date Edited `Long`
