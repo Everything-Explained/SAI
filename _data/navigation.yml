@@ -20,7 +20,7 @@ header:
     url: /about.html
 
 docs-en:
-  - Constants
-      children:
-        - title:  Hello World
-          url:    /docs/en/test
+  - title: Constants
+    children:
+      - title:  Hello World
+        url:    /docs/en/test
