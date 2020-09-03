@@ -2,20 +2,24 @@
   code.success {
     color: $text-color-function;
     background-color: $green;
+    font-weight: 700;
   }
 
   code.info {
     color: $text-color-function;
     background-color: $blue;
+    font-weight: 700;
   }
 
   code.warning {
     color: $text-color-function;
     background-color: $yellow;
+    font-weight: 700;
   }
 
   code.error {
     color: $text-color-function;
     background-color: $red;
+    font-weight: 700;
   }
 }
