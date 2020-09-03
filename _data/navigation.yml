@@ -28,3 +28,7 @@ docs-en:
     children:
       - title:  Hello World
         url:    /docs/test
+  - title:      Concepts
+    children:
+      - title: Repository Item
+        url: /docs/repository-item
