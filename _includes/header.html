@@ -6,7 +6,7 @@
   <header class="header" {%- if include.background -%} style="background: {{ include.background }};" {%- endif -%}>
 {%- endif -%}
     <div class="main">
-      <div class="header__title">
+      <!-- <div class="header__title">
         <div class="header__brand">
           {%- include svg/logo.svg -%}
           {%- assign _paths_root = site.paths.root | default: site.data.variables.default.paths.root  -%}
@@ -18,7 +18,7 @@
         {%- if site.search.provider -%}
           <button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button>
         {%- endif -%}
-      </div>
+      </div> -->
       {%- if site.data.navigation.header -%}
       <nav class="navigation">
         <ul>
