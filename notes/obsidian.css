@@ -196,7 +196,9 @@ p {
   margin-top: 5px;
   margin-bottom: 1.7em;
 }
-
+.popover.hover-popover {
+  max-height: 450px !important;
+}
 .popover.hover-popover .markdown-embed {
   font-size: 1.05em !important;
 }
