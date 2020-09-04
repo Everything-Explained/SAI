@@ -5,8 +5,8 @@
 
 :root
 {
---font-size-normal: 24px;
---font-size-code: 20px;
+--font-size-normal: 20px;
+--font-size-code: 18px;
 --font-size-side-dock: 16px;
 --font-size-side-dock-title: 18px;
 --font-size-blockquote: 22px;
@@ -540,7 +540,6 @@ font-size: var(--font-size-h6) !important;
 color: var(--text-title-h6);
 }
 
-.markdown-preview-view h2,
 .markdown-preview-view h3,
 .markdown-preview-view h4,
 .markdown-preview-view h5 {
@@ -1602,8 +1601,8 @@ border-color: var(--background-secondary-alt);
 }
 .status-bar {
 padding: 0 30px;
-height: 3.5em;
-line-height: 22px !important;
+height: 2.3rem;
+line-height: 30px;
 }
 .status-bar-item {
 background-color: var(--background-primary);
@@ -1743,7 +1742,7 @@ line-height: 28px;
 
 /* hashtags before headers */
 
-h1 {
+h1, h2 {
   border-bottom: 2px solid black;
   box-shadow: 0 1px 0px #333;
   padding-bottom: 10px;
