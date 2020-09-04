@@ -633,6 +633,10 @@ display: block;
 color: var(--code-block) !important;
 }
 
+.markdown-preview-view code {
+  white-space: nowrap;
+}
+
 
 /* padding of code blocks in preview */
 .markdown-preview-view pre {
@@ -1598,6 +1602,8 @@ border-color: var(--background-secondary-alt);
 }
 .status-bar {
 padding: 0 30px;
+height: 3.5em;
+line-height: 22px !important;
 }
 .status-bar-item {
 background-color: var(--background-primary);
