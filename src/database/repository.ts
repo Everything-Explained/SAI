@@ -54,26 +54,47 @@ export class Repository {
     this._items = val;
   }
 
-  get contemplatorInstance() {
+  get contemplate() {
     return this._contemplate;
   }
 
 
-  constructor(private fileOps: FileOps, private dict: Dictionary, path: string) {
-    if (!existsSync(path))
-      throw Error(`Path to repository: "${path}" does NOT exist.`)
+  constructor(private _fileOps: FileOps,
+              private _dict: Dictionary,
+              private _path: string)
+  {
+    if (!existsSync(_path))
+      throw Error(`Path to repository: "${_path}" does NOT exist.`)
     ;
-    this._items = fileOps.readRepoStore(path);
-    this._contemplate = new Contemplator(dict);
+    this._items = _fileOps.readRepoStore(_path);
+    this._contemplate = new Contemplator(_dict);
     this.items;
   }
 
 
-  findItem(hash: number) {
+  getItem(hash: number) {
     return this._items.find(r => ~r.hashes.indexOf(hash));
   }
 
-  addDocItem(itemDoc: string): Error|null {
+  indexOfItem(hash: number) {
+    for (let i = 0, l = this._items.length; i < l; i++) {
+      if (~this._items[i].hashes.indexOf(hash)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  editItem(oldHash: number, editedItem: RepoItem) {
+    const itemIndex = this.indexOfItem(oldHash);
+    if (~itemIndex) {
+      this._items[itemIndex] = editedItem;
+      return true;
+    }
+    return false;
+  }
+
+  addDocItem(itemDoc: string, author: string): Error|null {
     const parsedDoc = this.parseItemDoc(itemDoc);
     if (!Array.isArray(parsedDoc)) return parsedDoc
     ;
@@ -86,7 +107,7 @@ export class Repository {
       questions,
       answer,
       hashes,
-      authors: [],
+      authors: [author],
       tags: [],
       level: 0,
       dateCreated: Date.now(),
@@ -110,6 +131,10 @@ export class Repository {
     if (q.match(matchInvalid)) return Error('Questions contain Invalid chars.')
     ;
     return [q.split(crlf).map(q => q.trim()), ans];
+  }
+
+  save() {
+    return this._fileOps.save(this._path, repositoryScheme, this._items, true);
   }
 
   whiteSpaceStrat(doc: string) {

@@ -29,10 +29,6 @@ export class FileOps {
     return this.writeBinary(path, buf, compress, limitSave);
   }
 
-  saveRepository(path: string, data: unknown, limitSave = true) {
-    return this.save(path, repositoryScheme, data, true, limitSave);
-  }
-
   saveDictionary(path: string, data: unknown, limitSave = true) {
     return this.save(path, dictSchema, data, true, limitSave);
   }

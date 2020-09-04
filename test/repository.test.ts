@@ -11,6 +11,17 @@ import { testDir } from '../src/variables/constants';
 const fileOps = new FileOps();
 const folderPath = `${testDir}/repository`;
 const mocks = `${testDir}/doctests`;
+const dateNow = Date.now();
+const editItem: RepoItem = {
+  questions: ['chicken', 'lobster'],
+  answer: 'hello pickles!',
+  hashes: [234821348, 123481234],
+  authors: ['Test'],
+  tags: [],
+  level: 0,
+  dateCreated: dateNow,
+  dateEdited: dateNow
+};
 const testData = [
   { questions: ['asdf', 'qwer'],
     answer: 'hello world',
@@ -18,8 +29,8 @@ const testData = [
     authors: [],
     tags: [],
     level: 0,
-    dateCreated: Date.now(),
-    dateEdited: Date.now()
+    dateCreated: dateNow,
+    dateEdited: dateNow
   }
 ] as RepoItem[];
 
@@ -41,12 +52,23 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       );
     });
 
-    t.test('findReply(): Reply|undefined', async t => {
-      t.equal(repo.findItem(123481234)!.answer, 'hello world',
+    t.test('getItem(): Reply|undefined', async t => {
+      t.equal(repo.getItem(123481234)!.answer, 'hello world',
         'returns a Reply object.'
       );
-      t.equal(repo.findItem(58519234), undefined,
+      t.equal(repo.getItem(58519234), undefined,
         'returns undefined when reply not found.'
+      );
+      repo.items = [];
+    });
+
+    t.test('indexOfItem(): number', async t => {
+      repo.items = testData;
+      t.is(repo.indexOfItem(123481234), 0,
+        'returns index of RepoItem by specified hash.'
+      );
+      t.is(repo.indexOfItem(4812348), -1,
+        'returns -1 if index is not found'
       );
       repo.items = [];
     });
@@ -93,31 +115,53 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       );
     });
 
-    t.test('addDocReply: Error|null', async t => {
+    t.test('editItem(): boolean', async t => {
+      repo.items = testData;
+      const isEdited = repo.editItem(testData[0].hashes[0], editItem);
+      const item = repo.items[0];
+      const isUpdated =
+           item.questions[0] == 'chicken'
+        && item.answer == 'hello pickles!'
+        && item.authors[0] == 'Test'
+      ;
+      t.ok(isEdited,
+        'returns true when edited successfully.'
+      );
+      t.notOk(repo.editItem(34818234, editItem),
+        'returns false if old hash not found.'
+      );
+      t.ok(isUpdated,
+        'replaces old item with new edited item.'
+      );
+      repo.items = [];
+    });
+
+    t.test('addDocReply(): Error|null', async t => {
       const errorDoc = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
       const passingDoc = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`, 'utf-8');
       dict.words       = [['large', 'big', 'enormous', 'giant']];
-      const identicalVal  = (repo.addDocItem(identicalQDoc) as Error);
+      const identicalVal  = (repo.addDocItem(identicalQDoc, 'test') as Error);
       t.ok(
-        (repo.addDocItem(errorDoc) as Error).message.includes('Invalid chars'),
+        (repo.addDocItem(errorDoc, 'test') as Error).message.includes('Invalid chars'),
         'returns error if parseReplyDoc() fails.'
       );
-      t.is(repo.addDocItem(passingDoc), null,
+      t.is(repo.addDocItem(passingDoc, 'test'), null,
         'returns null when reply doc added successfully.'
       );
       t.is(repo.items[0].hashes.length, 4,
         'adds a hash for every question in document.'
       );
       t.ok(
-        (repo.addDocItem(invalidQDoc) as Error).message.includes('is Invalid'),
+        (repo.addDocItem(invalidQDoc, 'test') as Error).message.includes('is Invalid'),
         'returns Error with invalid questions.'
       );
       t.ok(
         identicalVal.message.includes('is identical to'),
         'returns Error with identical hashes.'
       );
+      repo.items = [];
     });
 
     t.test('hashQuestions(): Error|number', async t => {
@@ -133,6 +177,23 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
 
     });
 
-    del(folderPath); // Cleanup
+    t.test('save(): Promise<null>', t => {
+      t.plan(2);
+      repo.items = [editItem];
+      repo.save()
+        .then(() => {
+          t.pass('saves repository to file.');
+          const items = fileOps.readRepoStore(`${folderPath}/replies.said.gzip`);
+          t.is(items[0].answer, 'hello pickles!',
+            'saves same data that is in the in-memory object.'
+          );
+          del(folderPath); // Cleanup
+        })
+        .catch(err => {
+          console.log(err);
+          t.fail(err.message);
+          del(folderPath); // Cleanup
+        });
+    });
   });
 });
