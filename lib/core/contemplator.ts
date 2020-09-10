@@ -50,9 +50,11 @@ export class Contemplator {
    *
    * @param tokens An Array of tokens.
    */
+  // TODO - Add stricter tests for blank input
   isQuery(tokens: string[]) {
-    // There are no questions shorter than 2 words.
-    if (tokens.length < 2) return false;
+    if (tokens.length < 2 && !tokens[0].trim())
+      return false
+    ;
     const queryToken = this.filterContractions([tokens[0], tokens[1]])[0];
     return !!~queryTokens.indexOf(queryToken);
   }
