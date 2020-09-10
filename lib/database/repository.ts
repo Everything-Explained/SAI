@@ -171,11 +171,6 @@ export class Repository {
     return this._fileOps.save(this._path, repositoryScheme, this._items, true);
   }
 
-  // whiteSpaceStrat(doc: string) {
-  //   if (!doc.includes('\n')) return undefined;
-  //   return doc.includes('\r') ? '\r\n' : '\n';
-  // }
-
   hashQuestions(questions: string[]): DocErrorCode|number[]  {
     const hashes: number[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
@@ -193,6 +188,11 @@ export class Repository {
     }
     return hashes;
   }
+
+  // whiteSpaceStrat(doc: string) {
+  //   if (!doc.includes('\n')) return undefined;
+  //   return doc.includes('\r') ? '\r\n' : '\n';
+  // }
 
 
 
