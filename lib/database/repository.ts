@@ -92,7 +92,14 @@ export class Repository {
     this.items;
   }
 
-  ask(question: string) {
+
+
+  getItem(hash: number) {
+    return this._items.find(r => ~r.hashes.indexOf(hash));
+  }
+
+
+  findQuestion(question: string) {
     const qTokens = question.split(' ');
     if (!this._contemplate.isQuery(qTokens))
       return RepErrorCode.INVALIDQ
@@ -103,9 +110,6 @@ export class Repository {
     return undefined;
   }
 
-  getItem(hash: number) {
-    return this._items.find(r => ~r.hashes.indexOf(hash));
-  }
 
   indexOfItem(hash: number) {
     for (let i = 0, l = this._items.length; i < l; i++) {
@@ -116,6 +120,7 @@ export class Repository {
     return -1;
   }
 
+
   editItem(oldHash: number, editedItem: RepoItem) {
     const itemIndex = this.indexOfItem(oldHash);
     if (~itemIndex) {
@@ -124,6 +129,7 @@ export class Repository {
     }
     return false;
   }
+
 
   addItemDoc(itemDoc: string, author: string): RepErrorCode|null {
     const parsedDoc = this.parseItemDoc(itemDoc);
@@ -146,6 +152,7 @@ export class Repository {
     });
     return null;
   }
+
 
   parseItemDoc(rawDoc: string): RepErrorCode | [string[], string] {
     const doc = rawDoc.trim();
@@ -172,14 +179,17 @@ export class Repository {
     return [itemDoc.attributes.questions, itemDoc.body];
   }
 
+
   getFrontMatter(doc: string): FrontMatterResult<ItemDoc>|undefined {
     try { return frontMatter<ItemDoc>(doc); }
     catch (err) { return undefined; }
   }
 
+
   save() {
     return this._fileOps.save(this._path, repositoryScheme, this._items, true);
   }
+
 
   hashQuestions(questions: string[]): RepErrorCode|number[]  {
     const hashes: number[] = [];

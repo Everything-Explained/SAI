@@ -18,10 +18,10 @@ export class SAI {
 
 
   constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
-    this.dataFolder  = dataFolderPath;
-    this.repoPath = `${dataFolderPath}/repository.said.gzip`;
-    this.dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
-    this.fileOps     = new FileOps();
+    this.dataFolder = dataFolderPath;
+    this.repoPath   = `${dataFolderPath}/repository.said.gzip`;
+    this.dictPath   = `${dataFolderPath}/dictionary.said.gzip`;
+    this.fileOps    = new FileOps();
     this.init(isReady);
   }
 
@@ -29,6 +29,11 @@ export class SAI {
   //   // Should convert question to hash and lookup hash in database.
   //   throw Error('Not Implemented.');
   // }
+
+  public ask(question: string) {
+    return this.repo.findQuestion(question);
+  }
+
 
   private async init(isReadyCallback: (err: Error|null) => void) {
     try {
@@ -44,23 +49,6 @@ export class SAI {
     }
   }
 }
-
-// const sai = new SAI('./store', (err) => {
-//   console.log(err);
-// });
-
-// sai.addWord('god');
-// sai.addWordToIndex('deity', 0);
-// sai.addWordToIndex('almighty', 0);
-// sai.addWord('pickles');
-// sai.addWordToIndex('cucumbers', 1);
-// log(sai.words);
-// log('delete word');
-// sai.delWord('god');
-// log(sai.words);
-// log('delete index');
-// log(sai.delWordsAtIndex(3));
-// log(sai.words);
 
 
 

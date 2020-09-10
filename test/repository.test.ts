@@ -23,9 +23,9 @@ const editItem: RepoItem = {
   dateEdited: dateNow
 };
 const testData = [
-  { questions: ['asdf', 'qwer'],
+  { questions: ['what is love', 'how is love'],
     answer: 'hello world',
-    hashes: [234821348, 123481234],
+    hashes: [-1915670529, 123481234],
     authors: [],
     tags: [],
     level: 0,
@@ -60,6 +60,20 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         'returns undefined when reply not found.'
       );
       repo.items = [];
+    });
+
+    t.test('ask(): RepErrorCode|RepoItem|undefined', async t => {
+      repo.items = testData;
+      const item = repo.findQuestion('what is love') as RepoItem;
+      t.is(repo.findQuestion('tell me something'), RepErrorCode.INVALIDQ,
+        'returns Error Code on invalid query.'
+      );
+      t.is(repo.findQuestion('where is the sausage'), undefined,
+        'returns undefined if question is not found.'
+      );
+      t.is(item.hashes[0], -1915670529,
+        'returns a RepoItem if found.'
+      );
     });
 
     t.test('indexOfItem(): number', async t => {
