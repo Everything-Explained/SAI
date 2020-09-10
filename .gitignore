@@ -6,3 +6,4 @@ node_modules
 coverage
 notes/.obsidian/cache
 notes/.obsidian/workspace
+dist
