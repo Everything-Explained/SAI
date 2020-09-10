@@ -10,10 +10,10 @@ import { Repository, repositoryScheme } from './database/repository';
 
 export class SAI {
   private dataFolder : string;
-  private repoPath: string;
+  private repoPath   : string;
   private dictPath   : string;
   private dict!      : Dictionary; // set in init()
-  private repo!   : Repository;    // set in init()
+  private repo!      : Repository; // set in init()
   private fileOps    : FileOps;
 
 

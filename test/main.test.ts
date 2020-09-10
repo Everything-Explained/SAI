@@ -1,4 +1,4 @@
-import { SAI } from "../src";
+import { SAI } from "../lib";
 import { existsSync } from 'fs';
 import del from 'del';
 import t from 'tape';

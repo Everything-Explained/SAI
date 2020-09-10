@@ -1,4 +1,4 @@
-import { contextTokens, hashSeed, optionalTokens, queryTokens } from "../src/variables/constants";
+import { contextTokens, hashSeed, optionalTokens, queryTokens } from "../lib/variables/constants";
 import { intersection as _intersection } from 'lodash/fp';
 import t from 'tape';
 

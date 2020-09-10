@@ -1,6 +1,6 @@
 import t from 'tape';
-import { FileOps } from '../src/core/file-ops';
-import { Dictionary, dictSchema } from '../src/database/dictionary';
+import { FileOps } from '../lib/core/file-ops';
+import { Dictionary, dictSchema } from '../lib/database/dictionary';
 import del from 'del';
 
 const fileOps = new FileOps();

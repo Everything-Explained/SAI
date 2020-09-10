@@ -1,8 +1,8 @@
-import { Contemplator } from "../src/core/contemplator";
+import { Contemplator } from "../lib/core/contemplator";
 import t from 'tape';
-import { contextTokens, queryTokens } from "../src/variables/constants";
-import { Dictionary, dictSchema } from "../src/database/dictionary";
-import { FileOps } from "../src/core/file-ops";
+import { contextTokens, queryTokens } from "../lib/variables/constants";
+import { Dictionary, dictSchema } from "../lib/database/dictionary";
+import { FileOps } from "../lib/core/file-ops";
 import del from "del";
 
 

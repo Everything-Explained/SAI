@@ -1,12 +1,12 @@
-import { FileOps } from "../src/core/file-ops";
+import { FileOps } from "../lib/core/file-ops";
 import del from 'del';
 import { existsSync, writeFile } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
-import { dictSchema } from "../src/database/dictionary";
-import { RepoItem, repositoryScheme } from "../src/database/repository";
+import { dictSchema } from "../lib/database/dictionary";
+import { RepoItem, repositoryScheme } from "../lib/database/repository";
 import { promisify } from "util";
-import { testDir } from "../src/variables/constants";
+import { testDir } from "../lib/variables/constants";
 
 
 const fileOps = new FileOps();

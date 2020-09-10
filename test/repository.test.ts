@@ -1,10 +1,10 @@
 import del from 'del';
 import { readFileSync } from 'fs';
 import t from 'tape';
-import { FileOps } from '../src/core/file-ops';
-import { Dictionary, dictSchema } from '../src/database/dictionary';
-import { Repository, RepoItem, repositoryScheme, DocErrorCode } from '../src/database/repository';
-import { testDir } from '../src/variables/constants';
+import { FileOps } from '../lib/core/file-ops';
+import { Dictionary, dictSchema } from '../lib/database/dictionary';
+import { Repository, RepoItem, repositoryScheme, DocErrorCode } from '../lib/database/repository';
+import { testDir } from '../lib/variables/constants';
 
 
 
