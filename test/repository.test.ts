@@ -77,9 +77,11 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`, 'utf-8');
       const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`, 'utf8');
       const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`, 'utf-8');
-      const missingQ        = readFileSync(`${mocks}/missingQTest.txt`, 'utf-8');
+      const missingQ        = readFileSync(`${mocks}/missingQstnTest.txt`, 'utf-8');
       const invalidQArray   = readFileSync(`${mocks}/invalidQArrayTest.txt`, 'utf8');
-      const missingA        = readFileSync(`${mocks}/missingATest.txt`, 'utf-8');
+      const missingTitle    = readFileSync(`${mocks}/missingTitleTest.txt`, 'utf8');
+      const missingAuthor   = readFileSync(`${mocks}/missingAuthTest.txt`, 'utf8');
+      const missingA        = readFileSync(`${mocks}/missingAnsTest.txt`, 'utf-8');
       const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
       const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const passingVal      = repo.parseItemDoc(passingDoc);
@@ -106,6 +108,12 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.is(
         repo.parseItemDoc(invalidCharTest), DocErrorCode.INVALIDQ,
         'returns Error Code when questions contain invalid chars.'
+      );
+      t.is(repo.parseItemDoc(missingTitle), DocErrorCode.MISSTITLE,
+        'returns Error Code when missing title.'
+      );
+      t.is(repo.parseItemDoc(missingAuthor), DocErrorCode.MISSAUTHOR,
+        'returns Error Code when missing author.'
       );
       t.is(
         repo.parseItemDoc(missingA), DocErrorCode.MISSA,
@@ -171,10 +179,18 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
 
     t.test('hashQuestions(): Error|number', async t => {
       const questions     = ['what is this', 'what is that', 'what is what'];
+      const invalidQs     = ['tell me what to do', 'when will it be time'];
+      const identicalQs   = ['how big is the world', 'how large is the world'];
       const hashes        = repo.hashQuestions(questions);
 
       t.ok(Array.isArray(hashes),
         'returns an array of hashes on success.'
+      );
+      t.is(repo.hashQuestions(invalidQs), DocErrorCode.INVALIDQ,
+        'returns Error Code with invalid questions.'
+      );
+      t.is(repo.hashQuestions(identicalQs), DocErrorCode.IDENTICALQ,
+        'returns Error Code with semantically identical questions.'
       );
       t.is((hashes as number[]).length, 3,
         'returns the same amount of hashes as questions.'

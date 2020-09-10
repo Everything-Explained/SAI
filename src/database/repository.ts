@@ -171,10 +171,10 @@ export class Repository {
     return this._fileOps.save(this._path, repositoryScheme, this._items, true);
   }
 
-  whiteSpaceStrat(doc: string) {
-    if (!doc.includes('\n')) return undefined;
-    return doc.includes('\r') ? '\r\n' : '\n';
-  }
+  // whiteSpaceStrat(doc: string) {
+  //   if (!doc.includes('\n')) return undefined;
+  //   return doc.includes('\r') ? '\r\n' : '\n';
+  // }
 
   hashQuestions(questions: string[]): DocErrorCode|number[]  {
     const hashes: number[] = [];
@@ -186,7 +186,7 @@ export class Repository {
       const hashIndex = hashes.indexOf(hash);
       if (~hashIndex) {
         // Get original question index.
-        const qIndex = questions.length - 1 - hashIndex;
+        // const qIndex = questions.length - 1 - hashIndex;
         return DocErrorCode.IDENTICALQ;
       }
       hashes.push(hash);
