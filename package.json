@@ -1,15 +1,19 @@
 {
-  "name": "newsai",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@noumenae/sai",
+  "version": "1.1.0",
+  "description": "A Simple AI",
   "main": "index.js",
   "scripts": {
     "test": "tape ./test/*.js | tap-diff",
-    "stest": "tape ./test/brain.test.js | tap-diff",
-    "covstest": "nyc --reporter=lcov tape ./test/replies.test.js | tap-diff",
+    "stest": "tape ./test/repository.test.js | tap-diff",
+    "covstest": "nyc --reporter=lcov tape ./test/repository.test.js | tap-diff",
     "cov": "nyc --reporter=lcov tape ./test/*.js | tap-diff"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Noumenae/SAI"
+  },
+  "author": "Jaeiya",
   "license": "ISC",
   "devDependencies": {
     "@types/lodash": "^4.14.158",
