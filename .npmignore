@@ -1,5 +1,12 @@
+.vscode/
+.nyc_output/
+notes/
 lib/
+test/
+coverage/
 test.ts
 test.js
 SAI.mmap
+test.json
 .eslintrc.json
+tsconfig.tsbuildinfo
