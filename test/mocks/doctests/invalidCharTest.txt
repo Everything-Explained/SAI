@@ -1,3 +1,6 @@
-where 4re the pickles
-/@\
-some kind of answer
+---
+title: A Sexy Title!
+questions:
+ - where 4re the pickles
+---
+Lovely bunches of cocoanuts

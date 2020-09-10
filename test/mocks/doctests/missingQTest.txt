@@ -1,2 +1,4 @@
-/@\
+---
+title: A sexy title!
+---
 just an answer here

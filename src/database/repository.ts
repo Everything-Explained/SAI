@@ -3,6 +3,7 @@ import { Type as AvroType } from 'avsc';
 import { existsSync } from "fs";
 import { Contemplator } from "../core/contemplator";
 import { Dictionary } from "./dictionary";
+import frontMatter, { FrontMatterResult } from 'front-matter';
 
 
 export interface RepoItem {
@@ -14,6 +15,14 @@ export interface RepoItem {
   level       : number;
   dateCreated : number;
   dateEdited  : number;
+}
+
+export interface ItemDoc {
+  title: string;
+  questions: string[];
+  level: number;
+  tags: string[];
+  author: string;
 }
 
 
@@ -36,6 +45,16 @@ export const repositoryScheme = AvroType.forSchema({
     }
   ]
 });
+
+
+export enum DocErrorCode {
+  EMPTY,
+  INVALID,
+  MISSHEAD,
+  MISSQ,
+  MISSA,
+  INVCHARINQ,
+}
 
 
 
@@ -116,21 +135,31 @@ export class Repository {
     return null;
   }
 
-  parseItemDoc(itemDoc: string): Error | [string[], string] {
-    const doc = itemDoc.trim();
-    const crlf = this.whiteSpaceStrat(doc);
-    const separator = `/@\\`;
+  parseItemDoc(rawDoc: string): DocErrorCode | [string[], string] {
+    const doc = rawDoc.trim();
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
     ;
-    if (!doc)                  return Error('Empty Document.');
-    if (!crlf)                 return Error('Invalid Document.');
-    if (!~doc.indexOf('/@\\')) return Error('Separator is missing.')
+    if (!doc)                   return DocErrorCode.EMPTY;
+    if (!frontMatter.test(doc)) return DocErrorCode.MISSHEAD
     ;
-    const [q, ans] = doc.split(separator, 2).map(v => v.trim());
-    if (!q || !ans)            return Error('Missing question or answer blocks.');
-    if (q.match(matchInvalid)) return Error('Questions contain Invalid chars.')
+    const itemDoc = this.getFrontMatter(doc);
+    if (!itemDoc) return DocErrorCode.INVALID
     ;
-    return [q.split(crlf).map(q => q.trim()), ans];
+    const answer = itemDoc.body.trim();
+    const { questions, title, tags, author } = itemDoc.attributes;
+    const hasInvalidQuestion =
+      questions ? questions.find(v => v.match(matchInvalid)) : undefined
+    ;
+    if (!questions)         return DocErrorCode.MISSQ;
+    if (!answer)            return DocErrorCode.MISSA;
+    if (hasInvalidQuestion) return DocErrorCode.INVCHARINQ
+    ;
+    return [itemDoc.attributes.questions, itemDoc.body];
+  }
+
+  getFrontMatter(doc: string): FrontMatterResult<ItemDoc>|undefined {
+    try { return frontMatter<ItemDoc>(doc); }
+    catch (err) { return undefined; }
   }
 
   save() {

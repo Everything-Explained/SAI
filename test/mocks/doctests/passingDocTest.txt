@@ -1,6 +1,9 @@
-what is the sky
-where is the sky
-when can i see the sky
-how is the sky so bright
-/@\
-this document should pass the test
+---
+title: Sexy title!
+questions:
+ - what is the sky
+ - where is the sky
+ - when can i see the sky
+ - how is the sky so bright
+---
+I've got a lovely bunch of cocoanuts

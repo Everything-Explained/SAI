@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import t from 'tape';
 import { FileOps } from '../src/core/file-ops';
 import { Dictionary, dictSchema } from '../src/database/dictionary';
-import { Repository, RepoItem, repositoryScheme } from '../src/database/repository';
+import { Repository, RepoItem, repositoryScheme, DocErrorCode } from '../src/database/repository';
 import { testDir } from '../src/variables/constants';
 
 
@@ -75,36 +75,36 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
 
     t.test('parseItemDoc(): Error | [string[], string]', async t => {
       const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`, 'utf-8');
-      const crlfTest        = readFileSync(`${mocks}/CRLFTest.txt`, 'utf-8');
-      const sepTest         = readFileSync(`${mocks}/missingSeparator.txt`, 'utf-8');
+      const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`, 'utf-8');
+      const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`, 'utf8');
       const missingQ        = readFileSync(`${mocks}/missingQTest.txt`, 'utf-8');
       const missingA        = readFileSync(`${mocks}/missingATest.txt`, 'utf-8');
       const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
       const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const passingVal      = repo.parseItemDoc(passingDoc);
-      t.ok(
-        (repo.parseItemDoc(emptyTest) as Error).message.includes('Empty'),
-        'returns Error on white-space-only documents.'
+      t.is(
+        repo.parseItemDoc(emptyTest), DocErrorCode.EMPTY,
+        'returns Error Code on white-space-only documents.'
       );
-      t.ok(
-        (repo.parseItemDoc(crlfTest) as Error).message.includes('Invalid'),
-        'returns Error on missing CRLF white-space.'
+      t.is(
+        repo.parseItemDoc(isInvalid), DocErrorCode.INVALID,
+        'returns Error Code with invalid front-matter syntax.'
       );
-      t.ok(
-        (repo.parseItemDoc(sepTest) as Error).message.includes('Separator'),
-        'returns Error on missing separator.'
+      t.is(
+        repo.parseItemDoc(noMatter), DocErrorCode.MISSHEAD,
+        'returns Error Code when missing front-matter head.'
       );
-      t.ok(
-        (repo.parseItemDoc(missingQ) as Error).message.includes('Missing'),
-        'returns Error if missing questions block.'
+      t.is(
+        repo.parseItemDoc(missingQ), DocErrorCode.MISSQ,
+        'returns Error Code if missing questions block.'
       );
-      t.ok(
-        ~(repo.parseItemDoc(missingA) as Error).message.includes('Missing'),
-        'returns Error if missing answer.'
+      t.is(
+        repo.parseItemDoc(missingA), DocErrorCode.MISSA,
+        'returns Error Code if missing answer.'
       );
-      t.ok(
-        (repo.parseItemDoc(invalidCharTest) as Error).message.includes('contain Invalid'),
-        'returns Error when questions contain invalid chars.'
+      t.is(
+        repo.parseItemDoc(invalidCharTest), DocErrorCode.INVCHARINQ,
+        'returns Error Code when questions contain invalid chars.'
       );
       t.ok(
         Array.isArray(passingVal),
