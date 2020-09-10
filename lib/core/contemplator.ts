@@ -52,7 +52,7 @@ export class Contemplator {
    */
   // TODO - Add stricter tests for blank input
   isQuery(tokens: string[]) {
-    if (tokens.length < 2 && !tokens[0].trim())
+    if (tokens.length < 2 || !tokens[0].trim())
       return false
     ;
     const queryToken = this.filterContractions([tokens[0], tokens[1]])[0];
