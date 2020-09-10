@@ -47,7 +47,7 @@ export const repositoryScheme = AvroType.forSchema({
 });
 
 
-export enum DocErrorCode {
+export enum RepErrorCode {
   EMPTY,
   INVALID,
   MISSHEAD,
@@ -87,11 +87,21 @@ export class Repository {
     if (!existsSync(_path))
       throw Error(`Path to repository: "${_path}" does NOT exist.`)
     ;
-    this._items = _fileOps.readRepoStore(_path);
+    this._items       = _fileOps.readRepoStore(_path);
     this._contemplate = new Contemplator(_dict);
     this.items;
   }
 
+  ask(question: string) {
+    const qTokens = question.split(' ');
+    if (!this._contemplate.isQuery(qTokens))
+      return RepErrorCode.INVALIDQ
+    ;
+    const hash = this._contemplate.queryToHash(qTokens, false);
+    if (hash) return this.getItem(hash)
+    ;
+    return undefined;
+  }
 
   getItem(hash: number) {
     return this._items.find(r => ~r.hashes.indexOf(hash));
@@ -115,7 +125,7 @@ export class Repository {
     return false;
   }
 
-  addItemDoc(itemDoc: string, author: string): DocErrorCode|null {
+  addItemDoc(itemDoc: string, author: string): RepErrorCode|null {
     const parsedDoc = this.parseItemDoc(itemDoc);
     if (!Array.isArray(parsedDoc)) return parsedDoc
     ;
@@ -137,15 +147,15 @@ export class Repository {
     return null;
   }
 
-  parseItemDoc(rawDoc: string): DocErrorCode | [string[], string] {
+  parseItemDoc(rawDoc: string): RepErrorCode | [string[], string] {
     const doc = rawDoc.trim();
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
     ;
-    if (!doc)                   return DocErrorCode.EMPTY;
-    if (!frontMatter.test(doc)) return DocErrorCode.MISSHEAD
+    if (!doc)                   return RepErrorCode.EMPTY;
+    if (!frontMatter.test(doc)) return RepErrorCode.MISSHEAD
     ;
     const itemDoc = this.getFrontMatter(doc);
-    if (!itemDoc) return DocErrorCode.INVALID
+    if (!itemDoc) return RepErrorCode.INVALID
     ;
     const answer = itemDoc.body.trim();
     const { questions, title, tags, author } = itemDoc.attributes;
@@ -154,10 +164,10 @@ export class Repository {
       && Array.isArray(questions)
       && !questions.find(v => v.match(matchInvalid))
     );
-    if (!hasValidQs) return DocErrorCode.INVALIDQ;
-    if (!title)      return DocErrorCode.MISSTITLE;
-    if (!author)     return DocErrorCode.MISSAUTHOR;
-    if (!answer)     return DocErrorCode.MISSA
+    if (!hasValidQs) return RepErrorCode.INVALIDQ;
+    if (!title)      return RepErrorCode.MISSTITLE;
+    if (!author)     return RepErrorCode.MISSAUTHOR;
+    if (!answer)     return RepErrorCode.MISSA
     ;
     return [itemDoc.attributes.questions, itemDoc.body];
   }
@@ -171,18 +181,18 @@ export class Repository {
     return this._fileOps.save(this._path, repositoryScheme, this._items, true);
   }
 
-  hashQuestions(questions: string[]): DocErrorCode|number[]  {
+  hashQuestions(questions: string[]): RepErrorCode|number[]  {
     const hashes: number[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
       const hash = this._contemplate.queryToHash(q.split(' '));
-      if (!hash) return DocErrorCode.INVALIDQ
+      if (!hash) return RepErrorCode.INVALIDQ
       ;
       const hashIndex = hashes.indexOf(hash);
       if (~hashIndex) {
         // Get original question index.
         // const qIndex = questions.length - 1 - hashIndex;
-        return DocErrorCode.IDENTICALQ;
+        return RepErrorCode.IDENTICALQ;
       }
       hashes.push(hash);
     }

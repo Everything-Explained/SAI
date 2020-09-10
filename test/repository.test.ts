@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { Dictionary, dictSchema } from '../lib/database/dictionary';
-import { Repository, RepoItem, repositoryScheme, DocErrorCode } from '../lib/database/repository';
+import { Repository, RepoItem, repositoryScheme, RepErrorCode } from '../lib/database/repository';
 import { testDir } from '../lib/variables/constants';
 
 
@@ -86,37 +86,37 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const passingVal      = repo.parseItemDoc(passingDoc);
       t.is(
-        repo.parseItemDoc(emptyTest), DocErrorCode.EMPTY,
+        repo.parseItemDoc(emptyTest), RepErrorCode.EMPTY,
         'returns Error Code on white-space-only documents.'
       );
       t.is(
-        repo.parseItemDoc(noMatter), DocErrorCode.MISSHEAD,
+        repo.parseItemDoc(noMatter), RepErrorCode.MISSHEAD,
         'returns Error Code when missing front-matter head.'
       );
       t.is(
-        repo.parseItemDoc(isInvalid), DocErrorCode.INVALID,
+        repo.parseItemDoc(isInvalid), RepErrorCode.INVALID,
         'returns Error Code with invalid front-matter syntax.'
       );
       t.is(
-        repo.parseItemDoc(missingQ), DocErrorCode.INVALIDQ,
+        repo.parseItemDoc(missingQ), RepErrorCode.INVALIDQ,
         'returns Error Code when missing questions block.'
       );
       t.is(
-        repo.parseItemDoc(invalidQArray), DocErrorCode.INVALIDQ,
+        repo.parseItemDoc(invalidQArray), RepErrorCode.INVALIDQ,
         'returns Error Code when questions are not an Array.'
       );
       t.is(
-        repo.parseItemDoc(invalidCharTest), DocErrorCode.INVALIDQ,
+        repo.parseItemDoc(invalidCharTest), RepErrorCode.INVALIDQ,
         'returns Error Code when questions contain invalid chars.'
       );
-      t.is(repo.parseItemDoc(missingTitle), DocErrorCode.MISSTITLE,
+      t.is(repo.parseItemDoc(missingTitle), RepErrorCode.MISSTITLE,
         'returns Error Code when missing title.'
       );
-      t.is(repo.parseItemDoc(missingAuthor), DocErrorCode.MISSAUTHOR,
+      t.is(repo.parseItemDoc(missingAuthor), RepErrorCode.MISSAUTHOR,
         'returns Error Code when missing author.'
       );
       t.is(
-        repo.parseItemDoc(missingA), DocErrorCode.MISSA,
+        repo.parseItemDoc(missingA), RepErrorCode.MISSA,
         'returns Error Code when missing answer.'
       );
       t.ok(
@@ -155,7 +155,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`, 'utf-8');
       dict.words          = [['large', 'big', 'enormous', 'giant']];
-      const identicalVal  = repo.addItemDoc(identicalQDoc, 'test') as DocErrorCode;
+      const identicalVal  = repo.addItemDoc(identicalQDoc, 'test') as RepErrorCode;
       t.is(
         typeof repo.addItemDoc(errorDoc, 'test'), 'number',
         'returns Error Code if parseReplyDoc() fails.'
@@ -167,11 +167,11 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         'adds a hash for every question in document.'
       );
       t.is(
-        repo.addItemDoc(invalidQDoc, 'test'), DocErrorCode.INVALIDQ,
+        repo.addItemDoc(invalidQDoc, 'test'), RepErrorCode.INVALIDQ,
         'returns Error Code with invalid questions.'
       );
       t.is(
-        identicalVal, DocErrorCode.IDENTICALQ,
+        identicalVal, RepErrorCode.IDENTICALQ,
         'returns Error Code with identical hashes.'
       );
       repo.items = [];
@@ -186,10 +186,10 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.ok(Array.isArray(hashes),
         'returns an array of hashes on success.'
       );
-      t.is(repo.hashQuestions(invalidQs), DocErrorCode.INVALIDQ,
+      t.is(repo.hashQuestions(invalidQs), RepErrorCode.INVALIDQ,
         'returns Error Code with invalid questions.'
       );
-      t.is(repo.hashQuestions(identicalQs), DocErrorCode.IDENTICALQ,
+      t.is(repo.hashQuestions(identicalQs), RepErrorCode.IDENTICALQ,
         'returns Error Code with semantically identical questions.'
       );
       t.is((hashes as number[]).length, 3,
