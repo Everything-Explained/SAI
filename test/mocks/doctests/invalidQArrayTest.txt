@@ -1,0 +1,8 @@
+---
+title: A sexy title!
+author: Test
+questions:
+ what is life
+ what is sausage
+---
+some answer

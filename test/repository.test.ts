@@ -75,9 +75,10 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
 
     t.test('parseItemDoc(): Error | [string[], string]', async t => {
       const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`, 'utf-8');
-      const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`, 'utf-8');
       const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`, 'utf8');
+      const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`, 'utf-8');
       const missingQ        = readFileSync(`${mocks}/missingQTest.txt`, 'utf-8');
+      const invalidQArray   = readFileSync(`${mocks}/invalidQArrayTest.txt`, 'utf8');
       const missingA        = readFileSync(`${mocks}/missingATest.txt`, 'utf-8');
       const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
       const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
@@ -87,24 +88,28 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         'returns Error Code on white-space-only documents.'
       );
       t.is(
-        repo.parseItemDoc(isInvalid), DocErrorCode.INVALID,
-        'returns Error Code with invalid front-matter syntax.'
-      );
-      t.is(
         repo.parseItemDoc(noMatter), DocErrorCode.MISSHEAD,
         'returns Error Code when missing front-matter head.'
       );
       t.is(
-        repo.parseItemDoc(missingQ), DocErrorCode.MISSQ,
-        'returns Error Code if missing questions block.'
+        repo.parseItemDoc(isInvalid), DocErrorCode.INVALID,
+        'returns Error Code with invalid front-matter syntax.'
+      );
+      t.is(
+        repo.parseItemDoc(missingQ), DocErrorCode.INVALIDQ,
+        'returns Error Code when missing questions block.'
+      );
+      t.is(
+        repo.parseItemDoc(invalidQArray), DocErrorCode.INVALIDQ,
+        'returns Error Code when questions are not an Array.'
+      );
+      t.is(
+        repo.parseItemDoc(invalidCharTest), DocErrorCode.INVALIDQ,
+        'returns Error Code when questions contain invalid chars.'
       );
       t.is(
         repo.parseItemDoc(missingA), DocErrorCode.MISSA,
-        'returns Error Code if missing answer.'
-      );
-      t.is(
-        repo.parseItemDoc(invalidCharTest), DocErrorCode.INVCHARINQ,
-        'returns Error Code when questions contain invalid chars.'
+        'returns Error Code when missing answer.'
       );
       t.ok(
         Array.isArray(passingVal),
@@ -136,30 +141,30 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       repo.items = [];
     });
 
-    t.test('addDocReply(): Error|null', async t => {
-      const errorDoc = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
-      const passingDoc = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
+    t.test('addItemDoc(): Error|null', async t => {
+      const errorDoc      = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
+      const passingDoc    = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`, 'utf-8');
-      dict.words       = [['large', 'big', 'enormous', 'giant']];
-      const identicalVal  = (repo.addDocItem(identicalQDoc, 'test') as Error);
-      t.ok(
-        (repo.addDocItem(errorDoc, 'test') as Error).message.includes('Invalid chars'),
-        'returns error if parseReplyDoc() fails.'
+      dict.words          = [['large', 'big', 'enormous', 'giant']];
+      const identicalVal  = repo.addItemDoc(identicalQDoc, 'test') as DocErrorCode;
+      t.is(
+        typeof repo.addItemDoc(errorDoc, 'test'), 'number',
+        'returns Error Code if parseReplyDoc() fails.'
       );
-      t.is(repo.addDocItem(passingDoc, 'test'), null,
+      t.is(repo.addItemDoc(passingDoc, 'test'), null,
         'returns null when reply doc added successfully.'
       );
       t.is(repo.items[0].hashes.length, 4,
         'adds a hash for every question in document.'
       );
-      t.ok(
-        (repo.addDocItem(invalidQDoc, 'test') as Error).message.includes('is Invalid'),
-        'returns Error with invalid questions.'
+      t.is(
+        repo.addItemDoc(invalidQDoc, 'test'), DocErrorCode.INVALIDQ,
+        'returns Error Code with invalid questions.'
       );
-      t.ok(
-        identicalVal.message.includes('is identical to'),
-        'returns Error with identical hashes.'
+      t.is(
+        identicalVal, DocErrorCode.IDENTICALQ,
+        'returns Error Code with identical hashes.'
       );
       repo.items = [];
     });

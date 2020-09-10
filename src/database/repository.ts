@@ -51,9 +51,11 @@ export enum DocErrorCode {
   EMPTY,
   INVALID,
   MISSHEAD,
-  MISSQ,
+  MISSTITLE,
+  INVALIDQ,
   MISSA,
-  INVCHARINQ,
+  MISSAUTHOR,
+  IDENTICALQ,
 }
 
 
@@ -113,7 +115,7 @@ export class Repository {
     return false;
   }
 
-  addDocItem(itemDoc: string, author: string): Error|null {
+  addItemDoc(itemDoc: string, author: string): DocErrorCode|null {
     const parsedDoc = this.parseItemDoc(itemDoc);
     if (!Array.isArray(parsedDoc)) return parsedDoc
     ;
@@ -147,12 +149,15 @@ export class Repository {
     ;
     const answer = itemDoc.body.trim();
     const { questions, title, tags, author } = itemDoc.attributes;
-    const hasInvalidQuestion =
-      questions ? questions.find(v => v.match(matchInvalid)) : undefined
-    ;
-    if (!questions)         return DocErrorCode.MISSQ;
-    if (!answer)            return DocErrorCode.MISSA;
-    if (hasInvalidQuestion) return DocErrorCode.INVCHARINQ
+    const hasValidQs = (
+      !!questions
+      && Array.isArray(questions)
+      && !questions.find(v => v.match(matchInvalid))
+    );
+    if (!hasValidQs) return DocErrorCode.INVALIDQ;
+    if (!title)      return DocErrorCode.MISSTITLE;
+    if (!author)     return DocErrorCode.MISSAUTHOR;
+    if (!answer)     return DocErrorCode.MISSA
     ;
     return [itemDoc.attributes.questions, itemDoc.body];
   }
@@ -171,20 +176,18 @@ export class Repository {
     return doc.includes('\r') ? '\r\n' : '\n';
   }
 
-  hashQuestions(questions: string[]): Error|number[]  {
+  hashQuestions(questions: string[]): DocErrorCode|number[]  {
     const hashes: number[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
       const hash = this._contemplate.queryToHash(q.split(' '));
-      if (!hash) return Error(`"${q}" is Invalid.`)
+      if (!hash) return DocErrorCode.INVALIDQ
       ;
       const hashIndex = hashes.indexOf(hash);
       if (~hashIndex) {
         // Get original question index.
         const qIndex = questions.length - 1 - hashIndex;
-        return Error(
-          `Question: "${questions[i]}" is identical to "${questions[qIndex]}"`
-        );
+        return DocErrorCode.IDENTICALQ;
       }
       hashes.push(hash);
     }

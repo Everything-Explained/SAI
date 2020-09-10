@@ -1,5 +1,9 @@
-how big is the sun
-where is the sun
-how large is the sun
-/@\
+---
+title: Truncated Test
+author: me
+questions:
+ - how big is the sun
+ - where is the sun
+ - how large is the sun
+---
 some kind of answer

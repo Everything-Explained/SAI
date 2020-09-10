@@ -1,5 +1,9 @@
-where is it
-tell me about love
-what is it
-/@\
+---
+title: A sexy title!
+author: Test
+questions:
+ where is it
+ tell me about love
+ what is it
+---
 some kind of answer

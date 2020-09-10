@@ -1,4 +1,5 @@
 ---
 title: A sexy title!
+author: Test
 ---
 just an answer here

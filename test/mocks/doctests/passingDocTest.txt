@@ -1,5 +1,6 @@
 ---
 title: Sexy title!
+author: Test
 questions:
  - what is the sky
  - where is the sky

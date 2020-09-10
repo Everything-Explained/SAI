@@ -11,7 +11,17 @@
     "**.tsbuildinfo": true
   },
   "cSpell.words": [
+    "IDENTICALQ",
+    "IMPROPERHEAD",
+    "INVALIDQ",
+    "INVCHARINQ",
+    "MISSA",
+    "MISSAUTHOR",
+    "MISSHEAD",
+    "MISSQ",
+    "MISSTITLE",
     "Strat",
+    "avsc",
     "hasher"
   ],
 }
