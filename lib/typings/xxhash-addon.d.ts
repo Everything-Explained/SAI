@@ -1,6 +1,6 @@
 declare module 'xxhash-addon' {
   interface HashInterface {
-    new(seed: number): HashObject;
+    new(seed?: number): HashObject;
   }
 
   export interface HashObject {
@@ -8,4 +8,5 @@ declare module 'xxhash-addon' {
   }
 
   export const XXHash32: HashInterface;
+  export const XXHash64: HashInterface;
 }
