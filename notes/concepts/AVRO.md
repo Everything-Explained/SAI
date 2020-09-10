@@ -1,3 +1,4 @@
+## AVRO
 A [binary-encoding library] that works with [JSON]. It not only provides a faster serialization algorithm, but also a smaller size when saving the data than traditional [JSON].
 
 ## Schema

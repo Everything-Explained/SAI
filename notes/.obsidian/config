@@ -59,5 +59,27 @@
     "hashObj"
   ],
   "alwaysUpdateLinks": true,
-  "hotkeys": {}
+  "hotkeys": {
+    "outline:open": [
+      {
+        "modifiers": [
+          "Mod",
+          "Shift"
+        ],
+        "key": "O"
+      }
+    ],
+    "app:toggle-right-sidebar": [
+      {
+        "modifiers": [
+          "Mod",
+          "Shift"
+        ],
+        "key": "O"
+      }
+    ]
+  },
+  "strictLineBreaks": true,
+  "readableLineLength": true,
+  "showLineNumber": false
 }

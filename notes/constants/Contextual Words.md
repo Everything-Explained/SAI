@@ -23,7 +23,7 @@ Another more obscure reason, is that certain words when combined, can potentiall
 Each [[Contextual Words#Words|Contextual-Word]] is assigned a value based on its position in the array above. The following table will illustrate:
 
 word | code
-------|------
+------:|------
 this | %00
 was | %01
 like | %02

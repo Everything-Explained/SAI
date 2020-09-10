@@ -1,3 +1,4 @@
+## Hash
 An algorithmic process of converting a Buffer (binary data) into a potentially unique number. The reason I say *potentially*, is because there is the possibility of collisions, though when using a very small data-set coupled with short-length inputs, the theoretical amount of collisions is close to Zero.
 
 ## Requirements

@@ -4,6 +4,7 @@ If SAI is tasked with answering questions, then it stands to reason that certain
 In general, most people would consider *level 1* to be the first level, but in certain systems we could use the concept of priority, which would make 1 the highest level. It is ultimately the developers choice; you could even come up with an entirely unique classification system with its own numbering scheme.
 
 The following table illustrates how each system is similar but different:
+
 Degree |Level | Priority
 ------|------|---------
 low | 0 | 8
