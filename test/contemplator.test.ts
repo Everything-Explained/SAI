@@ -109,6 +109,22 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
       );
     });
 
+    t.test('toBase64(): string', async t => {
+      const tokens = ['here', 'are', 'some', 'tokens'];
+      const code = contemplate.toBase64(tokens);
+      const str =
+        Buffer
+          .from(code, 'base64')
+          .toString('utf-8')
+      ;
+      t.is(str.indexOf('here|are'), 0,
+        'should return a base64 encoded string.'
+      );
+      t.is(str, 'here|are|some|tokens',
+        'concatenates all tokens with a pipe character.'
+      );
+    });
+
     t.test('encodeQuery(): number', async t => {
       dict.words = [['large', 'big']];
       const q = "why \"can't\" i see how large @god is".split(' ');
