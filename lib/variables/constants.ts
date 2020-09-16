@@ -21,7 +21,7 @@ export const contextTokens = [
 export const optionalTokens = [
   'a',    'an',    'do',   'can', 'the',
   'are',  'does',  'it',   'is',
-  'that', 'could', 'would',
+  'that', 'could', 'would', 'did'
 ];
 
 
