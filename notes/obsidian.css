@@ -211,6 +211,10 @@ p {
   max-width: 900px;
 }
 
+.search-result-file-matched-text {
+  color: black !important;
+}
+
 
 /* the url string in editor */
 .cm-s-obsidian span.cm-string{
