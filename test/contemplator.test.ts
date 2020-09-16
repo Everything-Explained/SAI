@@ -109,29 +109,35 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
       );
     });
 
-    t.test('toHash(): () => number', async t => {
-      const toHash = contemplate.toHash(contemplate.hashObj);
-      const result = toHash(['hello', 'world']);
-      t.ok(typeof result == 'number',
-        'returns a hash number.'
+    t.test('encodeQuery(): number', async t => {
+      dict.words = [['large', 'big']];
+      const q = "why \"can't\" i see how large @god is".split(' ');
+      const q2 = "why can't; i see how big |\\god is".split(' ');
+      const res1 = contemplate.encodeQuery(q);
+      const res2 = contemplate.encodeQuery(q2)
+      ;
+      t.is(contemplate.encodeQuery(['not', 'a', 'question']), undefined,
+        'returns undefined if question NOT detected.'
       );
-      t.is(result, -1951427130,
-        'returns a predictable hash.'
+      t.ok(Buffer.from(res1, 'base64').toString('utf-8').indexOf('|'),
+        'converts a question to an encoded base64 string.'
+      );
+      t.is(res1, res2,
+        'combines similar questions to a single code.'
+      );
+      t.is(contemplate.decode(res2), 'why not i see how large god',
+        'uses all helper functions to encode query.'
       );
     });
 
-    t.test('queryToHash(): number', async t => {
-      dict.words = [['good', 'right', 'proper']];
-      const res1 = contemplate.queryToHash(['what', 'is', 'good']);
-      const res2 = contemplate.queryToHash(['what', 'is', 'proper']);
-      t.is(contemplate.queryToHash(['not', 'a', 'question']), undefined,
-        'returns undefined if question NOT detected.'
-      );
-      t.ok(typeof res1 == 'number',
-        'converts a question to a number.'
-      );
-      t.is(res1, res2,
-        'combines similar questions to a single hash.'
+    t.test('decode(): string', async t => {
+      dict.words = [['large', 'big']];
+      const q = 'how big is this sun'.split(' ');
+      const code = contemplate.encodeQuery(q);
+      const str = contemplate.decode(code)
+      ;
+      t.is(str, 'how large this sun',
+        'returns a relative version of the original query.'
       );
     });
     del('./test/contemplator');
