@@ -25,7 +25,7 @@
 .theme-dark
 {
 --background-primary:	hsl(204, 7%, 14%);
---background-primary-alt:	hsla(0, 0%, 0%, 0.124);
+--background-primary-alt:	hsla(0, 0%, 0%, 0.157);
 --background-secondary:	#1c1e21;
 --background-secondary-alt:	var(--background-secondary);
 --background-accent:	rgba(0,0,0,0.08);
@@ -46,7 +46,7 @@
 --text-faint:	rgb(109, 109, 109);
 --text-error:	#800000;
 --text-error-hover:	#990000;
---text-highlight-bg:	rgb(41, 187, 165);
+--text-highlight-bg:	rgb(82, 172, 158);
 --text-selection:	rgba(78, 73, 31, 0.572);
 --text-on-accent:	var(--text-normal);
 --interactive-normal:	var(--background-primary);
@@ -68,7 +68,7 @@
 
 --blockquote-border:	var(--text-accent);
 --pre-code-bg:	#1a1d20;
---code-block:	#868787;
+--code-block:	#b3b3b3;
 --file-name-color:	var(--text-accent);
 --inline-code:	var(--text-muted);
 --interfa-color-icon:	var(--interface-color-border);
@@ -108,7 +108,7 @@
 --interface-color-foreground:	#3e3e3e;
 
 
---font-size-footnote:	22px;
+--font-size-footnote:	18px;
 --font-size-h1:	1.9em;
 --font-size-h2:	1.6em;
 --font-size-h3:	1.3em;
@@ -175,6 +175,7 @@ a,
 .cm-link,
 .cm-url {
 text-decoration: none !important;
+border-bottom: 1px solid var(--link-bg);
 background-color: var(--link-bg)!important;
 color: var(--link-text)!important;
 }
@@ -204,6 +205,10 @@ p {
 }
 .popover.hover-popover .markdown-embed .markdown-embed-link {
   display: none;
+}
+
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer {
+  max-width: 900px;
 }
 
 
@@ -301,7 +306,7 @@ line-height: var(--line-height-footnote);
 /*       Highlight     */
 /***********************/
 .markdown-preview-view mark,
-.span.cm-highlight {
+.cm-s-obsidian span.cm-highlight {
   color: rgb(0, 0, 0) !important;
   padding: 0 5px;
 }
@@ -432,7 +437,8 @@ padding-right: 1% !important;
 
 /* bold in preview and editor */
 strong, .cm-strong {
-font-weight: 600;
+  font-weight: 600;
+  color: rgb(196, 196, 196) !important;
 }
 
 
@@ -661,7 +667,7 @@ line-height: 1.7;
 
 /* in-line block for preview */
 code{
-color: var(--inline-code) !important;
+color: rgb(77, 149, 130) !important;
 bottom: 0px !important;
 }
 
