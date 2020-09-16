@@ -4,53 +4,45 @@ This is a document containing a plain-text representation of a [[Repository Item
 ## Bot Format
 Adding a question one-by-one can be tedious and cumbersome if you have to add multiple questions, along with the formatting of an answer. In order to make this as frictionless as possible, a user can create a document to send directly to a bot *using* SAI.
 
-### Header
-Every Document Item must contain a header, which is parsed using the header-separator: `/@\`. This is illustrated in the simple Document Item below:
+## Front Matter
+This document is actually a *markdown* document. Markdown itself, has its own specification for how to write and format a document. There's also something called [Front Matter] that allows an author to use data to describe the content of a file in more detail. In other words, this [Front Matter] is [Meta-Data] and is required by SAI as part of the document.
 
+### Syntax
+All *Item Documents* must look similar to the following
 ```
-here is a question
-here is another question
-/@\
-something that answers the questions in the header.
-```
-
-As you can see, the questions are separated from the answer. The first section that contains the questions is called the header, while the second part containing the answer, is called the body. Questions are not the only properties that can be added to a header, as illustrated below:
-
-```
-here is a question
-here is another question
-#tag1,tag2,tag3
-:level
-:author name
-/@\
-something that answers the questions in the header.
-```
-
-You'll notice a couple extra properties there denoted by the `:` and `#` characters. Anything added with a colon as the first character, is considered a property descriptor while adding a pound symbol denotes a list of [[Repository Item#WIP Tags|Tags]].
-
-### Property Descriptors
-Usually there would be some kind of obvious way to tag what a property is, but I decided to use an ordering system which requires a bit of memory work. In other words, every property added, must be in the proper order. In the above illustration, you'll see that [[Repository Item#WIP Level|Level]] comes before [[Repository Item#WIP Authors|Author]]. If a level is not provided based on a type-check, then it is assumed that it is an Author name.
-
-> Other properties might be added in the future, but only Level and Author are currently planned.
-
-### Questions
-When adding questions to a Document Item, the same [[Question#Restraints|Question Restraints]] still apply. In this case, **question-marks are completely illegal**, not just ignored. If an Item Document is submitted with a question ending in a question-mark, this will produce an error.
-
-Likewise, if a question has any invalid characters within it, it will return an error, but this also applies to uppercase characters. A question like: `Is it going to rain today` is **illegal inside of a Document Item**. Yes, questions can be easily converted into lowercase characters, but getting an [[Repository Item#WIP Authors string|Author]] in the habit of entering valid input is overall more beneficial in my opinion.
-
-### Answers
-There are no formatting limitations inside of answers; this means **all characters are acceptable**. Even the header separator itself (`/@\`) is legal, because it is only parsed once at the beginning of the document.
-
-Since all characters are legal, this means the answer can contain HTML, Markdown, or any other form of code or text formatting required for a developers use-case.
-
-### Example Document
-```
-what is the sky
-where is the sky
-#weather
-:0
-:Jaeiya
-/@\
-Information about the sky and where it is in relation to other things.
+---
+title: some title
+questions:
+- where is the sky
+- what is the sky
+- how is the sky blue
+author: your name
+level: 3
+tags:
+- sky
+- weather
+---
+This is the content or "body" of the file. Anything can go here, including markdown or special characters. Obviously it must contain a relevant answer to the questions within the meta-data, but how this content is structured is entirley up to the author.
 ```
 
+### Header Denotation
+As you can see, the header (or [Front Matter]) is denoted by the opening `---` and closing `---` characters. There must be exactly 3 `-` characters, no more or less, when denoting the first and last line of the header. They must also be the only characters on that line. This is **not** valid: `---title: hello world`.
+
+It should be noted that the order is unimportant. You can place the title at the bottom and the tags at the top. As long as how you're writing the **title** and **tags** is as illustrated above and that all data is between the `---` characters.
+
+### Properties
+
+==Required== **Title:** This can be either the main relevant question or specifically express what the answer is about. For example, if the question is similar to `who is god` than a relevant title might be *"About God"* or just simply *"God"* . As long as it describes the content, it doesn't matter what it is.
+
+==Required== **Questions:** This is a list of questions that are relevant to the content of the file. So again, if the content is about **God** then relevant questions could be `how big is god` or `what is god` or `who is god` etc.. Any questions that might pertain to God should be here...don't forget though, that `how big is god` and `how large is god` are the same questions and will cause the document to be rejected. *Any questions that use synonyms only need to be added once.*
+
+==Required== **Author:** This can be an alias or the authors actual name; it doesn't matter, but it must be present. If it's not present, the bot will use your username.
+
+==Required== **Level:** This is a number that can mean anything from priority to some arbitrary leveling system. A more detailed description can be found [[Levels|Here]].
+
+==Optional== **Tags:** This is a list of words that in some way relate-to or describe the content. If we again, assume that the content is about **God**, then some words that might relate are *Heaven*, *deity*, or *creator*. This is in most cases very subjective, so tags should be reviewed frequently for consistency and popularity.
+
+
+
+[Front Matter]:https://datavizm20.classes.andrewheiss.com/resource/markdown/#front-matter
+[Meta-Data]:https://www.lifewire.com/metadata-definition-and-examples-1019177
