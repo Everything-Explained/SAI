@@ -2,46 +2,42 @@ import { Dictionary } from "../database/dictionary";
 import {
   contextTokens,
   contractionCorrections,
-  hashSeed,
   matchInvalidChars,
   optionalTokens,
   queryTokens
 } from "../variables/constants";
-import { XXHash32, HashObject } from 'xxhash-addon';
 import { flow as _flow } from 'lodash/fp';
 
 
 
 export class Contemplator {
-  private readonly _hash32: HashObject;
 
-  get hashObj() {
-    return this._hash32;
-  }
+  private queryProcessFuncs = [
+    this.filterContractions,
+    this.filterUnknown,
+    this.setQueryCode,
+    this.setContextCode,
+    this.setDictCode(this.dict),
+    this.stripOptional,
+    this.toBase64
+  ]
 
-
-  constructor(private dict: Dictionary) {
-    this._hash32 = new XXHash32(hashSeed);
-   }
+  constructor(private dict: Dictionary) {}
 
 
   /**
-   * Converts a tokenized question into its respective hash code
-   * based on words in the dictionary.
+   * Converts a tokenized question into a unique code.
    *
    * @param tokens An array of words that should make up a question.
    * @param checkQuery Skips token validation when **false**.
    */
-  queryToHash(tokens: string[], checkQuery = true) {
+  encodeQuery(tokens: string[], checkQuery = true) {
     if (checkQuery && !this.isQuery(tokens)) return undefined;
-    return _flow(
-      this.filterContractions,
-      this.filterUnknown,
-      this.setQueryCode,
-      this.setContextCode,
-      this.setDictCode(this.dict),
-      this.toHash(this._hash32),
-    )(tokens);
+    return _flow(...this.queryProcessFuncs)(tokens);
+  }
+
+  partialEncodeQuery(tokens: string[]) {
+    return _flow(...this.queryProcessFuncs.slice(0, -1))(tokens);
   }
 
   /**
@@ -128,13 +124,34 @@ export class Contemplator {
   }
 
   /**
-   * Uses the xxhash algorithm to convert the specified
-   * `tokens` into a unique hash value.
+   * Combines a token Array with a `|` char and encodes
+   * the resulting string in **base64**.
    */
-  toHash(hasher: HashObject) {
-    return (tokens: string[]) => {
-      return hasher.hash(Buffer.from(tokens.join(''))).readInt32BE();
-    };
+  toBase64(tokens: string[]) {
+    return Buffer.from(tokens.join('|')).toString('base64');
+  }
+
+
+  /**
+   * Decodes the result of an encoded query, back to
+   * a relative string-form of the query.
+   */
+  decode(code: string) {
+    const tokens =
+      Buffer
+        .from(code, 'base64')
+        .toString('utf-8')
+        .split('|')
+    ;
+    return (
+      tokens.map((t, i) => {
+        if (~t.indexOf('%')) return contextTokens[+t.substr(1)];
+        if (~t.indexOf('&')) return this.dict.words[+t.substr(1)][0];
+        if          (i == 0) return queryTokens[t.charCodeAt(0) - 65];
+        return t;
+      })
+      .join(' ')
+    );
   }
 }
 
