@@ -2,12 +2,14 @@ import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { Dictionary, dictSchema } from '../lib/database/dictionary';
 import del from 'del';
+import { testDir } from '../lib/variables/constants';
 
 const fileOps = new FileOps();
-fileOps.createFolder('./test/dict');
-fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
+const folderPath = `${testDir}/dictionary`;
+fileOps.createFolder(folderPath);
+fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true)
 .then(() => {
-  const dict = new Dictionary(fileOps, './test/dict/dictionary.said.gzip');
+  const dict = new Dictionary(fileOps, `${folderPath}/dictionary.said.gzip`);
   t('Dictionary{}', async t => {
     t.test('constructor()' , async t => {
       t.throws(() => new Dictionary(fileOps, './invalid/path'),
@@ -149,6 +151,25 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
         'will stop padding values when index > 9.'
       );
     });
-    del('./test/dict');
+
+    t.test('save(): Pomise<null>', t => {
+      dict.words = [['test', 'test1']];
+      t.plan(2);
+      dict.save()
+        .then(() => {
+          t.pass('saves dictionary file.');
+          const words = fileOps.readDictStore(`${folderPath}/dictionary.said.gzip`);
+          t.same(words, [['test', 'test1']],
+            'saves same data that is in the in-memory object.'
+          );
+          del(folderPath);
+        })
+        .catch(err => {
+          console.log(err);
+          t.fail(err.message);
+          del(folderPath);
+        });
+    });
+
   });
 });

@@ -84,29 +84,6 @@ t('File Operations', async t => {
     ;
   });
 
-  t.test('saveDictionary(): Promise<null>', t => {
-    const path = `${testDir}/saveDictionary`;
-    fileOps.createFolder(path);
-    t.plan(2);
-    const validData = [['word00', 'word01'], ['word10']];
-    const invalidData = [[3]];
-    t.plan(2);
-    fileOps.saveDictionary(`${path}/savedict.said.gzip`, validData)
-      .then(resp => {
-        t.is(resp, null, 'returns null on successful save.');
-        del(path);
-      })
-    ;
-    fileOps.saveDictionary(`${path}/savedict1.said.gzip`, invalidData)
-      .then(() => {
-        t.fail('throws an error on invalid data.');
-      })
-      .catch(() => {
-        t.pass('throws an error on invalid data.');
-      })
-    ;
-  });
-
   t.test('readRepoStore()', async t => {
     const path = `${testDir}/readRepoStore`;
     fileOps.createFolder(path);

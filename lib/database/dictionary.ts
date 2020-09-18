@@ -32,11 +32,11 @@ export class Dictionary {
   }
 
 
-  constructor(private fileOps: FileOps, path: string) {
-    if (!existsSync(path))
-      throw Error(`Path to dictionary: "${path}" does NOT exist.`)
+  constructor(private _fileOps: FileOps, private _path: string) {
+    if (!existsSync(_path))
+      throw Error(`Path to dictionary: "${_path}" does NOT exist.`)
     ;
-    this._words = fileOps.readDictStore(path);
+    this._words = _fileOps.readDictStore(_path);
     this.updateWordRef();
   }
 
@@ -47,6 +47,7 @@ export class Dictionary {
     return false;
   }
 
+
   findWordsAtIndex(index: number): undefined | string[] {
     const words = this._words[index];
     return (
@@ -55,6 +56,7 @@ export class Dictionary {
         : undefined
     );
   }
+
 
   findWordPosition(word: string): [number, number] | undefined {
     let row = this._words.length;
@@ -67,12 +69,14 @@ export class Dictionary {
     return undefined;
   }
 
+
   addWord(word: string): Error|null {
     if (this.hasWord(word)) { return Error('Word already exists.'); }
     this._words.push([word]);
     this.updateWordRef();
     return null;
   }
+
 
   addWordToIndex(word: string, index: number): Error|null {
     if (this.hasWord(word)) { return Error('Word already exists.'); }
@@ -82,6 +86,7 @@ export class Dictionary {
     this.updateWordRef();
     return null;
   }
+
 
   delWord(word: string): Error|null {
     const wordPos = this.findWordPosition(word);
@@ -96,6 +101,7 @@ export class Dictionary {
     return null;
   }
 
+
   delWordsAtIndex(index: number): Error|null {
     const words = this.findWordsAtIndex(index);
     if (!words) { return Error(`Index "${index}" NOT found.`); }
@@ -104,11 +110,18 @@ export class Dictionary {
     return null;
   }
 
+
   encodeWord(word: string) {
     const pos = this.findWordPosition(word);
     if (!pos) return word;
     return pos[0] < 10 ? `&0${pos[0]}` : `&${pos[0]}`;
   }
+
+
+  save() {
+    return this._fileOps.save(this._path, dictSchema, this._words, true);
+  }
+
 
   private updateWordRef() {
     this._wordsRef = this._words.flat();
