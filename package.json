@@ -37,7 +37,6 @@
     "avsc": "^5.4.21",
     "front-matter": "^4.0.2",
     "lodash": "^4.17.19",
-    "rereadable-stream": "^1.3.34",
-    "xxhash-addon": "^1.3.0"
+    "rereadable-stream": "^1.3.34"
   }
 }

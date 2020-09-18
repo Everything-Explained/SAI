@@ -7,24 +7,26 @@ import frontMatter, { FrontMatterResult } from 'front-matter';
 
 
 export interface RepoItem {
-  questions   : string[];
   answer      : string;
-  hashes      : number[];
+  ids         : string[];
   tags        : string[];
   authors     : string[];
   level       : number;
   dateCreated : number;
   dateEdited  : number;
+  editedBy    : string;
 }
+
 
 export interface ItemDoc {
-  title: string;
-  questions: string[];
-  level: number;
-  tags: string[];
-  author: string;
+  title     : string;
+  questions : string[];
+  answer    : string;
+  level     : number;
+  tags      : string[];
+  author    : string;
+  editedBy ?: string;
 }
-
 
 
 export const repositoryScheme = AvroType.forSchema({
@@ -33,14 +35,14 @@ export const repositoryScheme = AvroType.forSchema({
       type: 'record',
       name: 'RepoItem',
       fields: [
-        { name: 'questions'   , type: { type: 'array', items: 'string'}},
         { name: 'answer'      , type: 'string' },
-        { name: 'hashes'      , type: { type: 'array', items: 'int'}},
+        { name: 'ids'         , type: { type: 'array', items: 'string'}},
         { name: 'tags'        , type: { type: 'array', items: 'string'}},
         { name: 'authors'     , type: { type: 'array', items: 'string'}},
         { name: 'level'       , type: 'int' },
         { name: 'dateCreated' , type: 'long' },
         { name: 'dateEdited'  , type: 'long' },
+        { name: 'editedBy'    , type: 'string' }
       ]
     }
   ]
@@ -55,6 +57,7 @@ export enum RepErrorCode {
   INVALIDQ,
   MISSA,
   MISSAUTHOR,
+  MISSLEVEL,
   IDENTICALQ,
 }
 
@@ -94,8 +97,8 @@ export class Repository {
 
 
 
-  getItem(hash: number) {
-    return this._items.find(r => ~r.hashes.indexOf(hash));
+  getItem(hash: string) {
+    return this._items.find(r => ~r.ids.indexOf(hash));
   }
 
 
@@ -104,16 +107,14 @@ export class Repository {
     if (!this._contemplate.isQuery(qTokens))
       return RepErrorCode.INVALIDQ
     ;
-    const hash = this._contemplate.queryToHash(qTokens, false);
-    if (hash) return this.getItem(hash)
-    ;
-    return undefined;
+    const id = this._contemplate.encodeQuery(qTokens, false)!;
+    return this.getItem(id);
   }
 
 
-  indexOfItem(hash: number) {
+  indexOfItem(hash: string) {
     for (let i = 0, l = this._items.length; i < l; i++) {
-      if (~this._items[i].hashes.indexOf(hash)) {
+      if (~this._items[i].ids.indexOf(hash)) {
         return i;
       }
     }
@@ -121,7 +122,7 @@ export class Repository {
   }
 
 
-  editItem(oldHash: number, editedItem: RepoItem) {
+  editItem(oldHash: string, editedItem: RepoItem) {
     const itemIndex = this.indexOfItem(oldHash);
     if (~itemIndex) {
       this._items[itemIndex] = editedItem;
@@ -131,30 +132,30 @@ export class Repository {
   }
 
 
-  addItemDoc(itemDoc: string, author: string): RepErrorCode|null {
+  addItemDoc(itemDoc: string): RepErrorCode|null {
     const parsedDoc = this.parseItemDoc(itemDoc);
-    if (!Array.isArray(parsedDoc)) return parsedDoc
+    if (typeof parsedDoc == 'number') return parsedDoc
     ;
-    const [questions, answer] = parsedDoc;
-    const hashes = this.hashQuestions(questions);
-    if (!Array.isArray(hashes))
-      return hashes
+    const ids = this.encodeQuestions(parsedDoc.questions);
+    if (!Array.isArray(ids))
+      return ids
     ;
     this._items.push({
-      questions,
-      answer,
-      hashes,
-      authors: [author],
-      tags: [],
-      level: 0,
-      dateCreated: Date.now(),
-      dateEdited: Date.now()
-    });
+      answer      : parsedDoc.answer,
+      ids,
+      authors     : [parsedDoc.author],
+      tags        : parsedDoc.tags,
+      level       : parsedDoc.level,
+      dateCreated : Date.now(),
+      dateEdited  : Date.now(),
+      editedBy    : parsedDoc.author
+    })
+    ;
     return null;
   }
 
 
-  parseItemDoc(rawDoc: string): RepErrorCode | [string[], string] {
+  parseItemDoc(rawDoc: string): RepErrorCode | ItemDoc {
     const doc = rawDoc.trim();
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
     ;
@@ -165,18 +166,26 @@ export class Repository {
     if (!itemDoc) return RepErrorCode.INVALID
     ;
     const answer = itemDoc.body.trim();
-    const { questions, title, tags, author } = itemDoc.attributes;
+    const { questions, title, tags, author, level } = itemDoc.attributes;
     const hasValidQs = (
       !!questions
       && Array.isArray(questions)
       && !questions.find(v => v.match(matchInvalid))
     );
-    if (!hasValidQs) return RepErrorCode.INVALIDQ;
-    if (!title)      return RepErrorCode.MISSTITLE;
-    if (!author)     return RepErrorCode.MISSAUTHOR;
-    if (!answer)     return RepErrorCode.MISSA
+    if (!hasValidQs)        return RepErrorCode.INVALIDQ;
+    if (!title)             return RepErrorCode.MISSTITLE;
+    if (!author)            return RepErrorCode.MISSAUTHOR;
+    if (!answer)            return RepErrorCode.MISSA;
+    if (level == undefined) return RepErrorCode.MISSLEVEL
     ;
-    return [itemDoc.attributes.questions, itemDoc.body];
+    return {
+      title,
+      questions: itemDoc.attributes.questions,
+      author,
+      tags: tags || [],
+      level,
+      answer,
+    };
   }
 
 
@@ -191,11 +200,11 @@ export class Repository {
   }
 
 
-  hashQuestions(questions: string[]): RepErrorCode|number[]  {
-    const hashes: number[] = [];
+  encodeQuestions(questions: string[]): RepErrorCode|string[]  {
+    const hashes: string[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const hash = this._contemplate.queryToHash(q.split(' '));
+      const hash = this._contemplate.encodeQuery(q.split(' '));
       if (!hash) return RepErrorCode.INVALIDQ
       ;
       const hashIndex = hashes.indexOf(hash);

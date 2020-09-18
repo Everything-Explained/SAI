@@ -9,6 +9,12 @@ fileOps.save('./test/dict/dictionary.said.gzip', dictSchema, [], true)
 .then(() => {
   const dict = new Dictionary(fileOps, './test/dict/dictionary.said.gzip');
   t('Dictionary{}', async t => {
+    t.test('constructor()' , async t => {
+      t.throws(() => new Dictionary(fileOps, './invalid/path'),
+        'throws error on invalid path.'
+      );
+    });
+
     t.test('addWord(): Error|null', async t => {
       t.is(dict.addWord('test'), null,
         'returns null if no errors occur.'

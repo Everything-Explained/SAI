@@ -113,14 +113,15 @@ t('File Operations', async t => {
     const goodPath = `${path}/repository.gzip`;
     const badPath = `${path}/badRepo.gzip`;
     const data = [
-      { questions: ['hello'],
-        answer: 'world',
-        hashes: [3812834],
+      { answer: 'world',
+        ids: ['aAheoadf=='],
         tags: [],
         authors: [],
         level: 0,
         dateCreated: 1234,
-        dateEdited: 4321 }
+        dateEdited: 4321,
+        editedBy: '',
+      }
     ] as RepoItem[];
     await fileOps.save(goodPath, repositoryScheme, data, true, false);
     await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});

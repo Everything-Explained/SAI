@@ -31,7 +31,7 @@ export class Contemplator {
    * @param tokens An array of words that should make up a question.
    * @param checkQuery Skips token validation when **false**.
    */
-  encodeQuery(tokens: string[], checkQuery = true) {
+  encodeQuery(tokens: string[], checkQuery = true): string|undefined {
     if (checkQuery && !this.isQuery(tokens)) return undefined;
     return _flow(...this.queryProcessFuncs)(tokens);
   }

@@ -1,4 +1,4 @@
-import { contextTokens, hashSeed, optionalTokens, queryTokens } from "../lib/variables/constants";
+import { contextTokens, optionalTokens, queryTokens } from "../lib/variables/constants";
 import { intersection as _intersection } from 'lodash/fp';
 import t from 'tape';
 
@@ -27,7 +27,6 @@ function tokensHaveNoSpaces(tokens: string[], tokenType: string) {
 }
 
 t('Constants', async t => {
-
   t.test('[test setup]', async t => {
     let tokens = ['1', '2', '3', '4', '5'];
     t.ok(
@@ -52,11 +51,6 @@ t('Constants', async t => {
       () => tokensHaveNoSpaces(tokens, 'HaveSpaces'),
       'tokensHaveNoSpaces(): throws when spaces found in tokens.'
     );
-  });
-
-
-  t.test('hashSeed', async t => {
-    t.equal(hashSeed, 0x541, 'is 0x541.');
   });
 
 

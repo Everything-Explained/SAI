@@ -3,36 +3,41 @@ import { readFileSync } from 'fs';
 import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { Dictionary, dictSchema } from '../lib/database/dictionary';
-import { Repository, RepoItem, repositoryScheme, RepErrorCode } from '../lib/database/repository';
+import { Repository, RepoItem, repositoryScheme, RepErrorCode, ItemDoc } from '../lib/database/repository';
 import { testDir } from '../lib/variables/constants';
 
 
 
-const fileOps = new FileOps();
+const fileOps    = new FileOps();
 const folderPath = `${testDir}/repository`;
-const mocks = `${testDir}/doctests`;
-const dateNow = Date.now();
+const mocks      = `${testDir}/doctests`;
+const dateNow    = Date.now();
 const editItem: RepoItem = {
-  questions: ['chicken', 'lobster'],
-  answer: 'hello pickles!',
-  hashes: [234821348, 123481234],
+  // what is chicken; where's the chicken
+  answer: 'hello chickens!',
+  ids: ['Q3xjaGlja2Vu', 'RXxjaGlja2Vu'],
   authors: ['Test'],
   tags: [],
   level: 0,
   dateCreated: dateNow,
-  dateEdited: dateNow
+  dateEdited: dateNow,
+  editedBy: ''
 };
-const testData = [
-  { questions: ['what is love', 'how is love'],
+const testData: RepoItem[] = [
+  {
+    // what is love; who is god
+    ids: ['Q3xsb3Zl', 'R3xnb2Q='],
     answer: 'hello world',
-    hashes: [-1915670529, 123481234],
-    authors: [],
+    authors: ['Ethan'],
     tags: [],
     level: 0,
     dateCreated: dateNow,
-    dateEdited: dateNow
+    dateEdited: dateNow,
+    editedBy: ''
   }
-] as RepoItem[];
+];
+
+
 
 fileOps.createFolder(folderPath);
 fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true, false);
@@ -50,55 +55,62 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         () => repo = new Repository(fileOps, dict, `${folderPath}/replies.said.gzip`),
         'finds existing replies path.'
       );
+      t.throws(() => new Repository(fileOps, dict, 'blah/blah.asdf'),
+        'throws an error if the path does not exist.');
+    });
+
+    t.test('contemplate', async t => {
+      t.ok(repo.contemplate, 'gets the internal contemplate object.');
     });
 
     t.test('getItem(): Reply|undefined', async t => {
-      t.equal(repo.getItem(123481234)!.answer, 'hello world',
+      t.equal(repo.getItem('R3xnb2Q=')!.answer, 'hello world',
         'returns a Reply object.'
       );
-      t.equal(repo.getItem(58519234), undefined,
+      t.equal(repo.getItem('Q1aSb34L'), undefined,
         'returns undefined when reply not found.'
       );
       repo.items = [];
     });
 
-    t.test('ask(): RepErrorCode|RepoItem|undefined', async t => {
+    t.test('findQuestion(): RepErrorCode|RepoItem|undefined', async t => {
       repo.items = testData;
       const item = repo.findQuestion('what is love') as RepoItem;
       t.is(repo.findQuestion('tell me something'), RepErrorCode.INVALIDQ,
         'returns Error Code on invalid query.'
       );
       t.is(repo.findQuestion('where is the sausage'), undefined,
-        'returns undefined if question is not found.'
+        'returns undefined if question not found.'
       );
-      t.is(item.hashes[0], -1915670529,
+      t.is(item.ids[0], 'Q3xsb3Zl',
         'returns a RepoItem if found.'
       );
     });
 
     t.test('indexOfItem(): number', async t => {
       repo.items = testData;
-      t.is(repo.indexOfItem(123481234), 0,
-        'returns index of RepoItem by specified hash.'
+      t.is(repo.indexOfItem('R3xnb2Q='), 0,
+        'returns index of RepoItem by id.'
       );
-      t.is(repo.indexOfItem(4812348), -1,
+      t.is(repo.indexOfItem('3Aeq71='), -1,
         'returns -1 if index is not found'
       );
       repo.items = [];
     });
 
-    t.test('parseItemDoc(): Error | [string[], string]', async t => {
-      const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`, 'utf-8');
-      const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`, 'utf8');
-      const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`, 'utf-8');
-      const missingQ        = readFileSync(`${mocks}/missingQstnTest.txt`, 'utf-8');
-      const invalidQArray   = readFileSync(`${mocks}/invalidQArrayTest.txt`, 'utf8');
-      const missingTitle    = readFileSync(`${mocks}/missingTitleTest.txt`, 'utf8');
-      const missingAuthor   = readFileSync(`${mocks}/missingAuthTest.txt`, 'utf8');
-      const missingA        = readFileSync(`${mocks}/missingAnsTest.txt`, 'utf-8');
-      const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
-      const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
-      const passingVal      = repo.parseItemDoc(passingDoc);
+    t.test('parseItemDoc(): RepErrorCode|ItemDoc', async t => {
+      const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`         , 'utf-8');
+      const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`      , 'utf-8');
+      const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`    , 'utf-8');
+      const missingQ        = readFileSync(`${mocks}/missingQstnTest.txt`   , 'utf-8');
+      const invalidQArray   = readFileSync(`${mocks}/invalidQArrayTest.txt` , 'utf-8');
+      const missingTitle    = readFileSync(`${mocks}/missingTitleTest.txt`  , 'utf-8');
+      const missingAuthor   = readFileSync(`${mocks}/missingAuthTest.txt`   , 'utf-8');
+      const missingLevel    = readFileSync(`${mocks}/missingLevelTest.txt`  , 'utf-8');
+      const missingA        = readFileSync(`${mocks}/missingAnsTest.txt`    , 'utf-8');
+      const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`   , 'utf-8');
+      const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`    , 'utf-8');
+      const passingVal      = repo.parseItemDoc(passingDoc) as ItemDoc;
       t.is(
         repo.parseItemDoc(emptyTest), RepErrorCode.EMPTY,
         'returns Error Code on white-space-only documents.'
@@ -129,33 +141,36 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.is(repo.parseItemDoc(missingAuthor), RepErrorCode.MISSAUTHOR,
         'returns Error Code when missing author.'
       );
+      t.is(repo.parseItemDoc(missingLevel), RepErrorCode.MISSLEVEL,
+        'returns Error Code when missing level.'
+      );
       t.is(
         repo.parseItemDoc(missingA), RepErrorCode.MISSA,
         'returns Error Code when missing answer.'
       );
-      t.ok(
-        Array.isArray(passingVal),
-        'returns Array containing the questions and an answer.'
+      t.is(
+        passingVal.answer, "A lovely bunch of cocoanuts",
+        'returns an ItemDoc object.'
       );
-      t.is((passingVal as [string[], string])[0].length, 4,
+      t.is(passingVal.questions.length, 4,
         'question count should match question entry.'
       );
     });
 
     t.test('editItem(): boolean', async t => {
       repo.items = testData;
-      const isEdited = repo.editItem(testData[0].hashes[0], editItem);
+      const isEdited = repo.editItem(testData[0].ids[0], editItem);
       const item = repo.items[0];
       const isUpdated =
-           item.questions[0] == 'chicken'
-        && item.answer == 'hello pickles!'
+           item.ids[0]     == 'Q3xjaGlja2Vu'
+        && item.answer     == 'hello chickens!'
         && item.authors[0] == 'Test'
       ;
       t.ok(isEdited,
         'returns true when edited successfully.'
       );
-      t.notOk(repo.editItem(34818234, editItem),
-        'returns false if old hash not found.'
+      t.notOk(repo.editItem('R3xnb2Q=', editItem),
+        'returns false if old id not found.'
       );
       t.ok(isUpdated,
         'replaces old item with new edited item.'
@@ -163,51 +178,51 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       repo.items = [];
     });
 
-    t.test('addItemDoc(): Error|null', async t => {
+    t.test('addItemDoc(): RepErrorCode|null', async t => {
       const errorDoc      = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
       const passingDoc    = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`, 'utf-8');
       dict.words          = [['large', 'big', 'enormous', 'giant']];
-      const identicalVal  = repo.addItemDoc(identicalQDoc, 'test') as RepErrorCode;
+      const identicalVal  = repo.addItemDoc(identicalQDoc) as RepErrorCode;
       t.is(
-        typeof repo.addItemDoc(errorDoc, 'test'), 'number',
+        typeof repo.addItemDoc(errorDoc), 'number',
         'returns Error Code if parseReplyDoc() fails.'
       );
-      t.is(repo.addItemDoc(passingDoc, 'test'), null,
+      t.is(repo.addItemDoc(passingDoc), null,
         'returns null when reply doc added successfully.'
       );
-      t.is(repo.items[0].hashes.length, 4,
+      t.is(repo.items[0].ids.length, 4,
         'adds a hash for every question in document.'
       );
       t.is(
-        repo.addItemDoc(invalidQDoc, 'test'), RepErrorCode.INVALIDQ,
+        repo.addItemDoc(invalidQDoc), RepErrorCode.INVALIDQ,
         'returns Error Code with invalid questions.'
       );
       t.is(
         identicalVal, RepErrorCode.IDENTICALQ,
-        'returns Error Code with identical hashes.'
+        'returns Error Code with identical ids.'
       );
       repo.items = [];
     });
 
-    t.test('hashQuestions(): Error|number', async t => {
-      const questions     = ['what is this', 'what is that', 'what is what'];
-      const invalidQs     = ['tell me what to do', 'when will it be time'];
-      const identicalQs   = ['how big is the world', 'how large is the world'];
-      const hashes        = repo.hashQuestions(questions);
+    t.test('encodeQuestions(): RepErrorCode|string[]', async t => {
+      const questions   = ['what is this', 'what is that', 'what is what'];
+      const invalidQs   = ['tell me what to do', 'when will it be time'];
+      const identicalQs = ['how big is the world', 'how large is the world'];
+      const ids         = repo.encodeQuestions(questions) as string[];
 
-      t.ok(Array.isArray(hashes),
-        'returns an array of hashes on success.'
+      t.ok(Array.isArray(ids),
+        'returns an array of ids on success.'
       );
-      t.is(repo.hashQuestions(invalidQs), RepErrorCode.INVALIDQ,
+      t.is(repo.encodeQuestions(invalidQs), RepErrorCode.INVALIDQ,
         'returns Error Code with invalid questions.'
       );
-      t.is(repo.hashQuestions(identicalQs), RepErrorCode.IDENTICALQ,
+      t.is(repo.encodeQuestions(identicalQs), RepErrorCode.IDENTICALQ,
         'returns Error Code with semantically identical questions.'
       );
-      t.is((hashes as number[]).length, 3,
-        'returns the same amount of hashes as questions.'
+      t.is(ids.length, 3,
+        'returns the same amount of ids as questions.'
       );
 
     });
@@ -219,7 +234,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         .then(() => {
           t.pass('saves repository to file.');
           const items = fileOps.readRepoStore(`${folderPath}/replies.said.gzip`);
-          t.is(items[0].answer, 'hello pickles!',
+          t.is(items[0].answer, 'hello chickens!',
             'saves same data that is in the in-memory object.'
           );
           del(folderPath); // Cleanup

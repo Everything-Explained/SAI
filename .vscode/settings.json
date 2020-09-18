@@ -3,6 +3,7 @@
     "source.fixAll": true
   },
   "files.exclude": {
+    "dist": true,
     "notes": true,
     "coverage": true,
     ".nyc_output": true,
@@ -18,6 +19,7 @@
     "MISSA",
     "MISSAUTHOR",
     "MISSHEAD",
+    "MISSLEVEL",
     "MISSQ",
     "MISSTITLE",
     "Strat",

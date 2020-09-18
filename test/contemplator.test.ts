@@ -125,12 +125,12 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
       );
     });
 
-    t.test('encodeQuery(): number', async t => {
+    t.test('encodeQuery(): string', async t => {
       dict.words = [['large', 'big']];
       const q = "why \"can't\" i see how large @god is".split(' ');
       const q2 = "why can't; i see how big |\\god is".split(' ');
-      const res1 = contemplate.encodeQuery(q);
-      const res2 = contemplate.encodeQuery(q2)
+      const res1 = contemplate.encodeQuery(q)!;
+      const res2 = contemplate.encodeQuery(q2)!
       ;
       t.is(contemplate.encodeQuery(['not', 'a', 'question']), undefined,
         'returns undefined if question NOT detected.'
@@ -146,10 +146,19 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
       );
     });
 
+    t.test('partialEncodeQuery(): string', async t => {
+      dict.words = [['god']];
+      const q = 'what is the love of god'.split(' ');
+      const test = contemplate.partialEncodeQuery(q).join('');
+      t.is(test, 'Clove%04&00',
+        'returns a unique id without base64 encoding.'
+      );
+    });
+
     t.test('decode(): string', async t => {
       dict.words = [['large', 'big']];
       const q = 'how big is this sun'.split(' ');
-      const code = contemplate.encodeQuery(q);
+      const code = contemplate.encodeQuery(q, false)!;
       const str = contemplate.decode(code)
       ;
       t.is(str, 'how large this sun',

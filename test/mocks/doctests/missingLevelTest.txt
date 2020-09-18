@@ -6,6 +6,5 @@ questions:
  - where is the sky
  - when can i see the sky
  - how is the sky so bright
-level: 0
 ---
 A lovely bunch of cocoanuts
