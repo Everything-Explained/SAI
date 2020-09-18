@@ -199,6 +199,17 @@ export class Repository {
     return this._fileOps.save(this._path, repositoryScheme, this._items, true);
   }
 
+  checkIntegrity() {
+    const items = this.items.slice();
+    while (items.length) {
+      const id = items[0].ids.splice(0, 1)[0];
+      const failedItem = items.find(v => v.ids.includes(id));
+      if (failedItem) return failedItem;
+      if (!items[0].ids.length) items.splice(0, 1);
+    }
+    return null;
+  }
+
 
   encodeQuestions(questions: string[]): RepErrorCode|string[]  {
     const hashes: string[] = [];

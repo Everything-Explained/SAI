@@ -8,33 +8,36 @@ import { testDir } from '../lib/variables/constants';
 
 
 
+
 const fileOps    = new FileOps();
 const folderPath = `${testDir}/repository`;
 const mocks      = `${testDir}/doctests`;
 const dateNow    = Date.now();
-const editItem: RepoItem = {
-  // what is chicken; where's the chicken
-  answer: 'hello chickens!',
-  ids: ['Q3xjaGlja2Vu', 'RXxjaGlja2Vu'],
-  authors: ['Test'],
-  tags: [],
-  level: 0,
-  dateCreated: dateNow,
-  dateEdited: dateNow,
-  editedBy: ''
-};
-const testData: RepoItem[] = [
-  {
-    // what is love; who is god
-    ids: ['Q3xsb3Zl', 'R3xnb2Q='],
-    answer: 'hello world',
-    authors: ['Ethan'],
-    tags: [],
+
+function createItem(ids: string[], answer: string) {
+  return {
+    ids,
+    answer,
     level: 0,
-    dateCreated: dateNow,
+    authors: [],
+    tags: [],
     dateEdited: dateNow,
+    dateCreated: dateNow,
     editedBy: ''
-  }
+  } as RepoItem;
+}
+
+
+const editItem = createItem(
+  ['Q3xjaGlja2Vu', 'RXxjaGlja2Vu'], // what is chicken; where's the chicken
+  'hello chickens!'
+);
+
+const testData = [
+  createItem(
+    ['Q3xsb3Zl', 'R3xnb2Q='], // what is love; who is god
+    'hello world'
+  )
 ];
 
 
@@ -48,7 +51,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
     throw err; // We want to kill testing
   }
   const dict = new Dictionary(fileOps, `${folderPath}/dictionary.said.gzip`);
-  t('Replies{}', async t => {
+  t('Repository{}', async t => {
     let repo: Repository;
     t.test('contructor()', async t => {
       t.doesNotThrow(
@@ -158,13 +161,12 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
     });
 
     t.test('editItem(): boolean', async t => {
-      repo.items = testData;
+      repo.items = testData.slice();
       const isEdited = repo.editItem(testData[0].ids[0], editItem);
       const item = repo.items[0];
       const isUpdated =
            item.ids[0]     == 'Q3xjaGlja2Vu'
         && item.answer     == 'hello chickens!'
-        && item.authors[0] == 'Test'
       ;
       t.ok(isEdited,
         'returns true when edited successfully.'
@@ -244,6 +246,26 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
           t.fail(err.message);
           del(folderPath); // Cleanup
         });
+    });
+
+    t.test('checkIntegrity(): null|string', async t => {
+      repo.items = [
+        createItem(['Q3xsb3Zl', 'R3xnb2Q='], 'hello world'),
+        editItem
+      ];
+      const goodResult = repo.checkIntegrity();
+      repo.items = [
+        createItem(['Q3xsb3Zl', 'R3xnb2Q='], 'hello world'),
+        createItem(['R3xnb2Q=', 'A38aEonZ8='], 'will collide')
+      ];
+      const badResult = repo.checkIntegrity();
+
+      t.is(goodResult, null,
+        'returns null if the integrity is good'
+      );
+      t.is(badResult?.answer, 'will collide',
+        'returns first occurrence of duplicate id.'
+      );
     });
   });
 });
