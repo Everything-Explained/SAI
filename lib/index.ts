@@ -42,7 +42,7 @@ export class SAI {
    * @param itemDoc A string whose content is an Item Document.
    */
   addQuestion(itemDoc: string): RepErrorCode|Promise<null> {
-    const resp = this._repo.addItemDoc(itemDoc);
+    const resp = this._repo.addItem(itemDoc);
     if (typeof resp == 'number') return resp;
     return this._repo.save();
   }

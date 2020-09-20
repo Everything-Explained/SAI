@@ -219,19 +219,19 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`, 'utf-8');
       dict.words          = [['large', 'big', 'enormous', 'giant']];
-      const identicalVal  = repo.addItemDoc(identicalQDoc) as RepErrorCode;
+      const identicalVal  = repo.addItem(identicalQDoc) as RepErrorCode;
       t.is(
-        typeof repo.addItemDoc(errorDoc), 'number',
+        typeof repo.addItem(errorDoc), 'number',
         'returns Error Code if parseReplyDoc() fails.'
       );
-      t.is(repo.addItemDoc(passingDoc), null,
+      t.is(repo.addItem(passingDoc), null,
         'returns null when reply doc added successfully.'
       );
       t.is(repo.items[0].ids.length, 4,
         'adds a hash for every question in document.'
       );
       t.is(
-        repo.addItemDoc(invalidQDoc), RepErrorCode.Question,
+        repo.addItem(invalidQDoc), RepErrorCode.Question,
         'returns Error Code with invalid questions.'
       );
       t.is(

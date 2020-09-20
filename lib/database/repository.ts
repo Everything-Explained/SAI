@@ -102,6 +102,10 @@ export class Repository {
 
 
 
+  /**
+   * Retrieves a repository item by `id`; or _undefined_
+   * if the `id` is not found.
+   */
   getItem(id: string) {
     return this._items.find(r => ~r.ids.indexOf(id));
   }
@@ -127,6 +131,11 @@ export class Repository {
   }
 
 
+  /**
+   * Edits an item based on the item document string
+   * provided. _Make sure to include the_ `editId`
+   * _field in the front matter._
+   */
   editItem(itemDoc: string): RepErrorCode|boolean {
     const doc = this.toRepoItem(itemDoc);
     if (typeof doc == 'number') return doc;
@@ -150,7 +159,11 @@ export class Repository {
   }
 
 
-  addItemDoc(itemDoc: string): RepErrorCode|null {
+  /**
+   * Adds an item based on the item document string
+   * provided.
+   */
+  addItem(itemDoc: string): RepErrorCode|null {
     const item = this.toRepoItem(itemDoc);
     if (typeof item == 'number') return item
     ;
@@ -164,6 +177,10 @@ export class Repository {
   }
 
 
+  /**
+   * Converts an item document string to a Repository
+   * Item.
+   */
   toRepoItem(rawDoc: string): RepErrorCode | RepoItem {
     const doc = rawDoc.trim();
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
@@ -216,6 +233,10 @@ export class Repository {
   }
 
 
+  /**
+   * Returns any items which contain duplicate ids, otherwise
+   * it returns null.
+   */
   checkIntegrity() {
     const items = this.items.slice();
     while (items.length) {

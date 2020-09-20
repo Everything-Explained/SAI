@@ -24,9 +24,13 @@ export class Dictionary {
   }
   set words(val: string[][]) {
     this._words = val;
-    this.updateWordRef();
+    this._updateWordRef();
   }
 
+  /**
+   * Retrieves Array of all dictionary words
+   * pushed into a single dimension array.
+   */
   get flatWords(): string[] {
     return [...this._wordsRef];
   }
@@ -37,7 +41,7 @@ export class Dictionary {
       throw Error(`Path to dictionary: "${_path}" does NOT exist.`)
     ;
     this._words = _fileOps.readDictStore(_path);
-    this.updateWordRef();
+    this._updateWordRef();
   }
 
 
@@ -47,7 +51,10 @@ export class Dictionary {
     return false;
   }
 
-
+  /**
+   * Retrieves an Array of synonyms at the given `index`; or
+   * _undefined_ if the `index` is not found.
+   */
   findWordsAtIndex(index: number): undefined | string[] {
     const words = this._words[index];
     return (
@@ -58,6 +65,11 @@ export class Dictionary {
   }
 
 
+  /**
+   * Retrieves the row and column indexes of the
+   * specified `word`; or _undefined_ if the `word`
+   * is not found.
+   */
   findWordPosition(word: string): [number, number] | undefined {
     let row = this._words.length;
     while (row--) {
@@ -73,7 +85,7 @@ export class Dictionary {
   addWord(word: string): Error|null {
     if (this.hasWord(word)) { return Error('Word already exists.'); }
     this._words.push([word]);
-    this.updateWordRef();
+    this._updateWordRef();
     return null;
   }
 
@@ -83,7 +95,7 @@ export class Dictionary {
     if (index < 0)          { return Error('Index must be greater than -1.'); }
     if (!this._words[index]) { return Error(`The index "${index}" does NOT exist.`); }
     this._words[index].push(word);
-    this.updateWordRef();
+    this._updateWordRef();
     return null;
   }
 
@@ -92,12 +104,13 @@ export class Dictionary {
     const wordPos = this.findWordPosition(word);
     if (!wordPos) { return Error('Word does NOT exist at.'); }
     const [row, col] = wordPos;
-    this._words[row].splice(col, 1);
+    this._words[row].splice(col, 1)
+    ;
     // Delete entire index if it's empty
     if (!this._words[row].length) {
       this._words.splice(row, 1);
     }
-    this.updateWordRef();
+    this._updateWordRef();
     return null;
   }
 
@@ -106,11 +119,15 @@ export class Dictionary {
     const words = this.findWordsAtIndex(index);
     if (!words) { return Error(`Index "${index}" NOT found.`); }
     this._words.splice(index, 1);
-    this.updateWordRef();
+    this._updateWordRef();
     return null;
   }
 
 
+  /**
+   * Encodes a `word` based on its index position in
+   * the words Array.
+   */
   encodeWord(word: string) {
     const pos = this.findWordPosition(word);
     if (!pos) return word;
@@ -123,7 +140,7 @@ export class Dictionary {
   }
 
 
-  private updateWordRef() {
+  private _updateWordRef() {
     this._wordsRef = this._words.flat();
   }
 
