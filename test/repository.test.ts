@@ -159,24 +159,29 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.is(passingVal.ids.length, 4,
         'question count should match question entry.'
       );
+      t.is(passingVal.editId, undefined,
+        'editedBy should be undefined when unspecified.'
+      );
     });
 
-    t.test('editItem(): boolean', async t => {
+    t.test('editItem(): RepErrorCode|boolean', async t => {
       repo.items = testData.slice();
-      const isEdited = repo.editItem(testData[0].ids[0], editItem);
+      const doc = readFileSync(`${mocks}/editItemTest.txt`, 'utf-8');
+      const isEdited = repo.editItem(doc);
       const item = repo.items[0];
       const isUpdated =
-           item.ids[0]     == 'Q3xjaGlja2Vu'
-        && item.answer     == 'hello chickens!'
+           item.ids[0] == 'Q3xjaGlja2Vu'
+        && item.answer == 'hello chickens!'
+        && repo.getItem('Q3xsb3Zl') == undefined
       ;
       t.ok(isEdited,
         'returns true when edited successfully.'
       );
-      t.notOk(repo.editItem('R3xnb2Q=', editItem),
-        'returns false if old id not found.'
-      );
       t.ok(isUpdated,
         'replaces old item with new edited item.'
+      );
+      t.ok(item.dateCreated < item.dateEdited,
+        'edited date should be greater than created date.'
       );
       repo.items = [];
     });

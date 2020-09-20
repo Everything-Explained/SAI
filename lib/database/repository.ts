@@ -16,6 +16,7 @@ export interface RepoItem {
   dateCreated : number;
   dateEdited  : number;
   editedBy    : string;
+  editId     ?: string;
 }
 
 
@@ -27,6 +28,7 @@ export interface ItemDoc {
   tags      : string[];
   author    : string;
   editedBy ?: string;
+  editId   ?: string;
 }
 
 
@@ -100,15 +102,15 @@ export class Repository {
 
 
 
-  getItem(hash: string) {
-    return this._items.find(r => ~r.ids.indexOf(hash));
+  getItem(id: string) {
+    return this._items.find(r => ~r.ids.indexOf(id));
   }
 
 
   findQuestion(question: string) {
     const qTokens = question.split(' ');
     if (!this._contemplate.isQuery(qTokens))
-      return RepErrorCode.INVALIDQ
+      return RepErrorCode.Question
     ;
     const id = this._contemplate.encodeQuery(qTokens, false)!;
     return this.getItem(id);
@@ -125,13 +127,26 @@ export class Repository {
   }
 
 
-  editItem(oldHash: string, editedItem: RepoItem) {
-    const itemIndex = this.indexOfItem(oldHash);
-    if (~itemIndex) {
-      this._items[itemIndex] = editedItem;
-      return true;
-    }
-    return false;
+  editItem(itemDoc: string): RepErrorCode|boolean {
+    const doc = this.toRepoItem(itemDoc);
+    if (typeof doc == 'number') return doc;
+    if (!doc.editId) return RepErrorCode.EditId
+    ;
+    const itemIndex = this.indexOfItem(doc.editId);
+    if (!~itemIndex) return false
+    ;
+    const authors   = this._items[itemIndex].authors;
+    const hasAuthor = authors.includes(doc.authors[0]);
+    doc.authors =
+      hasAuthor
+        ? authors.slice()
+        : [...authors, doc.authors[0]]
+    ;
+    doc.dateCreated = this._items[itemIndex].dateCreated;
+    doc.dateEdited  = Date.now();
+    delete doc.editId
+    ;
+    return !!(this._items[itemIndex] = doc);
   }
 
 
@@ -142,6 +157,7 @@ export class Repository {
     const dateNow = Date.now();
     item.dateCreated = dateNow;
     item.dateEdited = dateNow;
+    delete item.editId;
     this._items.push(item)
     ;
     return null;
@@ -159,7 +175,7 @@ export class Repository {
     if (!itemDoc) return RepErrorCode.Invalid
     ;
     const answer = itemDoc.body.trim();
-    const { questions, title, tags, author, level } = itemDoc.attributes;
+    const { questions, title, tags, author, level, editId } = itemDoc.attributes;
     const hasValidQs = (
       !!questions
       && Array.isArray(questions)
@@ -184,6 +200,7 @@ export class Repository {
       dateCreated: 0,
       dateEdited: 0,
       editedBy: author,
+      editId,
     };
   }
 
@@ -197,6 +214,7 @@ export class Repository {
   save() {
     return this._fileOps.save(this._path, repositoryScheme, this._items, true);
   }
+
 
   checkIntegrity() {
     const items = this.items.slice();
