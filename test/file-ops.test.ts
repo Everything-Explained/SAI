@@ -90,7 +90,9 @@ t('File Operations', async t => {
     const goodPath = `${path}/repository.gzip`;
     const badPath = `${path}/badRepo.gzip`;
     const data = [
-      { answer: 'world',
+      {
+        title: 'blah',
+        answer: 'world',
         ids: ['aAheoadf=='],
         tags: [],
         authors: [],
