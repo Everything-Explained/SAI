@@ -10,3 +10,4 @@ SAI.mmap
 test.json
 .eslintrc.json
 tsconfig.tsbuildinfo
+store/
