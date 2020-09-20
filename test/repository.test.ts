@@ -16,6 +16,7 @@ const dateNow    = Date.now();
 
 function createItem(ids: string[], answer: string) {
   return {
+    title: 'test',
     ids,
     answer,
     level: 0,

@@ -7,6 +7,7 @@ import frontMatter, { FrontMatterResult } from 'front-matter';
 
 
 export interface RepoItem {
+  title       : string;
   answer      : string;
   ids         : string[];
   tags        : string[];
@@ -35,6 +36,7 @@ export const repositoryScheme = AvroType.forSchema({
       type: 'record',
       name: 'RepoItem',
       fields: [
+        { name: 'title'       , type: 'string' },
         { name: 'answer'      , type: 'string' },
         { name: 'ids'         , type: { type: 'array', items: 'string'}},
         { name: 'tags'        , type: { type: 'array', items: 'string'}},
