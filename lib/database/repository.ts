@@ -52,15 +52,16 @@ export const repositoryScheme = AvroType.forSchema({
 
 
 export enum RepErrorCode {
-  EMPTY,
-  INVALID,
-  MISSHEAD,
-  MISSTITLE,
-  INVALIDQ,
-  MISSA,
-  MISSAUTHOR,
-  MISSLEVEL,
-  IDENTICALQ,
+  Empty,
+  Invalid,
+  Head,
+  Title,
+  Question,
+  Answer,
+  Author,
+  Level,
+  IQuestion, // Identical Question
+  EditId,  //
 }
 
 
@@ -135,37 +136,27 @@ export class Repository {
 
 
   addItemDoc(itemDoc: string): RepErrorCode|null {
-    const parsedDoc = this.parseItemDoc(itemDoc);
-    if (typeof parsedDoc == 'number') return parsedDoc
+    const item = this.toRepoItem(itemDoc);
+    if (typeof item == 'number') return item
     ;
-    const ids = this.encodeQuestions(parsedDoc.questions);
-    if (!Array.isArray(ids))
-      return ids
-    ;
-    this._items.push({
-      answer      : parsedDoc.answer,
-      ids,
-      authors     : [parsedDoc.author],
-      tags        : parsedDoc.tags,
-      level       : parsedDoc.level,
-      dateCreated : Date.now(),
-      dateEdited  : Date.now(),
-      editedBy    : parsedDoc.author
-    })
+    const dateNow = Date.now();
+    item.dateCreated = dateNow;
+    item.dateEdited = dateNow;
+    this._items.push(item)
     ;
     return null;
   }
 
 
-  parseItemDoc(rawDoc: string): RepErrorCode | ItemDoc {
+  toRepoItem(rawDoc: string): RepErrorCode | RepoItem {
     const doc = rawDoc.trim();
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
     ;
-    if (!doc)                   return RepErrorCode.EMPTY;
-    if (!frontMatter.test(doc)) return RepErrorCode.MISSHEAD
+    if (!doc)                   return RepErrorCode.Empty;
+    if (!frontMatter.test(doc)) return RepErrorCode.Head
     ;
     const itemDoc = this.getFrontMatter(doc);
-    if (!itemDoc) return RepErrorCode.INVALID
+    if (!itemDoc) return RepErrorCode.Invalid
     ;
     const answer = itemDoc.body.trim();
     const { questions, title, tags, author, level } = itemDoc.attributes;
@@ -174,19 +165,25 @@ export class Repository {
       && Array.isArray(questions)
       && !questions.find(v => v.match(matchInvalid))
     );
-    if (!hasValidQs)        return RepErrorCode.INVALIDQ;
-    if (!title)             return RepErrorCode.MISSTITLE;
-    if (!author)            return RepErrorCode.MISSAUTHOR;
-    if (!answer)            return RepErrorCode.MISSA;
-    if (level == undefined) return RepErrorCode.MISSLEVEL
+    if (!hasValidQs)        return RepErrorCode.Question;
+    if (!title)             return RepErrorCode.Title;
+    if (!author)            return RepErrorCode.Author;
+    if (!answer)            return RepErrorCode.Answer;
+    if (level == undefined) return RepErrorCode.Level
+    ;
+    const ids = this.encodeQuestions(questions);
+    if (!Array.isArray(ids)) return ids
     ;
     return {
       title,
-      questions: itemDoc.attributes.questions,
-      author,
-      tags: tags || [],
+      ids,
+      authors: [author],
+      tags: tags ?? [],
       level,
       answer,
+      dateCreated: 0,
+      dateEdited: 0,
+      editedBy: author,
     };
   }
 

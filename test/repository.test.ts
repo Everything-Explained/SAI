@@ -80,7 +80,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
     t.test('findQuestion(): RepErrorCode|RepoItem|undefined', async t => {
       repo.items = testData;
       const item = repo.findQuestion('what is love') as RepoItem;
-      t.is(repo.findQuestion('tell me something'), RepErrorCode.INVALIDQ,
+      t.is(repo.findQuestion('tell me something'), RepErrorCode.Question,
         'returns Error Code on invalid query.'
       );
       t.is(repo.findQuestion('where is the sausage'), undefined,
@@ -102,7 +102,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       repo.items = [];
     });
 
-    t.test('parseItemDoc(): RepErrorCode|ItemDoc', async t => {
+    t.test('toRepoItem(): RepErrorCode|RepoItem', async t => {
       const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`         , 'utf-8');
       const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`      , 'utf-8');
       const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`    , 'utf-8');
@@ -114,49 +114,49 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       const missingA        = readFileSync(`${mocks}/missingAnsTest.txt`    , 'utf-8');
       const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`   , 'utf-8');
       const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`    , 'utf-8');
-      const passingVal      = repo.parseItemDoc(passingDoc) as ItemDoc;
+      const passingVal      = repo.toRepoItem(passingDoc) as RepoItem;
       t.is(
-        repo.parseItemDoc(emptyTest), RepErrorCode.EMPTY,
+        repo.toRepoItem(emptyTest), RepErrorCode.Empty,
         'returns Error Code on white-space-only documents.'
       );
       t.is(
-        repo.parseItemDoc(noMatter), RepErrorCode.MISSHEAD,
+        repo.toRepoItem(noMatter), RepErrorCode.Head,
         'returns Error Code when missing front-matter head.'
       );
       t.is(
-        repo.parseItemDoc(isInvalid), RepErrorCode.INVALID,
+        repo.toRepoItem(isInvalid), RepErrorCode.Invalid,
         'returns Error Code with invalid front-matter syntax.'
       );
       t.is(
-        repo.parseItemDoc(missingQ), RepErrorCode.INVALIDQ,
+        repo.toRepoItem(missingQ), RepErrorCode.Question,
         'returns Error Code when missing questions block.'
       );
       t.is(
-        repo.parseItemDoc(invalidQArray), RepErrorCode.INVALIDQ,
+        repo.toRepoItem(invalidQArray), RepErrorCode.Question,
         'returns Error Code when questions are not an Array.'
       );
       t.is(
-        repo.parseItemDoc(invalidCharTest), RepErrorCode.INVALIDQ,
+        repo.toRepoItem(invalidCharTest), RepErrorCode.Question,
         'returns Error Code when questions contain invalid chars.'
       );
-      t.is(repo.parseItemDoc(missingTitle), RepErrorCode.MISSTITLE,
+      t.is(repo.toRepoItem(missingTitle), RepErrorCode.Title,
         'returns Error Code when missing title.'
       );
-      t.is(repo.parseItemDoc(missingAuthor), RepErrorCode.MISSAUTHOR,
+      t.is(repo.toRepoItem(missingAuthor), RepErrorCode.Author,
         'returns Error Code when missing author.'
       );
-      t.is(repo.parseItemDoc(missingLevel), RepErrorCode.MISSLEVEL,
+      t.is(repo.toRepoItem(missingLevel), RepErrorCode.Level,
         'returns Error Code when missing level.'
       );
       t.is(
-        repo.parseItemDoc(missingA), RepErrorCode.MISSA,
+        repo.toRepoItem(missingA), RepErrorCode.Answer,
         'returns Error Code when missing answer.'
       );
       t.is(
         passingVal.answer, "A lovely bunch of cocoanuts",
         'returns an ItemDoc object.'
       );
-      t.is(passingVal.questions.length, 4,
+      t.is(passingVal.ids.length, 4,
         'question count should match question entry.'
       );
     });
@@ -199,11 +199,11 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         'adds a hash for every question in document.'
       );
       t.is(
-        repo.addItemDoc(invalidQDoc), RepErrorCode.INVALIDQ,
+        repo.addItemDoc(invalidQDoc), RepErrorCode.Question,
         'returns Error Code with invalid questions.'
       );
       t.is(
-        identicalVal, RepErrorCode.IDENTICALQ,
+        identicalVal, RepErrorCode.IQuestion,
         'returns Error Code with identical ids.'
       );
       repo.items = [];
@@ -218,10 +218,10 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.ok(Array.isArray(ids),
         'returns an array of ids on success.'
       );
-      t.is(repo.encodeQuestions(invalidQs), RepErrorCode.INVALIDQ,
+      t.is(repo.encodeQuestions(invalidQs), RepErrorCode.Question,
         'returns Error Code with invalid questions.'
       );
-      t.is(repo.encodeQuestions(identicalQs), RepErrorCode.IDENTICALQ,
+      t.is(repo.encodeQuestions(identicalQs), RepErrorCode.IQuestion,
         'returns Error Code with semantically identical questions.'
       );
       t.is(ids.length, 3,
