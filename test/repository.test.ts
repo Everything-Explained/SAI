@@ -20,7 +20,7 @@ function createItem(ids: string[], answer: string) {
     ids,
     answer,
     level: 0,
-    authors: [],
+    authors: ['blah'],
     tags: [],
     dateEdited: dateNow,
     dateCreated: dateNow,
@@ -166,7 +166,12 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
 
     t.test('editItem(): RepErrorCode|boolean', async t => {
       repo.items = testData.slice();
+      const createdDate = repo.items[0].dateCreated;
       const doc = readFileSync(`${mocks}/editItemTest.txt`, 'utf-8');
+      const missEditId = readFileSync(`${mocks}/missingEditIdTest.txt`, 'utf-8');
+      const invalidItem = readFileSync(`${mocks}/invalidEditItemTest.txt`, 'utf-8');
+      const itemNoExist = readFileSync(`${mocks}/editItemNoExistTest.txt`, 'utf-8');
+      const authorExists = readFileSync(`${mocks}/editItemAuthorExistsTest.txt`, 'utf-8');
       const isEdited = repo.editItem(doc);
       const item = repo.items[0];
       const isUpdated =
@@ -182,6 +187,28 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       );
       t.ok(item.dateCreated < item.dateEdited,
         'edited date should be greater than created date.'
+      );
+      t.is(createdDate, item.dateCreated,
+        'will copy the dateCreated property from the original item.'
+      );
+      t.same(repo.items[0].authors, ['blah', 'unique'],
+        'appends unique authors to the authors Array.'
+      );
+      t.is(repo.editItem(missEditId), RepErrorCode.EditId,
+        'returns an Error Code when missing editId property.'
+      );
+      t.is(repo.editItem(invalidItem), RepErrorCode.Author,
+        'returns an Error Code if the document is invalid.'
+      );
+      t.is(repo.editItem(itemNoExist), false,
+        'returns false if the id is not found.'
+      );
+      repo.editItem(authorExists);
+      t.is(repo.items[0].answer, 'I am a new message',
+        'updates item successfully when author already exists.'
+      );
+      t.same(repo.items[0].authors, ['blah', 'unique'],
+        'ignores edit author if author already exists.'
       );
       repo.items = [];
     });

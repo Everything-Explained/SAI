@@ -3,7 +3,6 @@ title: test
 questions:
 - what is chicken
 - where's the chicken
-author: unique
 level: 0
 editId: Q3xsb3Zl
 ---
