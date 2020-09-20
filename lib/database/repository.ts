@@ -212,21 +212,21 @@ export class Repository {
 
 
   encodeQuestions(questions: string[]): RepErrorCode|string[]  {
-    const hashes: string[] = [];
+    const codes: string[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const hash = this._contemplate.encodeQuery(q.split(' '));
-      if (!hash) return RepErrorCode.INVALIDQ
+      const code = this._contemplate.encodeQuery(q.split(' '));
+      if (!code) return RepErrorCode.Question
       ;
-      const hashIndex = hashes.indexOf(hash);
-      if (~hashIndex) {
+      const codeIndex = codes.indexOf(code);
+      if (~codeIndex) {
         // Get original question index.
         // const qIndex = questions.length - 1 - hashIndex;
-        return RepErrorCode.IDENTICALQ;
+        return RepErrorCode.IQuestion;
       }
-      hashes.push(hash);
+      codes.push(code);
     }
-    return hashes;
+    return codes;
   }
 
   // whiteSpaceStrat(doc: string) {
