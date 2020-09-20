@@ -36,4 +36,4 @@ export const contractionCorrections: [RegExp, string][] = [
 
 
 export const matchInvalidChars = /[^a-z]/g;
-export const testDir = './test/mocks';
+export const mockDir = './test/mocks';

@@ -1,47 +1,71 @@
-import { cloneDeep as _cloneDeep,
-         pullAt    as _pullAt,
-         flatten   as _flatten,
-         flow      as _flow } from 'lodash/fp'
-;
 import { FileOps } from './core/file-ops';
 import { Dictionary, dictSchema } from './database/dictionary';
-import { Repository, repositoryScheme } from './database/repository';
+import { RepErrorCode, Repository, repositoryScheme } from './database/repository';
 
 
 export class SAI {
-  private dataFolder : string;
-  private repoPath   : string;
-  private dictPath   : string;
-  private dict!      : Dictionary; // set in init()
-  private repo!      : Repository; // set in init()
-  private fileOps    : FileOps;
+  private _dataFolder : string;
+  private _repoPath   : string;
+  private _dictPath   : string;
+  private _dict!      : Dictionary; // set in init()
+  private _repo!      : Repository; // set in init()
+  private _fileOps    : FileOps;
+
+
+  get dictionary() {
+    return this._dict;
+  }
+
+  get repository() {
+    return this._repo;
+  }
 
 
   constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
-    this.dataFolder = dataFolderPath;
-    this.repoPath   = `${dataFolderPath}/repository.said.gzip`;
-    this.dictPath   = `${dataFolderPath}/dictionary.said.gzip`;
-    this.fileOps    = new FileOps();
+    this._dataFolder = dataFolderPath;
+    this._repoPath   = `${dataFolderPath}/repository.said.gzip`;
+    this._dictPath   = `${dataFolderPath}/dictionary.said.gzip`;
+    this._fileOps    = new FileOps();
     this.init(isReady);
   }
 
-  // ask(question: string) {
-  //   // Should convert question to hash and lookup hash in database.
-  //   throw Error('Not Implemented.');
-  // }
 
-  public ask(question: string) {
-    return this.repo.findQuestion(question);
+  ask(question: string) {
+    return this._repo.findQuestion(question);
+  }
+
+
+  /**
+   * Adds a question using the **Item Document**
+   * syntax.
+   *
+   * @param itemDoc A string whose content is an Item Document.
+   */
+  addQuestion(itemDoc: string): RepErrorCode|Promise<null> {
+    const resp = this._repo.addItemDoc(itemDoc);
+    if (typeof resp == 'number') return resp;
+    return this._repo.save();
+  }
+
+
+  /**
+   * Edits a question using the **Item Document**
+   * syntax.
+   */
+  editQuestion(itemDoc: string) {
+    const resp = this._repo.editItem(itemDoc);
+    if (typeof resp == 'number') return resp;
+    return this._repo.save();
   }
 
 
   private async init(isReadyCallback: (err: Error|null) => void) {
     try {
-      this.fileOps.createFolder(this.dataFolder);
-      await this.fileOps.save(this.repoPath, repositoryScheme, [], true, false);
-      await this.fileOps.save(this.dictPath, dictSchema, [], true, false);
-      this.dict = new Dictionary(this.fileOps, this.dictPath);
-      this.repo = new Repository(this.fileOps, this.dict, this.repoPath);
+      this._fileOps.createFolder(this._dataFolder);
+      await this._fileOps.save(this._repoPath, repositoryScheme, [], true, false);
+      await this._fileOps.save(this._dictPath, dictSchema, [], true, false);
+      this._dict = new Dictionary(this._fileOps, this._dictPath);
+      this._repo = new Repository(this._fileOps, this._dict, this._repoPath);
       isReadyCallback(null);
     }
     catch(e) {

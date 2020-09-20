@@ -6,7 +6,7 @@ import { Type as AvroType } from 'avsc';
 import { dictSchema } from "../lib/database/dictionary";
 import { RepoItem, repositoryScheme } from "../lib/database/repository";
 import { promisify } from "util";
-import { testDir } from "../lib/variables/constants";
+import { mockDir } from "../lib/variables/constants";
 
 
 const fileOps = new FileOps();
@@ -20,14 +20,14 @@ const writeFileAsync = promisify(writeFile);
 t('File Operations', async t => {
 
   t.test('createFolder()', async t => {
-    let folderPath = `${testDir}/createFolder`;
+    let folderPath = `${mockDir}/createFolder`;
     fileOps.createFolder(folderPath);
     t.ok(existsSync(folderPath),
       'will create specified folder.'
     );
     del(folderPath);
 
-    folderPath = `${testDir}/folderPath2`;
+    folderPath = `${mockDir}/folderPath2`;
     fileOps.createFolder(folderPath);
     t.ok(fileOps.createFolder(folderPath),
       'returns if folder already exists.'
@@ -36,7 +36,7 @@ t('File Operations', async t => {
   });
 
   t.test('save(): Promise<null>', t => {
-    const path = `${testDir}/save`;
+    const path = `${mockDir}/save`;
     fileOps.createFolder(path);
     const validPath = `${path}/test1.test`;
     const validPath2 = `${path}/test2.gzip`;
@@ -85,7 +85,7 @@ t('File Operations', async t => {
   });
 
   t.test('readRepoStore()', async t => {
-    const path = `${testDir}/readRepoStore`;
+    const path = `${mockDir}/readRepoStore`;
     fileOps.createFolder(path);
     const goodPath = `${path}/repository.gzip`;
     const badPath = `${path}/badRepo.gzip`;
@@ -116,7 +116,7 @@ t('File Operations', async t => {
   });
 
   t.test('readDictStore()', async t => {
-    const path = `${testDir}/readDictStore`;
+    const path = `${mockDir}/readDictStore`;
     fileOps.createFolder(path);
     const goodPath = `${path}/dictionary.gzip`;
     const badPath = `${path}/badDictionary.gzip`;

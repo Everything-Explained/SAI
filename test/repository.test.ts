@@ -4,14 +4,14 @@ import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { Dictionary, dictSchema } from '../lib/database/dictionary';
 import { Repository, RepoItem, repositoryScheme, RepErrorCode, ItemDoc } from '../lib/database/repository';
-import { testDir } from '../lib/variables/constants';
+import { mockDir } from '../lib/variables/constants';
 
 
 
 
 const fileOps    = new FileOps();
-const folderPath = `${testDir}/repository`;
-const mocks      = `${testDir}/doctests`;
+const folderPath = `${mockDir}/repository`;
+const mocks      = `${mockDir}/doctests`;
 const dateNow    = Date.now();
 
 function createItem(ids: string[], answer: string) {

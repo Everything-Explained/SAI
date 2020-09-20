@@ -2,10 +2,10 @@ import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { Dictionary, dictSchema } from '../lib/database/dictionary';
 import del from 'del';
-import { testDir } from '../lib/variables/constants';
+import { mockDir } from '../lib/variables/constants';
 
 const fileOps = new FileOps();
-const folderPath = `${testDir}/dictionary`;
+const folderPath = `${mockDir}/dictionary`;
 fileOps.createFolder(folderPath);
 fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true)
 .then(() => {
