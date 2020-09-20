@@ -7,3 +7,6 @@ coverage
 notes/.obsidian/cache
 notes/.obsidian/workspace
 dist
+test.ts
+test.json
+SAI.mmap
