@@ -111,6 +111,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       const missingTitle    = readFileSync(`${mocks}/missingTitleTest.txt`  , 'utf-8');
       const missingAuthor   = readFileSync(`${mocks}/missingAuthTest.txt`   , 'utf-8');
       const missingLevel    = readFileSync(`${mocks}/missingLevelTest.txt`  , 'utf-8');
+      const negativeLevel   = readFileSync(`${mocks}/negativeLevelTest.txt` , 'utf-8');
       const missingA        = readFileSync(`${mocks}/missingAnsTest.txt`    , 'utf-8');
       const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`   , 'utf-8');
       const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`    , 'utf-8');
@@ -147,6 +148,9 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       );
       t.is(repo.toRepoItem(missingLevel), RepErrorCode.Level,
         'returns Error Code when missing level.'
+      );
+      t.is(repo.toRepoItem(negativeLevel), RepErrorCode.Level,
+        'returns Error Code with a negative level value.'
       );
       t.is(
         repo.toRepoItem(missingA), RepErrorCode.Answer,
