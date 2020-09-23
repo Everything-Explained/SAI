@@ -202,7 +202,8 @@ export class Repository {
     if (!title)             return RepErrorCode.Title;
     if (!author)            return RepErrorCode.Author;
     if (!answer)            return RepErrorCode.Answer;
-    if (level == undefined) return RepErrorCode.Level
+    if ( level == undefined
+      || level < 0)         return RepErrorCode.Level
     ;
     const ids = this.encodeQuestions(questions);
     if (!Array.isArray(ids)) return ids
