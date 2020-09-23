@@ -239,7 +239,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         'returns Error Code with invalid questions.'
       );
       t.is(
-        identicalVal, RepErrorCode.IQuestion,
+        identicalVal, RepErrorCode.DuplicateId,
         'returns Error Code with identical ids.'
       );
       repo.items = [];
@@ -257,7 +257,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.is(repo.encodeQuestions(invalidQs), RepErrorCode.Question,
         'returns Error Code with invalid questions.'
       );
-      t.is(repo.encodeQuestions(identicalQs), RepErrorCode.IQuestion,
+      t.is(repo.encodeQuestions(identicalQs), RepErrorCode.DuplicateId,
         'returns Error Code with semantically identical questions.'
       );
       t.is(ids.length, 3,

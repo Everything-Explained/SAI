@@ -62,8 +62,8 @@ export enum RepErrorCode {
   Answer,
   Author,
   Level,
-  IQuestion, // Identical Question
-  EditId,  //
+  DuplicateId, // Question created duplicate id
+  EditId,
 }
 
 
@@ -251,21 +251,21 @@ export class Repository {
 
 
   encodeQuestions(questions: string[]): RepErrorCode|string[]  {
-    const codes: string[] = [];
+    const ids: string[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const code = this._contemplate.encodeQuery(q.split(' '));
-      if (!code) return RepErrorCode.Question
+      const id = this._contemplate.encodeQuery(q.split(' '));
+      if (!id) return RepErrorCode.Question
       ;
-      const codeIndex = codes.indexOf(code);
+      const codeIndex = ids.indexOf(id);
       if (~codeIndex) {
         // Get original question index.
         // const qIndex = questions.length - 1 - hashIndex;
-        return RepErrorCode.IQuestion;
+        return RepErrorCode.DuplicateId;
       }
-      codes.push(code);
+      ids.push(id);
     }
-    return codes;
+    return ids;
   }
 
   // whiteSpaceStrat(doc: string) {
