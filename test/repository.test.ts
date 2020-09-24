@@ -125,7 +125,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         'returns Error Code when missing front-matter head.'
       );
       t.is(
-        repo.toRepoItem(isInvalid), RepErrorCode.Invalid,
+        repo.toRepoItem(isInvalid), RepErrorCode.HeadSyntax,
         'returns Error Code with invalid front-matter syntax.'
       );
       t.is(

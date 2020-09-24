@@ -54,16 +54,16 @@ export const repositoryScheme = AvroType.forSchema({
 
 
 export enum RepErrorCode {
-  Empty,
-  Invalid,
-  Head,
-  Title,
-  Question,
-  Answer,
-  Author,
-  Level,
-  DuplicateId, // Question created duplicate id
-  EditId,
+  Empty,       // ItemDoc is empty
+  Head,        // Missing or Invalid
+  HeadSyntax,  // Syntax error in front matter header
+  Title,       // Missing
+  Question,    // Missing or Invalid
+  Answer,      // Missing
+  Author,      // Missing
+  Level,       // Missing or < 0
+  DuplicateId, // Two or more questions have duplicate ID
+  EditId,      // Missing
 }
 
 
@@ -189,7 +189,7 @@ export class Repository {
     if (!frontMatter.test(doc)) return RepErrorCode.Head
     ;
     const itemDoc = this.getFrontMatter(doc);
-    if (!itemDoc) return RepErrorCode.Invalid
+    if (!itemDoc) return RepErrorCode.HeadSyntax
     ;
     const answer = itemDoc.body.trim();
     const { questions, title, tags, author, level, editId } = itemDoc.attributes;
