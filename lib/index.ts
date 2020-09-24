@@ -41,10 +41,12 @@ export class SAI {
    *
    * @param itemDoc A string whose content is an Item Document.
    */
-  addQuestion(itemDoc: string): RepErrorCode|Promise<null> {
-    const resp = this._repo.addItem(itemDoc);
-    if (typeof resp == 'number') return resp;
-    return this._repo.save();
+  async addQuestion(itemDoc: string, limitSave = true) {
+    const res = this._repo.addItem(itemDoc);
+    if (typeof res == 'number') return Promise.reject(res)
+    ;
+    await this._repo.save(limitSave);
+    return Promise.resolve(res);
   }
 
 
@@ -52,10 +54,12 @@ export class SAI {
    * Edits a question using the **Item Document**
    * syntax.
    */
-  editQuestion(itemDoc: string) {
-    const resp = this._repo.editItem(itemDoc);
-    if (typeof resp == 'number') return resp;
-    return this._repo.save();
+  async editQuestion(itemDoc: string, limitSave = true) {
+    const res = this._repo.editItem(itemDoc);
+    if (typeof res == 'number') return Promise.reject(res)
+    ;
+    await this._repo.save(limitSave);
+    return Promise.resolve(res);
   }
 
 

@@ -48,17 +48,20 @@ t('SAI Class', async t => {
         t.pass('executes isReady() callback after SAI{}.init()');
       });
 
+
       t.test('get dictionary()', async t => {
         t.ok(Array.isArray(sai.dictionary.words),
           'returns the active dictionary object.'
         );
       });
 
+
       t.test('get repository', async t => {
         t.ok(Array.isArray(sai.repository.items),
           'returns the active repository object.'
         );
       });
+
 
       t.test('init(): void', t => {
         t.plan(1);
@@ -68,6 +71,7 @@ t('SAI Class', async t => {
           else t.fail('did not bubble up error to callback');
         });
       });
+
 
       t.test('ask(): RepoItem|RepErrorCode|undefined', async t => {
         const invalidQuestion = sai.ask('tell me about something');
@@ -85,43 +89,65 @@ t('SAI Class', async t => {
         sai.repository.items = [];
       });
 
-      t.test('addQuestion(): RepErrorCode|Promise<null>', t => {
-        t.plan(3);
+
+      t.test('addQuestion(): Promise<RepoItem>', async t => {
         const addQuestion = readFileSync(`${mocks}/addQuestionTest.txt`, 'utf-8');
-        t.is(sai.addQuestion(''), RepErrorCode.Empty,
-          'returns Error Code with invalid document.'
+        sai.repository.path = `${mocks}/failpath/rep.said.gzip`;
+        await sai.addQuestion(addQuestion)
+          .catch((err: NodeJS.ErrnoException) => {
+            t.is(err.code, 'ENOENT',
+              'throws Error if save operation throws.'
+            );
+          })
+        ;
+        sai.repository.path = `${folderPath}/repository.said.gzip`;
+        await sai.addQuestion('')
+          .catch(errCode => {
+            t.is(errCode, RepErrorCode.Empty,
+              'returns Error Code with invalid document.'
+            );
+          })
+        ;
+        const res = await sai.addQuestion(addQuestion);
+        t.is(res.answer, 'hello penguins!!',
+          'returns a promised null on success.'
         );
-        (sai.addQuestion(addQuestion) as Promise<null>)
-          .then((val) => {
-            t.is(val, null,
-              'returns a promised null on success.'
-            );
-            const items = fileOps.readRepoStore(`${folderPath}/repository.said.gzip`);
-            t.is(items[0].answer, 'hello penguins!!',
-              'saves the question to the database.'
-            );
-          });
+        const items = fileOps.readRepoStore(sai.repository.path);
+        t.is(items[0].answer, 'hello penguins!!',
+          'saves the question to the database.'
+        );
       });
 
-      t.test('editQuestion(): Promise<null>', t => {
-        t.plan(3);
+
+      t.test('editQuestion(): Promise<RepoItem>', async t => {
         const editQuestion = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
-        t.is(sai.editQuestion(''), RepErrorCode.Empty,
-          'returns Error Code with invalid document.'
+        sai.repository.path = `${mocks}/failpath/rep.said.gzip`;
+        await sai.editQuestion(editQuestion)
+          .catch((err: NodeJS.ErrnoException) => {
+            t.is(err.code, 'ENOENT',
+              'throws Error if save operation throws.'
+            );
+          })
+        ;
+        sai.repository.path = `${folderPath}/repository.said.gzip`;
+        await sai.editQuestion('')
+          .catch((err: RepErrorCode) => {
+            t.is(err, RepErrorCode.Empty,
+              'returns an Error Code with an Invalid Document.'
+            );
+          })
+        ;
+        const res = await sai.editQuestion(editQuestion);
+        t.is(res.answer, 'hello lobsters!!',
+          'returns RepoItem on success.'
         );
-        (sai.editQuestion(editQuestion) as Promise<null>)
-          .then(val => {
-            t.is(val, null,
-              'returns a promised null on success.'
-            );
-            const items = fileOps.readRepoStore(`${folderPath}/repository.said.gzip`);
-            t.is(items[0].answer, 'hello lobsters!!',
-              'saves the question to the database.'
-            );
-          });
-      });
+        const items = fileOps.readRepoStore(sai.repository.path);
+        t.is(items[0].answer, 'hello lobsters!!',
+          'saves the edited question to the database.'
+        );
 
-      del(folderPath);
+        del(folderPath);
+      });
     })
   ;
 });
