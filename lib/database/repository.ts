@@ -148,8 +148,12 @@ export class Repository {
    * provided. _Make sure to include the_ `editId`
    * _field in the front matter._
    */
-  editItem(itemDoc: string) {
-    const item = this.toRepoItem(itemDoc);
+  editItem(itemDoc: string|RepoItem) {
+    const item =
+      typeof itemDoc == 'string'
+        ? this.toRepoItem(itemDoc)
+        : itemDoc
+    ;
     if (typeof item == 'number') return item;
     if (!item.editId) return RepErrorCode.EditId
     ;
@@ -177,7 +181,8 @@ export class Repository {
    */
   addItem(itemDoc: string): RepErrorCode|RepoItem {
     const item = this.toRepoItem(itemDoc);
-    if (typeof item == 'number') return item
+    if (typeof item == 'number') return item;
+    if (item.editId) return this.editItem(item)
     ;
     const dateNow = Date.now();
     item.dateCreated = dateNow;

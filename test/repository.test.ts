@@ -217,11 +217,13 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       repo.items = [];
     });
 
+
     t.test('addItemDoc(): RepErrorCode|RepoItem', async t => {
-      const errorDoc      = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
-      const passingDoc    = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
-      const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
-      const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`, 'utf-8');
+      const errorDoc      = readFileSync(`${mocks}/invalidCharTest.txt` , 'utf-8');
+      const passingDoc    = readFileSync(`${mocks}/passingDocTest.txt`  , 'utf-8');
+      const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`  , 'utf-8');
+      const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`    , 'utf-8');
+      const handToEdit    = readFileSync(`${mocks}/handToEditTest.txt`  , 'utf-8');
       dict.words          = [['large', 'big', 'enormous', 'giant']];
       const identicalVal  = repo.addItem(identicalQDoc) as RepErrorCode;
       t.is(
@@ -232,7 +234,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         'returns a RepoItem when reply doc added successfully.'
       );
       t.is(repo.items[0].ids.length, 4,
-        'adds a hash for every question in document.'
+        'adds an id for every question in document.'
       );
       t.is(
         repo.addItem(invalidQDoc), RepErrorCode.Question,
@@ -241,6 +243,11 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.is(
         identicalVal, RepErrorCode.DuplicateId,
         'returns Error Code with identical ids.'
+      );
+      repo.items = [editItem];
+      const editedItem = repo.addItem(handToEdit) as RepoItem;
+      t.ok(editedItem.dateCreated < editedItem.dateEdited,
+        'use editItem() if editId property is present.'
       );
       repo.items = [];
     });
