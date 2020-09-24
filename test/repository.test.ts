@@ -168,7 +168,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       );
     });
 
-    t.test('editItem(): RepErrorCode|boolean', async t => {
+    t.test('editItem(): RepErrorCode|RepoItem', async t => {
       repo.items = testData.slice();
       const createdDate = repo.items[0].dateCreated;
       const doc = readFileSync(`${mocks}/editItemTest.txt`, 'utf-8');
@@ -184,7 +184,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         && repo.getItem('Q3xsb3Zl') == undefined
       ;
       t.ok(isEdited,
-        'returns true when edited successfully.'
+        'returns the edited RepoItem when edited successfully.'
       );
       t.ok(isUpdated,
         'replaces old item with new edited item.'
@@ -204,8 +204,8 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.is(repo.editItem(invalidItem), RepErrorCode.Author,
         'returns an Error Code if the document is invalid.'
       );
-      t.is(repo.editItem(itemNoExist), false,
-        'returns false if the id is not found.'
+      t.is(repo.editItem(itemNoExist), RepErrorCode.BadEditId,
+        'returns an Error Code if the id is not found.'
       );
       repo.editItem(authorExists);
       t.is(repo.items[0].answer, 'I am a new message',
@@ -217,7 +217,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       repo.items = [];
     });
 
-    t.test('addItemDoc(): RepErrorCode|null', async t => {
+    t.test('addItemDoc(): RepErrorCode|RepoItem', async t => {
       const errorDoc      = readFileSync(`${mocks}/invalidCharTest.txt`, 'utf-8');
       const passingDoc    = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`, 'utf-8');
@@ -228,8 +228,8 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         typeof repo.addItem(errorDoc), 'number',
         'returns Error Code if parseReplyDoc() fails.'
       );
-      t.is(repo.addItem(passingDoc), null,
-        'returns null when reply doc added successfully.'
+      t.is((repo.addItem(passingDoc) as RepoItem).answer, 'A lovely bunch of cocoanuts',
+        'returns a RepoItem when reply doc added successfully.'
       );
       t.is(repo.items[0].ids.length, 4,
         'adds a hash for every question in document.'

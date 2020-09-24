@@ -64,6 +64,7 @@ export enum RepErrorCode {
   Level,       // Missing or < 0
   DuplicateId, // Two or more questions have duplicate ID
   EditId,      // Missing
+  BadEditId,   // Question to edit was not found
 }
 
 
@@ -85,6 +86,17 @@ export class Repository {
 
   get contemplate() {
     return this._contemplate;
+  }
+
+  /**
+   * Gets or sets repository path. Setting this value is **destructive**.
+   * *Do not set this value manually unless you know what you're doing.*
+   */
+  get path() {
+    return this._path;
+  }
+  set path(val: string) {
+    this._path = val;
   }
 
 
@@ -136,26 +148,26 @@ export class Repository {
    * provided. _Make sure to include the_ `editId`
    * _field in the front matter._
    */
-  editItem(itemDoc: string): RepErrorCode|boolean {
-    const doc = this.toRepoItem(itemDoc);
-    if (typeof doc == 'number') return doc;
-    if (!doc.editId) return RepErrorCode.EditId
+  editItem(itemDoc: string) {
+    const item = this.toRepoItem(itemDoc);
+    if (typeof item == 'number') return item;
+    if (!item.editId) return RepErrorCode.EditId
     ;
-    const itemIndex = this.indexOfItem(doc.editId);
-    if (!~itemIndex) return false
+    const itemIndex = this.indexOfItem(item.editId);
+    if (!~itemIndex) return RepErrorCode.BadEditId
     ;
     const authors   = this._items[itemIndex].authors;
-    const hasAuthor = authors.includes(doc.authors[0]);
-    doc.authors =
+    const hasAuthor = authors.includes(item.authors[0]);
+    item.authors =
       hasAuthor
         ? authors.slice()
-        : [...authors, doc.authors[0]]
+        : [...authors, item.authors[0]]
     ;
-    doc.dateCreated = this._items[itemIndex].dateCreated;
-    doc.dateEdited  = Date.now();
-    delete doc.editId
+    item.dateCreated = this._items[itemIndex].dateCreated;
+    item.dateEdited  = Date.now();
+    delete item.editId
     ;
-    return !!(this._items[itemIndex] = doc);
+    return (this._items[itemIndex] = item);
   }
 
 
@@ -163,7 +175,7 @@ export class Repository {
    * Adds an item based on the item document string
    * provided.
    */
-  addItem(itemDoc: string): RepErrorCode|null {
+  addItem(itemDoc: string): RepErrorCode|RepoItem {
     const item = this.toRepoItem(itemDoc);
     if (typeof item == 'number') return item
     ;
@@ -173,7 +185,7 @@ export class Repository {
     delete item.editId;
     this._items.push(item)
     ;
-    return null;
+    return item;
   }
 
 
@@ -229,8 +241,8 @@ export class Repository {
   }
 
 
-  save() {
-    return this._fileOps.save(this._path, repositoryScheme, this._items, true);
+  save(limit = true) {
+    return this._fileOps.save(this._path, repositoryScheme, this._items, limit);
   }
 
 
@@ -250,7 +262,7 @@ export class Repository {
   }
 
 
-  encodeQuestions(questions: string[]): RepErrorCode|string[]  {
+  encodeQuestions(questions: string[])  {
     const ids: string[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
