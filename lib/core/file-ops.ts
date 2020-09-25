@@ -18,9 +18,13 @@ export class FileOps {
 
 
   createFolder(path: string): boolean {
-    if (existsSync(path)) return true;
+    if (this.fileExists(path)) return true;
     mkdirSync(path);
     return true;
+  }
+
+  fileExists(path: string) {
+    return existsSync(path);
   }
 
 

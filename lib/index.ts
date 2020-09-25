@@ -66,14 +66,23 @@ export class SAI {
   private async init(isReadyCallback: (err: Error|null) => void) {
     try {
       this._fileOps.createFolder(this._dataFolder);
-      await this._fileOps.save(this._repoPath, repositoryScheme, [], true, false);
-      await this._fileOps.save(this._dictPath, dictSchema, [], true, false);
+      await this._createFiles();
       this._dict = new Dictionary(this._fileOps, this._dictPath);
       this._repo = new Repository(this._fileOps, this._dict, this._repoPath);
       isReadyCallback(null);
     }
     catch(e) {
       isReadyCallback(Error(e.message));
+    }
+  }
+
+
+  private async _createFiles() {
+    if (!this._fileOps.fileExists(this._repoPath)) {
+      await this._fileOps.save(this._repoPath, repositoryScheme, [], true, false);
+    }
+    if (!this._fileOps.fileExists(this._dictPath)) {
+      await this._fileOps.save(this._dictPath, dictSchema, [], true, false);
     }
   }
 }
