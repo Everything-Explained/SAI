@@ -30,7 +30,7 @@ export const contractionCorrections: [RegExp, string][] = [
   [/can't|cannot/g , 'can not'],
   [/n't/g          , ' not'],
   [/'ll/g          , ' will'],
-  [/'s/g           , ' is'],
+  [/it's/g         , 'it is'],
   [/'re/g          , ' are']
 ];
 
