@@ -60,6 +60,8 @@ export class Contemplator {
    * (ex: `can't => can not`)
    */
   filterContractions(tokens: string[]) {
+    // Assume first token is always a query word.
+    tokens[0] = tokens[0].replace(/'s/g, ' is');
     return contractionCorrections.reduce(
       (pv, cv) => (pv.replace(cv[0], cv[1])),
       tokens.join(' ')

@@ -35,6 +35,10 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
       t.isNot(contemplate.filterContractions(testTokens), testTokens,
         'returns a new array.'
       );
+      t.same(contemplate.filterContractions(['what\'s', 'good']),
+        ['what', 'is', 'good'],
+        'filters query-word is-contractions.'
+      );
     });
 
     t.test('stripUnknown(): string[]', async t => {
