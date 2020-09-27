@@ -2,7 +2,7 @@
 title: hand to edit
 questions:
 - what is chicken
-- where's the chicken
+- where is the chicken
 author: blahblah
 level: 0
 editId: Q3xjaGlja2Vu

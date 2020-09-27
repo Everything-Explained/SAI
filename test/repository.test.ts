@@ -183,7 +183,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
         && item.answer == 'hello chickens!'
         && repo.getItem('Q3xsb3Zl') == undefined
       ;
-      t.ok(isEdited,
+      t.ok(typeof isEdited != 'number',
         'returns the edited RepoItem when edited successfully.'
       );
       t.ok(isUpdated,
@@ -216,7 +216,6 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       );
       repo.items = [];
     });
-
 
     t.test('addItemDoc(): RepErrorCode|RepoItem', async t => {
       const errorDoc      = readFileSync(`${mocks}/invalidCharTest.txt` , 'utf-8');
