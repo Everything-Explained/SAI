@@ -102,6 +102,15 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       repo.items = [];
     });
 
+    t.test('questionsFromItem(): string[]', async t => {
+      repo.items = testData;
+      const questions = repo.questionsFromItem(testData[0]);
+      t.same(questions, ['what love', 'who god'],
+        'returns an Array of decoded questions from an item.'
+      );
+      repo.items = [];
+    });
+
     t.test('toRepoItem(): RepErrorCode|RepoItem', async t => {
       const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`         , 'utf-8');
       const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`      , 'utf-8');

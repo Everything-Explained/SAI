@@ -149,6 +149,12 @@ export class Repository {
   }
 
 
+  /** Returns an Array of questions decoded from item ids. */
+  questionsFromItem(item: RepoItem) {
+    return item.ids.map(id => this._contemplate.decode(id));
+  }
+
+
   /**
    * Edits an item based on the item document string
    * provided. _Make sure to include the_ `editId`
