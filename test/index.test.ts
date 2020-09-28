@@ -63,6 +63,20 @@ t('SAI Class', async t => {
       });
 
 
+      t.test('get questions', async t => {
+        const id = sai.repository.contemplate.encodeQuery('what is love'.split(' '));
+        const item = createItem([id!], 'blah');
+        sai.repository.items = [item];
+        const qs = sai.questions;
+        t.ok(Array.isArray(qs),
+          'returns an array.'
+        );
+        t.ok(Array.isArray(qs[0]),
+          'returns an array of arrays of questions.'
+        );
+      });
+
+
       t.test('init(): void', t => {
         t.plan(1);
         // A readonly folder must be created for this test

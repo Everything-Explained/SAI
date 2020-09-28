@@ -88,6 +88,12 @@ export class Repository {
     return this._contemplate;
   }
 
+  get questions() {
+    return this._items.map(item => {
+      return item.ids.map(id => this._contemplate.decode(id));
+    });
+  }
+
   /**
    * Gets or sets repository path. Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*

@@ -1,6 +1,6 @@
 import { FileOps } from './core/file-ops';
 import { Dictionary, dictSchema } from './database/dictionary';
-import { RepErrorCode, Repository, repositoryScheme } from './database/repository';
+import { Repository, repositoryScheme } from './database/repository';
 
 
 export class SAI {
@@ -18,6 +18,10 @@ export class SAI {
 
   get repository() {
     return this._repo;
+  }
+
+  get questions() {
+    return this._repo.questions;
   }
 
 
