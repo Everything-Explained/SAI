@@ -184,7 +184,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       t.ok(fm.test(doc),
         'returns a document with valid Front Matter.'
       );
-      t.ok(matter.attributes.questions.length,
+      t.same(matter.attributes.questions, ['what love', 'who god'],
         'returned document has valid questions.'
       );
       t.is(matter.attributes.author, 'blah',
