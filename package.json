@@ -1,12 +1,12 @@
 {
   "name": "@noumenae/sai",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "A Simple AI",
   "main": "./dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "tape ./test/*.js | tap-spec-emoji",
-    "stest": "tape ./test/index.test.js | tap-spec-emoji",
+    "stest": "tape ./test/repository.test.js | tap-spec-emoji",
     "covstest": "nyc --reporter=lcov tape ./test/repository.test.js | tap-spec-emoji",
     "cov": "nyc --reporter=lcov tape ./test/*.js | tap-spec-emoji"
   },
