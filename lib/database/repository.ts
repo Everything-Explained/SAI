@@ -252,6 +252,25 @@ export class Repository {
   }
 
 
+  toItemDoc(item: RepoItem) {
+    const questions =
+      item.ids.map(id => `- ${this.contemplate.decode(id)}`)
+    ;
+    const frontMatter =
+`---
+title: ${item.title}
+questions:
+${questions.join('\n')}
+author: ${item.authors[0]}
+level: ${item.level}
+editId: ${item.ids[0]}
+---
+${item.answer}`
+    ;
+    return frontMatter;
+  }
+
+
   getFrontMatter(doc: string): FrontMatterResult<ItemDoc>|undefined {
     try { return frontMatter<ItemDoc>(doc); }
     catch (err) { return undefined; }

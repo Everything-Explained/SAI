@@ -5,6 +5,7 @@ import { FileOps } from '../lib/core/file-ops';
 import { Dictionary, dictSchema } from '../lib/database/dictionary';
 import { Repository, RepoItem, repositoryScheme, RepErrorCode, ItemDoc } from '../lib/database/repository';
 import { mockDir } from '../lib/variables/constants';
+import fm from 'front-matter';
 
 
 
@@ -174,6 +175,32 @@ fileOps.save(`${folderPath}/replies.said.gzip`, repositoryScheme, testData, true
       );
       t.is(passingVal.editId, undefined,
         'editedBy should be undefined when unspecified.'
+      );
+    });
+
+    t.test('toItemDoc(): string', async t => {
+      const doc = repo.toItemDoc(testData[0]);
+      const matter = fm<ItemDoc>(doc);
+      t.ok(fm.test(doc),
+        'returns a document with valid Front Matter.'
+      );
+      t.ok(matter.attributes.questions.length,
+        'returned document has valid questions.'
+      );
+      t.is(matter.attributes.author, 'blah',
+        'returned document has valid author.'
+      );
+      t.is(matter.attributes.editId, 'Q3xsb3Zl',
+        'returned document has valid editId.'
+      );
+      t.is(matter.attributes.level, 0,
+        'returned document has valid level.'
+      );
+      t.is(matter.attributes.title, 'test',
+        'returned document has valid title.'
+      );
+      t.is(matter.body, 'hello world',
+        'returned document has valid answer.'
       );
     });
 
