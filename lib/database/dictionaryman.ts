@@ -11,7 +11,7 @@ export const dictSchema = AvroType.forSchema({
 
 
 
-export class Dictionary {
+export class DictionaryManager {
   private _words!     : string[][];    // set in init()
   private _wordsRef!  : string[];      // set in init()
 

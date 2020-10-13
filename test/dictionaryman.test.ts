@@ -1,6 +1,6 @@
 import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
-import { Dictionary, dictSchema } from '../lib/database/dictionary';
+import { DictionaryManager, dictSchema } from '../lib/database/dictionaryman';
 import del from 'del';
 import { mockDir } from '../lib/variables/constants';
 
@@ -9,10 +9,10 @@ const folderPath = `${mockDir}/dictionary`;
 fileOps.createFolder(folderPath);
 fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true)
 .then(() => {
-  const dict = new Dictionary(fileOps, `${folderPath}/dictionary.said.gzip`);
+  const dict = new DictionaryManager(fileOps, `${folderPath}/dictionary.said.gzip`);
   t('Dictionary{}', async t => {
     t.test('constructor()' , async t => {
-      t.throws(() => new Dictionary(fileOps, './invalid/path'),
+      t.throws(() => new DictionaryManager(fileOps, './invalid/path'),
         'throws error on invalid path.'
       );
     });
