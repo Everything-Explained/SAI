@@ -1,7 +1,7 @@
 import { Contemplator } from "../lib/core/contemplator";
 import t from 'tape';
 import { contextTokens, queryTokens } from "../lib/variables/constants";
-import { Dictionary, dictSchema } from "../lib/database/dictionary";
+import { DictionaryManager, dictSchema } from "../lib/database/dictionaryman";
 import { FileOps } from "../lib/core/file-ops";
 import del from "del";
 
@@ -10,7 +10,7 @@ const fileOps = new FileOps();
 fileOps.createFolder('./test/contemplator');
 fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
 .then((err) => {
-  const dict = new Dictionary(fileOps, './test/contemplator/dictionary.said.gzip');
+  const dict = new DictionaryManager(fileOps, './test/contemplator/dictionary.said.gzip');
   const contemplate = new Contemplator(dict);
   t('Contemplator{}', async t => {
     t.test('isQuery(): boolean', async t => {
@@ -115,7 +115,7 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
 
     t.test('toBase64(): string', async t => {
       const tokens = ['here', 'are', 'some', 'tokens'];
-      const code = contemplate.toBase64(tokens);
+      const code = contemplate.toBase64WithPipe(tokens);
       const str =
         Buffer
           .from(code, 'base64')

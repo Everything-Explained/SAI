@@ -2,7 +2,7 @@ import { SAI } from "../lib";
 import { existsSync, readFileSync } from 'fs';
 import del from 'del';
 import t from 'tape';
-import { RepErrorCode, RepoItem } from "../lib/database/repository";
+import { IqErrorCode, Inquiry } from "../lib/database/inquiryman";
 import { mockDir } from "../lib/variables/constants";
 import { FileOps } from "../lib/core/file-ops";
 
@@ -24,7 +24,7 @@ function createItem(ids: string[], answer: string) {
     dateEdited: dateNow,
     dateCreated: dateNow,
     editedBy: ''
-  } as RepoItem;
+  } as Inquiry;
 }
 
 t('SAI Class', async t => {
@@ -39,7 +39,7 @@ t('SAI Class', async t => {
         t.ok(existsSync(folderPath),
           'creates test folder'
         );
-        t.ok(existsSync(`${folderPath}/repository.said.gzip`),
+        t.ok(existsSync(`${folderPath}/inquiries.said.gzip`),
           'creates repository file.'
         );
         t.ok(existsSync(`${folderPath}/dictionary.said.gzip`),
@@ -57,16 +57,16 @@ t('SAI Class', async t => {
 
 
       t.test('get repository', async t => {
-        t.ok(Array.isArray(sai.repository.items),
+        t.ok(Array.isArray(sai.inquiryManager.inquiries),
           'returns the active repository object.'
         );
       });
 
 
       t.test('get questions', async t => {
-        const id = sai.repository.contemplate.encodeQuery('what is love'.split(' '));
+        const id = sai.inquiryManager.contemplate.encodeQuery('what is love'.split(' '));
         const item = createItem([id!], 'blah');
-        sai.repository.items = [item];
+        sai.inquiryManager.inquiries = [item];
         const qs = sai.questions;
         t.ok(Array.isArray(qs),
           'returns an array.'
@@ -89,44 +89,44 @@ t('SAI Class', async t => {
 
       t.test('ask(): RepoItem|RepErrorCode|undefined', async t => {
         const invalidQuestion = sai.ask('tell me about something');
-        sai.repository.items = [createItem(['Q3xnb29k'], 'blah blah')];
-        const goodQuestion = sai.ask('what is good') as RepoItem;
+        sai.inquiryManager.inquiries = [createItem(['Q3xnb29k'], 'blah blah')];
+        const goodQuestion = sai.ask('what is good') as Inquiry;
         t.is(goodQuestion.answer, 'blah blah',
           'returns RepoItem if question is found.'
         );
-        t.is(invalidQuestion, RepErrorCode.Question,
+        t.is(invalidQuestion, IqErrorCode.Question,
           'returns Error Code on invalid question.'
         );
         t.is(sai.ask('what is a test'), undefined,
           'returns undefined if question not found.'
         );
-        sai.repository.items = [];
+        sai.inquiryManager.inquiries = [];
       });
 
 
       t.test('addQuestion(): Promise<RepoItem>', async t => {
         const addQuestion = readFileSync(`${mocks}/addQuestionTest.txt`, 'utf-8');
-        sai.repository.path = `${mocks}/failpath/rep.said.gzip`;
-        await sai.addQuestion(addQuestion)
+        sai.inquiryManager.path = `${mocks}/failpath/rep.said.gzip`;
+        await sai.addInquiry(addQuestion)
           .catch((err: NodeJS.ErrnoException) => {
             t.is(err.code, 'ENOENT',
               'throws Error if save operation throws.'
             );
           })
         ;
-        sai.repository.path = `${folderPath}/repository.said.gzip`;
-        await sai.addQuestion('')
+        sai.inquiryManager.path = `${folderPath}/repository.said.gzip`;
+        await sai.addInquiry('')
           .catch(errCode => {
-            t.is(errCode, RepErrorCode.Empty,
+            t.is(errCode, IqErrorCode.Empty,
               'returns Error Code with invalid document.'
             );
           })
         ;
-        const res = await sai.addQuestion(addQuestion);
+        const res = await sai.addInquiry(addQuestion);
         t.is(res.answer, 'hello penguins!!',
           'returns a promised null on success.'
         );
-        const items = fileOps.readRepoStore(sai.repository.path);
+        const items = fileOps.readRepoStore(sai.inquiryManager.path);
         t.is(items[0].answer, 'hello penguins!!',
           'saves the question to the database.'
         );
@@ -135,27 +135,27 @@ t('SAI Class', async t => {
 
       t.test('editQuestion(): Promise<RepoItem>', async t => {
         const editQuestion = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
-        sai.repository.path = `${mocks}/failpath/rep.said.gzip`;
-        await sai.editQuestion(editQuestion)
+        sai.inquiryManager.path = `${mocks}/failpath/rep.said.gzip`;
+        await sai.editInquiry(editQuestion)
           .catch((err: NodeJS.ErrnoException) => {
             t.is(err.code, 'ENOENT',
               'throws Error if save operation throws.'
             );
           })
         ;
-        sai.repository.path = `${folderPath}/repository.said.gzip`;
-        await sai.editQuestion('')
-          .catch((err: RepErrorCode) => {
-            t.is(err, RepErrorCode.Empty,
+        sai.inquiryManager.path = `${folderPath}/repository.said.gzip`;
+        await sai.editInquiry('')
+          .catch((err: IqErrorCode) => {
+            t.is(err, IqErrorCode.Empty,
               'returns an Error Code with an Invalid Document.'
             );
           })
         ;
-        const res = await sai.editQuestion(editQuestion);
+        const res = await sai.editInquiry(editQuestion);
         t.is(res.answer, 'hello lobsters!!',
           'returns RepoItem on success.'
         );
-        const items = fileOps.readRepoStore(sai.repository.path);
+        const items = fileOps.readRepoStore(sai.inquiryManager.path);
         t.is(items[0].answer, 'hello lobsters!!',
           'saves the edited question to the database.'
         );

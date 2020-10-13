@@ -1,68 +1,68 @@
 import { FileOps } from './core/file-ops';
-import { Dictionary, dictSchema } from './database/dictionary';
-import { Repository, repositoryScheme } from './database/repository';
+import { DictionaryManager, dictSchema } from './database/dictionaryman';
+import { InquiryManager, inquiryScheme } from './database/inquiryman';
 
 
 export class SAI {
-  private _dataFolder : string;
-  private _repoPath   : string;
-  private _dictPath   : string;
-  private _dict!      : Dictionary; // set in init()
-  private _repo!      : Repository; // set in init()
-  private _fileOps    : FileOps;
+  private _dataFolder  : string;
+  private _inquiryPath : string;
+  private _dictPath    : string;
+  private _dictMan!    : DictionaryManager;     // set in init()
+  private _inquiryMan! : InquiryManager; // set in init()
+  private _fileOps     : FileOps;
 
 
   get dictionary() {
-    return this._dict;
+    return this._dictMan;
   }
 
-  get repository() {
-    return this._repo;
+  get inquiryManager() {
+    return this._inquiryMan;
   }
 
   get questions() {
-    return this._repo.questions;
+    return this._inquiryMan.questions;
   }
 
 
   constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
-    this._dataFolder = dataFolderPath;
-    this._repoPath   = `${dataFolderPath}/repository.said.gzip`;
-    this._dictPath   = `${dataFolderPath}/dictionary.said.gzip`;
-    this._fileOps    = new FileOps();
+    this._dataFolder  = dataFolderPath;
+    this._inquiryPath = `${dataFolderPath}/inquiries.said.gzip`;
+    this._dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
+    this._fileOps     = new FileOps();
     this.init(isReady);
   }
 
 
   ask(question: string) {
-    return this._repo.findQuestion(question);
+    return this._inquiryMan.getInquiryByQuestion(question);
   }
 
 
   /**
-   * Adds a question using the **Item Document**
+   * Adds a question using the **Inquiry Document**
    * syntax.
    *
-   * @param itemDoc A string whose content is an Item Document.
+   * @param inquiryDoc A string whose content is an Item Document.
    */
-  async addQuestion(itemDoc: string, limitSave = true) {
-    const res = this._repo.addItem(itemDoc);
+  async addInquiry(inquiryDoc: string, limitSave = true) {
+    const res = this._inquiryMan.addInquiry(inquiryDoc);
     if (typeof res == 'number') return Promise.reject(res)
     ;
-    await this._repo.save(limitSave);
+    await this._inquiryMan.save(limitSave);
     return Promise.resolve(res);
   }
 
 
   /**
-   * Edits a question using the **Item Document**
+   * Edits a question using the **Inquiry Document**
    * syntax.
    */
-  async editQuestion(itemDoc: string, limitSave = true) {
-    const res = this._repo.editItem(itemDoc);
+  async editInquiry(inquiryDoc: string, limitSave = true) {
+    const res = this._inquiryMan.editInquiry(inquiryDoc);
     if (typeof res == 'number') return Promise.reject(res)
     ;
-    await this._repo.save(limitSave);
+    await this._inquiryMan.save(limitSave);
     return Promise.resolve(res);
   }
 
@@ -71,8 +71,8 @@ export class SAI {
     try {
       this._fileOps.createFolder(this._dataFolder);
       await this._createFiles();
-      this._dict = new Dictionary(this._fileOps, this._dictPath);
-      this._repo = new Repository(this._fileOps, this._dict, this._repoPath);
+      this._dictMan = new DictionaryManager(this._fileOps, this._dictPath);
+      this._inquiryMan = new InquiryManager(this._fileOps, this._dictMan, this._inquiryPath);
       isReadyCallback(null);
     }
     catch(e) {
@@ -82,8 +82,8 @@ export class SAI {
 
 
   private async _createFiles() {
-    if (!this._fileOps.fileExists(this._repoPath)) {
-      await this._fileOps.save(this._repoPath, repositoryScheme, [], true, false);
+    if (!this._fileOps.fileExists(this._inquiryPath)) {
+      await this._fileOps.save(this._inquiryPath, inquiryScheme, [], true, false);
     }
     if (!this._fileOps.fileExists(this._dictPath)) {
       await this._fileOps.save(this._dictPath, dictSchema, [], true, false);

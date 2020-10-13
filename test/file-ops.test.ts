@@ -3,8 +3,8 @@ import del from 'del';
 import { existsSync, writeFile } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
-import { dictSchema } from "../lib/database/dictionary";
-import { RepoItem, repositoryScheme } from "../lib/database/repository";
+import { dictSchema } from "../lib/database/dictionaryman";
+import { Inquiry, inquiryScheme } from "../lib/database/inquiryman";
 import { promisify } from "util";
 import { mockDir } from "../lib/variables/constants";
 
@@ -89,7 +89,7 @@ t('File Operations', async t => {
     fileOps.createFolder(path);
     const goodPath = `${path}/repository.gzip`;
     const badPath = `${path}/badRepo.gzip`;
-    const data = [
+    const inquiries = [
       {
         title: 'blah',
         answer: 'world',
@@ -101,8 +101,8 @@ t('File Operations', async t => {
         dateEdited: 4321,
         editedBy: '',
       }
-    ] as RepoItem[];
-    await fileOps.save(goodPath, repositoryScheme, data, true, false);
+    ] as Inquiry[];
+    await fileOps.save(goodPath, inquiryScheme, inquiries, true, false);
     await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
     const repo = fileOps.readRepoStore(goodPath);
     t.equal(repo[0].answer, 'world',

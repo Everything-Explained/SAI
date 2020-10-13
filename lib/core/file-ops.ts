@@ -2,8 +2,8 @@ import { existsSync, mkdirSync, readFileSync, writeFile } from "fs";
 import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
-import { dictSchema } from "../database/dictionary";
-import { RepoItem, repositoryScheme } from "../database/repository";
+import { dictSchema } from "../database/dictionaryman";
+import { Inquiry, inquiryScheme } from "../database/inquiryman";
 
 
 const gzipAsync = promisify(gzip);
@@ -35,10 +35,10 @@ export class FileOps {
   }
 
 
-  readRepoStore(filePath: string): RepoItem[] {
+  readRepoStore(filePath: string): Inquiry[] {
     const zippedItems = readFileSync(filePath);
     const unzippedItems = gunzipSync(zippedItems);
-    return repositoryScheme.fromBuffer(unzippedItems);
+    return inquiryScheme.fromBuffer(unzippedItems);
   }
 
 

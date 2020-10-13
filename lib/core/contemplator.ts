@@ -1,4 +1,4 @@
-import { Dictionary } from "../database/dictionary";
+import { DictionaryManager } from "../database/dictionaryman";
 import {
   contextTokens,
   contractionCorrections,
@@ -19,10 +19,10 @@ export class Contemplator {
     this.setContextCode,
     this.setDictCode(this.dict),
     this.stripOptional,
-    this.toBase64
+    this.toBase64WithPipe
   ]
 
-  constructor(private dict: Dictionary) {}
+  constructor(private dict: DictionaryManager) {}
 
 
   /**
@@ -119,29 +119,29 @@ export class Contemplator {
    * Uses the `dict` to replace any found tokens
    * with a unique code.
    */
-  setDictCode(dict: Dictionary) {
+  setDictCode(dict: DictionaryManager) {
     return (tokens: string[]) => {
       return tokens.map(token => dict.encodeWord(token));
     };
   }
 
   /**
-   * Combines a token Array with a `|` char and encodes
+   * Combines a token Array with a pipe: "|" and encodes
    * the resulting string in **base64**.
    */
-  toBase64(tokens: string[]) {
+  toBase64WithPipe(tokens: string[]) {
     return Buffer.from(tokens.join('|')).toString('base64');
   }
 
 
   /**
-   * Decodes the result of an encoded query, back to
-   * a relative string-form of the query.
+   * Decodes an inquiry id, back to a relative form of the
+   * original question the id represents.
    */
-  decode(code: string) {
+  decode(id: string) {
     const tokens =
       Buffer
-        .from(code, 'base64')
+        .from(id, 'base64')
         .toString('utf-8')
         .split('|')
     ;
