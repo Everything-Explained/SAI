@@ -7,6 +7,9 @@ import { dictSchema } from "../lib/database/dictionaryman";
 import { Inquiry, inquiryScheme } from "../lib/database/inquiryman";
 import { promisify } from "util";
 import { mockDir } from "../lib/variables/constants";
+import smap from 'source-map-support';
+
+smap.install();
 
 
 const fileOps = new FileOps();

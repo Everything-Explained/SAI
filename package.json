@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.158",
     "@types/node": "^14.0.27",
+    "@types/source-map-support": "^0.5.3",
     "@types/tape": "^4.13.0",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
@@ -29,6 +30,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "nyc": "^15.1.0",
+    "source-map-support": "^0.5.19",
     "tap-diff": "^0.1.1",
     "tap-dot": "^2.0.0",
     "tap-spec-emoji": "^6.1.2",

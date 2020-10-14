@@ -6,7 +6,9 @@ import { DictionaryManager, dictSchema } from '../lib/database/dictionaryman';
 import { InquiryManager, Inquiry, inquiryScheme, InqErrorCode, InquiryDocObj } from '../lib/database/inquiryman';
 import { mockDir } from '../lib/variables/constants';
 import fm from 'front-matter';
+import smap from 'source-map-support';
 
+smap.install();
 
 
 

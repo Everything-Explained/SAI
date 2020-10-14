@@ -1,7 +1,9 @@
 import { contextTokens, optionalTokens, queryTokens } from "../lib/variables/constants";
 import { intersection as _intersection } from 'lodash/fp';
 import t from 'tape';
+import smap from 'source-map-support';
 
+smap.install();
 
 
 

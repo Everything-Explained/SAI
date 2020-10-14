@@ -4,6 +4,9 @@ import { contextTokens, queryTokens } from "../lib/variables/constants";
 import { DictionaryManager, dictSchema } from "../lib/database/dictionaryman";
 import { FileOps } from "../lib/core/file-ops";
 import del from "del";
+import smap from 'source-map-support';
+
+smap.install();
 
 
 const fileOps = new FileOps();
