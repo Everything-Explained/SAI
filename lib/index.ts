@@ -12,7 +12,7 @@ export class SAI {
   private _fileOps     : FileOps;
 
 
-  get dictionary() {
+  get dictionaryManager() {
     return this._dictMan;
   }
 

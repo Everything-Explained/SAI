@@ -13,7 +13,7 @@ const fileOps = new FileOps();
 const dateNow = Date.now();
 
 
-function createItem(ids: string[], answer: string) {
+function createInquiry(ids: string[], answer: string) {
   return {
     title: 'test',
     ids,
@@ -31,53 +31,41 @@ t('SAI Class', async t => {
   const folderPath = './test/test';
   const sai = new SAI(folderPath,
     (err) => {
-      t.test('constructor()', async t => {
-        t.equal(err, null,
-          'returns no errors on proper instantiation'
-        );
+      t.test('constructor() returns no errors on proper instantiation.', async t => {
+        t.equal(err, null);
         if (err) console.log(err);
-        t.ok(existsSync(folderPath),
-          'creates test folder'
-        );
-        t.ok(existsSync(`${folderPath}/inquiries.said.gzip`),
-          'creates repository file.'
-        );
-        t.ok(existsSync(`${folderPath}/dictionary.said.gzip`),
-          'creates a dictionary file.'
-        );
-        t.pass('executes isReady() callback after SAI{}.init()');
       });
 
-
-      t.test('get dictionary()', async t => {
-        t.ok(Array.isArray(sai.dictionary.words),
-          'returns the active dictionary object.'
-        );
+      t.test('constructor() executes isReady() callback after instantiation.', async t => {
+        // We're already executing all tests within the isReady callback.
+        t.pass('passes');
       });
 
+      t.test('constructor() creates specified folder.', async t => (
+        t.ok(existsSync(folderPath))
+      ));
 
-      t.test('get repository', async t => {
-        t.ok(Array.isArray(sai.inquiryManager.inquiries),
-          'returns the active repository object.'
-        );
+      t.test('constructor() creates default storage files.', async t => {
+        t.ok(existsSync(`${folderPath}/inquiries.said.gzip`));
+        t.ok(existsSync(`${folderPath}/dictionary.said.gzip`));
       });
 
-
-      t.test('get questions', async t => {
-        const id = sai.inquiryManager.contemplate.encodeQuery('what is love'.split(' '));
-        const item = createItem([id!], 'blah');
-        sai.inquiryManager.inquiries = [item];
-        const qs = sai.questions;
-        t.ok(Array.isArray(qs),
-          'returns an array.'
-        );
-        t.ok(Array.isArray(qs[0]),
-          'returns an array of arrays of questions.'
-        );
+      t.test('get dictionaryManager(): returns dictionary manager object', async t => {
+        t.ok(Array.isArray(sai.dictionaryManager.words));
       });
 
+      t.test('get inquiryManager(): returns inquiry manager object.', async t => {
+        t.ok(Array.isArray(sai.inquiryManager.inquiries));
+      });
 
-      t.test('init(): void', t => {
+      t.test('get questions(): returns an array of arrays of questions.', async t => {
+        const inquiryDoc = readFileSync(`${mocks}/addQuestionTest.txt`);
+        sai.addInquiry(inquiryDoc.toString('utf-8'), false);
+        t.same(sai.questions[0], ['where penguin', 'how big penguin']);
+        sai.inquiryManager.inquiries = [];
+      });
+
+      t.test('init() throws an error when it fails to create files.', t => {
         t.plan(1);
         // A readonly folder must be created for this test
         new SAI('./test/readonly', err => {
@@ -86,81 +74,95 @@ t('SAI Class', async t => {
         });
       });
 
-
-      t.test('ask(): RepoItem|RepErrorCode|undefined', async t => {
-        const invalidQuestion = sai.ask('tell me about something');
-        sai.inquiryManager.inquiries = [createItem(['Q3xnb29k'], 'blah blah')];
+      t.test('ask() returns an Inquiry if question is found.', async t => {
+        sai.inquiryManager.inquiries = [createInquiry(['Q3xnb29k'], 'blah blah')];
         const goodQuestion = sai.ask('what is good') as Inquiry;
-        t.is(goodQuestion.answer, 'blah blah',
-          'returns RepoItem if question is found.'
-        );
-        t.is(invalidQuestion, IqErrorCode.Question,
-          'returns Error Code on invalid question.'
-        );
-        t.is(sai.ask('what is a test'), undefined,
-          'returns undefined if question not found.'
-        );
+        t.is(goodQuestion.answer, 'blah blah');
         sai.inquiryManager.inquiries = [];
       });
 
+      t.test('ask() returns an Error Code on invalid question.', async t => {
+        const invalidQuestion = sai.ask('tell me about something');
+        t.is(invalidQuestion, InqErrorCode.Question);
+      });
 
-      t.test('addQuestion(): Promise<RepoItem>', async t => {
-        const addQuestion = readFileSync(`${mocks}/addQuestionTest.txt`, 'utf-8');
-        sai.inquiryManager.path = `${mocks}/failpath/rep.said.gzip`;
-        await sai.addInquiry(addQuestion)
+      t.test('ask() returns undefined if question not found.', async t => {
+        sai.inquiryManager.inquiries = [createInquiry(['Q3xnb29k'], 'blah blah')];
+        t.is(sai.ask('what is a test'), undefined);
+        sai.inquiryManager.inquiries = [];
+      });
+
+      t.test('addInquiry() throws an Error if save operation throws.', async t => {
+        const inquiryDoc = readFileSync(`${mocks}/addQuestionTest.txt`, 'utf-8');
+        sai.inquiryManager.path = `${folderPath}/failpath/inq.said.gzip`;
+        await sai.addInquiry(inquiryDoc)
           .catch((err: NodeJS.ErrnoException) => {
-            t.is(err.code, 'ENOENT',
-              'throws Error if save operation throws.'
-            );
+            t.is(err.code, 'ENOENT');
           })
         ;
-        sai.inquiryManager.path = `${folderPath}/repository.said.gzip`;
+        sai.inquiryManager.path = `${folderPath}/inq.said.gzip`;
+      });
+
+      t.test('addInquiry() returns a promised Error Code on empty inquiryDoc.', async t => {
         await sai.addInquiry('')
-          .catch(errCode => {
-            t.is(errCode, IqErrorCode.Empty,
-              'returns Error Code with invalid document.'
-            );
-          })
-        ;
-        const res = await sai.addInquiry(addQuestion);
-        t.is(res.answer, 'hello penguins!!',
-          'returns a promised null on success.'
-        );
-        const items = fileOps.readRepoStore(sai.inquiryManager.path);
-        t.is(items[0].answer, 'hello penguins!!',
-          'saves the question to the database.'
-        );
+        .catch((errCode: InqErrorCode) => {
+          t.is(errCode, InqErrorCode.Empty,
+            'returns Error Code with invalid document.'
+          );
+        });
+      });
+
+      t.test('addInquiry() returns the added Inquiry as a promise.', async t => {
+        const inquiryDoc = readFileSync(`${mocks}/addQuestionTest.txt`, 'utf-8');
+        const res = await sai.addInquiry(inquiryDoc);
+        t.is(res.answer, 'hello penguins!!');
+      });
+
+      t.test('addInquiry() saves the inquiryDoc to the database.', async t => {
+        const items = fileOps.readInquiryStore(sai.inquiryManager.path);
+        t.is(items[0].answer, 'hello penguins!!');
       });
 
 
-      t.test('editQuestion(): Promise<RepoItem>', async t => {
-        const editQuestion = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
-        sai.inquiryManager.path = `${mocks}/failpath/rep.said.gzip`;
-        await sai.editInquiry(editQuestion)
+      t.test('editInquiry() throws an Error if save operation throws.', async t => {
+        const inquiryDoc = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
+        sai.inquiryManager.path = `${folderPath}/failpath/inq.said.gzip`;
+        await sai.editInquiry(inquiryDoc)
           .catch((err: NodeJS.ErrnoException) => {
-            t.is(err.code, 'ENOENT',
-              'throws Error if save operation throws.'
-            );
-          })
-        ;
-        sai.inquiryManager.path = `${folderPath}/repository.said.gzip`;
-        await sai.editInquiry('')
-          .catch((err: IqErrorCode) => {
-            t.is(err, IqErrorCode.Empty,
-              'returns an Error Code with an Invalid Document.'
-            );
-          })
-        ;
-        const res = await sai.editInquiry(editQuestion);
-        t.is(res.answer, 'hello lobsters!!',
-          'returns RepoItem on success.'
-        );
-        const items = fileOps.readRepoStore(sai.inquiryManager.path);
-        t.is(items[0].answer, 'hello lobsters!!',
-          'saves the edited question to the database.'
-        );
+            t.is(err.code, 'ENOENT');
+          });
+        sai.inquiryManager.path = `${folderPath}/inq.said.gzip`;
+      });
 
-        del(folderPath);
+      t.test('editInquiry() returns an Error Code with an Invalid Document.', async t => {
+        await sai.editInquiry('')
+          .catch((err: InqErrorCode) => {
+            t.is(err, InqErrorCode.Empty);
+          });
+      });
+
+      t.test('editInquiry() returns a promised Inquiry on success.', async t => {
+        const inquiryDoc = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
+        const res = await sai.editInquiry(inquiryDoc);
+        t.is(res.answer, 'hello lobsters!!');
+        sai.inquiryManager.inquiries = [];
+      });
+
+      t.test('editInquiry() saves an edited Inquiry into the database.', async t => {
+        const inquiryDocToAdd = readFileSync(`${mocks}/addQuestionTest.txt`).toString('utf-8');
+        await sai.addInquiry(inquiryDocToAdd);
+        t.is(sai.inquiryManager.inquiries[0].answer, 'hello penguins!!');
+        const inquiryDocToEdit = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
+        try {
+          await sai.editInquiry(inquiryDocToEdit);
+          const inquiries = fileOps.readInquiryStore(sai.inquiryManager.path);
+          t.is(inquiries[0].answer, 'hello lobsters!!');
+          del(folderPath);
+        }
+        catch (err) {
+          t.fail(`failed to edit inquiry: ${err}`);
+          del(folderPath);
+        }
       });
     })
   ;
