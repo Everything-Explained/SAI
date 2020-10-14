@@ -35,10 +35,10 @@ export class FileOps {
   }
 
 
-  readRepoStore(filePath: string): Inquiry[] {
-    const zippedItems = readFileSync(filePath);
-    const unzippedItems = gunzipSync(zippedItems);
-    return inquiryScheme.fromBuffer(unzippedItems);
+  readInquiryStore(filePath: string): Inquiry[] {
+    const zippedInquiries = readFileSync(filePath);
+    const unzippedInquiries = gunzipSync(zippedInquiries);
+    return inquiryScheme.fromBuffer(unzippedInquiries);
   }
 
 

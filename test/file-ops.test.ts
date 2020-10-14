@@ -84,12 +84,12 @@ t('File Operations', async t => {
     ;
   });
 
-  t.test('readRepoStore()', async t => {
-    const path = `${mockDir}/readRepoStore`;
+  t.test('readInquiryStore()', async t => {
+    const path = `${mockDir}/readInquiryStore`;
     fileOps.createFolder(path);
-    const goodPath = `${path}/repository.gzip`;
-    const badPath = `${path}/badRepo.gzip`;
-    const inquiries = [
+    const goodPath = `${path}/inquiries.gzip`;
+    const badPath = `${path}/badInquiries.gzip`;
+    const inquiriesTestData = [
       {
         title: 'blah',
         answer: 'world',
@@ -102,13 +102,13 @@ t('File Operations', async t => {
         editedBy: '',
       }
     ] as Inquiry[];
-    await fileOps.save(goodPath, inquiryScheme, inquiries, true, false);
+    await fileOps.save(goodPath, inquiryScheme, inquiriesTestData, true, false);
     await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
-    const repo = fileOps.readRepoStore(goodPath);
-    t.equal(repo[0].answer, 'world',
-      'reads the repository buffer into a JSON object'
+    const inquiries = fileOps.readInquiryStore(goodPath);
+    t.equal(inquiries[0].answer, 'world',
+      'reads the Inquiry buffer into a JSON object'
     );
-    t.throws(() => fileOps.readRepoStore(badPath),
+    t.throws(() => fileOps.readInquiryStore(badPath),
       /(truncated buffer)|(incorrect header)/g,
       'throws an error if data fails schema conversion.'
     );

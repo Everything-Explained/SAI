@@ -2,11 +2,13 @@ import { SAI } from "../lib";
 import { existsSync, readFileSync } from 'fs';
 import del from 'del';
 import t from 'tape';
-import { IqErrorCode, Inquiry } from "../lib/database/inquiryman";
+import { InqErrorCode, Inquiry } from "../lib/database/inquiryman";
 import { mockDir } from "../lib/variables/constants";
 import { FileOps } from "../lib/core/file-ops";
+import smap from 'source-map-support';
 
 
+smap.install(); // typescript file stack tracing
 
 const mocks = `${mockDir}/sai`;
 const fileOps = new FileOps();
@@ -119,8 +121,8 @@ t('SAI Class', async t => {
       });
 
       t.test('addInquiry() saves the inquiryDoc to the database.', async t => {
-        const items = fileOps.readInquiryStore(sai.inquiryManager.path);
-        t.is(items[0].answer, 'hello penguins!!');
+        const inquiries = fileOps.readInquiryStore(sai.inquiryManager.path);
+        t.is(inquiries[0].answer, 'hello penguins!!');
       });
 
 

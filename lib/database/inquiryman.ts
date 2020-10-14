@@ -53,8 +53,8 @@ export const inquiryScheme = AvroType.forSchema({
 });
 
 
-export enum IqErrorCode {
-  Empty,       // ItemDoc is empty
+export enum InqErrorCode {
+  Empty,       // InquiryDoc is empty
   Head,        // Missing or Invalid
   HeadSyntax,  // Syntax error in front matter header
   Title,       // Missing
@@ -64,7 +64,7 @@ export enum IqErrorCode {
   Level,       // Missing or < 0
   DuplicateId, // Two or more questions have duplicate ID
   EditId,      // Missing
-  BadEditId,   // Question to edit was not found
+  BadEditId,   // Inquiry to edit was not found
 }
 
 
@@ -74,7 +74,7 @@ export class InquiryManager {
   private _contemplate: Contemplator;
 
   /**
-   * Gets or sets repository items. Setting this value is **destructive**.
+   * Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*
    */
   get inquiries() {
@@ -89,13 +89,13 @@ export class InquiryManager {
   }
 
   get questions() {
-    return this._inquiries.map(item => {
-      return item.ids.map(id => this._contemplate.decode(id));
+    return this._inquiries.map(inquiry => {
+      return inquiry.ids.map(id => this._contemplate.decode(id));
     });
   }
 
   /**
-   * Gets or sets repository path. Setting this value is **destructive**.
+   * Gets or sets inquiry file path. Setting this value is **destructive**.
    * *Do not set this value manually unless you know what you're doing.*
    */
   get path() {
@@ -111,9 +111,9 @@ export class InquiryManager {
               private _path: string)
   {
     if (!existsSync(_path))
-      throw Error(`Path to repository: "${_path}" does NOT exist.`)
+      throw Error(`Path to inquiries: "${_path}" does NOT exist.`)
     ;
-    this._inquiries   = _fileOps.readRepoStore(_path);
+    this._inquiries   = _fileOps.readInquiryStore(_path);
     this._contemplate = new Contemplator(_dict);
     this.inquiries;
   }
@@ -128,7 +128,7 @@ export class InquiryManager {
   getInquiryByQuestion(question: string) {
     const qTokens = question.split(' ');
     if (!this._contemplate.isQuery(qTokens))
-      return IqErrorCode.Question
+      return InqErrorCode.Question
     ;
     const id = this._contemplate.encodeQuery(qTokens, false)!;
     return this.getInquiryById(id);
@@ -151,22 +151,22 @@ export class InquiryManager {
 
 
   /**
-   * Edits an item based on the item document string
+   * Edits an Inquiry based on the inquiry document string
    * provided. _Make sure to include the_ `editId`
    * _field in the front matter._
    */
   editInquiry(inquiryDoc: string|Inquiry) {
     const newInquiry =
       typeof inquiryDoc == 'string'
-        ? this.toInquiryItem(inquiryDoc)
+        ? this.toInquiry(inquiryDoc)
         : inquiryDoc
     ;
     if (typeof newInquiry == 'number') return newInquiry;
-    if (!newInquiry.editId) return IqErrorCode.EditId
+    if (!newInquiry.editId) return InqErrorCode.EditId
     ;
     const oldInquiryIndex = this.indexOfInquiry(newInquiry.editId);
     const oldInquiry      = this._inquiries[oldInquiryIndex];
-    if (!oldInquiry) return IqErrorCode.BadEditId
+    if (!oldInquiry) return InqErrorCode.BadEditId
     ;
     const oldAuthors = oldInquiry.authors;
     const newAuthor  = newInquiry.authors[0];
@@ -184,8 +184,8 @@ export class InquiryManager {
   }
 
 
-  addInquiry(inquiryDoc: string): IqErrorCode|Inquiry {
-    const inquiry = this.toInquiryItem(inquiryDoc);
+  addInquiry(inquiryDoc: string): InqErrorCode|Inquiry {
+    const inquiry = this.toInquiry(inquiryDoc);
     if (typeof inquiry == 'number') return inquiry;
     if (inquiry.editId) return this.editInquiry(inquiry)
     ;
@@ -198,29 +198,29 @@ export class InquiryManager {
   }
 
 
-  toInquiryItem(inquiryDoc: string): IqErrorCode | Inquiry {
+  toInquiry(inquiryDoc: string): InqErrorCode | Inquiry {
     const doc          = inquiryDoc.trim();
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
     ;
-    if (!doc)                   return IqErrorCode.Empty;
-    if (!frontMatter.test(doc)) return IqErrorCode.Head
+    if (!doc)                   return InqErrorCode.Empty;
+    if (!frontMatter.test(doc)) return InqErrorCode.Head
     ;
-    const itemDoc = this.getFrontMatter(doc);
-    if (!itemDoc) return IqErrorCode.HeadSyntax
+    const docFrontMatter = this.getFrontMatter(doc);
+    if (!docFrontMatter) return InqErrorCode.HeadSyntax
     ;
-    const answer = itemDoc.body.trim();
-    const { questions, title, tags, author, level, editId } = itemDoc.attributes;
+    const answer = docFrontMatter.body.trim();
+    const { questions, title, tags, author, level, editId } = docFrontMatter.attributes;
     const hasValidQs = (
       !!questions
       && Array.isArray(questions)
       && !questions.find(v => v.match(matchInvalid))
     );
-    if (!hasValidQs)        return IqErrorCode.Question;
-    if (!title)             return IqErrorCode.Title;
-    if (!author)            return IqErrorCode.Author;
-    if (!answer)            return IqErrorCode.Answer;
+    if (!hasValidQs)        return InqErrorCode.Question;
+    if (!title)             return InqErrorCode.Title;
+    if (!author)            return InqErrorCode.Author;
+    if (!answer)            return InqErrorCode.Answer;
     if ( level == undefined
-      || level < 0)         return IqErrorCode.Level
+      || level < 0)         return InqErrorCode.Level
     ;
     const ids = this.encodeQuestions(questions);
     if (!Array.isArray(ids)) return ids
@@ -240,20 +240,20 @@ export class InquiryManager {
   }
 
 
-  toInquiryDoc(item: Inquiry) {
+  toInquiryDoc(inquiry: Inquiry) {
     const questions =
-      item.ids.map(id => `- ${this.contemplate.decode(id)}`)
+      inquiry.ids.map(id => `- ${this.contemplate.decode(id)}`)
     ;
     const frontMatter =
 `---
-title: ${item.title}
+title: ${inquiry.title}
 questions:
 ${questions.join('\n')}
-author: ${item.authors[0]}
-level: ${item.level}
-editId: ${item.ids[0]}
+author: ${inquiry.authors[0]}
+level: ${inquiry.level}
+editId: ${inquiry.ids[0]}
 ---
-${item.answer}`
+${inquiry.answer}`
     ;
     return frontMatter;
   }
@@ -278,8 +278,8 @@ ${item.answer}`
     const inquiries = this.inquiries.slice();
     while (inquiries.length) {
       const id = inquiries[0].ids.splice(0, 1)[0];
-      const failedItem = inquiries.find(v => v.ids.includes(id));
-      if (failedItem) return failedItem;
+      const failedInquiry = inquiries.find(v => v.ids.includes(id));
+      if (failedInquiry) return failedInquiry;
       if (!inquiries[0].ids.length) inquiries.splice(0, 1);
     }
     return null;
@@ -291,13 +291,13 @@ ${item.answer}`
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
       const id = this._contemplate.encodeQuery(q.split(' '));
-      if (!id) return IqErrorCode.Question
+      if (!id) return InqErrorCode.Question
       ;
       const idIndex = ids.indexOf(id);
       if (~idIndex) {
         // Get original question index.
         // const qIndex = questions.length - 1 - hashIndex;
-        return IqErrorCode.DuplicateId;
+        return InqErrorCode.DuplicateId;
       }
       ids.push(id);
     }

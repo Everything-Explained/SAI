@@ -1,9 +1,9 @@
 import del from 'del';
 import { readFileSync } from 'fs';
-import t from 'tape';
+import tape from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { DictionaryManager, dictSchema } from '../lib/database/dictionaryman';
-import { InquiryManager, Inquiry, inquiryScheme, IqErrorCode, InquiryDocObj } from '../lib/database/inquiryman';
+import { InquiryManager, Inquiry, inquiryScheme, InqErrorCode, InquiryDocObj } from '../lib/database/inquiryman';
 import { mockDir } from '../lib/variables/constants';
 import fm from 'front-matter';
 
@@ -11,11 +11,11 @@ import fm from 'front-matter';
 
 
 const fileOps    = new FileOps();
-const folderPath = `${mockDir}/repository`;
+const folderPath = `${mockDir}/inquiries`;
 const mocks      = `${mockDir}/doctests`;
 const dateNow    = Date.now();
 
-function createItem(ids: string[], answer: string) {
+function createInquiry(ids: string[], answer: string) {
   return {
     title: 'test',
     ids,
@@ -30,13 +30,13 @@ function createItem(ids: string[], answer: string) {
 }
 
 
-const editItem = createItem(
+const editInquiry = createInquiry(
   ['Q3xjaGlja2Vu', 'RXxjaGlja2Vu'], // what is chicken; where's the chicken
   'hello chickens!'
 );
 
 const testData = [
-  createItem(
+  createInquiry(
     ['Q3xsb3Zl', 'R3xnb2Q='], // what is love; who is god
     'hello world'
   )
@@ -53,66 +53,68 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
     throw err; // We want to kill testing
   }
   const dict = new DictionaryManager(fileOps, `${folderPath}/dictionary.said.gzip`);
-  t('Repository{}', async t => {
-    let repo: InquiryManager;
+  tape('Inquiry{}', async t => {
+    let inquiryMan: InquiryManager;
     t.test('contructor()', async t => {
       t.doesNotThrow(
-        () => repo = new InquiryManager(fileOps, dict, `${folderPath}/replies.said.gzip`),
+        () => inquiryMan = new InquiryManager(fileOps, dict, `${folderPath}/replies.said.gzip`),
         'finds existing replies path.'
       );
       t.throws(() => new InquiryManager(fileOps, dict, 'blah/blah.asdf'),
-        'throws an error if the path does not exist.');
+        'throws an error if the path does not exist.'
+      );
     });
 
     t.test('contemplate', async t => {
-      t.ok(repo.contemplate, 'gets the internal contemplate object.');
+      t.ok(inquiryMan.contemplate, 'gets the internal contemplate object.');
     });
 
-    t.test('getItem(): Reply|undefined', async t => {
-      t.equal(repo.getInquiryById('R3xnb2Q=')!.answer, 'hello world',
-        'returns a Reply object.'
+    t.test('getInquiryById(): Reply|undefined', async t => {
+      const validInquiry = inquiryMan.getInquiryById('R3xnb2Q=');
+      t.notEqual(validInquiry, undefined,
+        'returns an inquiry if it exists.'
       );
-      t.equal(repo.getInquiryById('Q1aSb34L'), undefined,
-        'returns undefined when reply not found.'
+      t.equal(inquiryMan.getInquiryById('Q1aSb34L'), undefined,
+        'returns undefined when inquiry not found.'
       );
-      repo.inquiries = [];
+      inquiryMan.inquiries = [];
     });
 
-    t.test('findQuestion(): RepErrorCode|RepoItem|undefined', async t => {
-      repo.inquiries = testData;
-      const item = repo.getInquiryByQuestion('what is love') as Inquiry;
-      t.is(repo.getInquiryByQuestion('tell me something'), IqErrorCode.Question,
+    t.test('getInquiryByQuestion(): RepErrorCode|Inquiry|undefined', async t => {
+      inquiryMan.inquiries = testData;
+      const inquiry = inquiryMan.getInquiryByQuestion('what is love') as Inquiry;
+      t.is(inquiryMan.getInquiryByQuestion('tell me something'), InqErrorCode.Question,
         'returns Error Code on invalid query.'
       );
-      t.is(repo.getInquiryByQuestion('where is the sausage'), undefined,
+      t.is(inquiryMan.getInquiryByQuestion('where is the sausage'), undefined,
         'returns undefined if question not found.'
       );
-      t.is(item.ids[0], 'Q3xsb3Zl',
-        'returns a RepoItem if found.'
+      t.is(inquiry.ids[0], 'Q3xsb3Zl',
+        'returns a Inquiry if found.'
       );
     });
 
-    t.test('indexOfItem(): number', async t => {
-      repo.inquiries = testData;
-      t.is(repo.indexOfInquiry('R3xnb2Q='), 0,
-        'returns index of RepoItem by id.'
+    t.test('indexOfInquiry(): number', async t => {
+      inquiryMan.inquiries = testData;
+      t.is(inquiryMan.indexOfInquiry('R3xnb2Q='), 0,
+        'returns index of Inquiry by id.'
       );
-      t.is(repo.indexOfInquiry('3Aeq71='), -1,
+      t.is(inquiryMan.indexOfInquiry('3Aeq71='), -1,
         'returns -1 if index is not found'
       );
-      repo.inquiries = [];
+      inquiryMan.inquiries = [];
     });
 
-    t.test('questionsFromItem(): string[]', async t => {
-      repo.inquiries = testData;
-      const questions = repo.questionsFromInquiry(testData[0]);
+    t.test('questionsFromInquiry(): string[]', async t => {
+      inquiryMan.inquiries = testData;
+      const questions = inquiryMan.questionsFromInquiry(testData[0]);
       t.same(questions, ['what love', 'who god'],
-        'returns an Array of decoded questions from an item.'
+        'returns an Array of decoded questions from an inquiry.'
       );
-      repo.inquiries = [];
+      inquiryMan.inquiries = [];
     });
 
-    t.test('toRepoItem(): RepErrorCode|RepoItem', async t => {
+    t.test('toInquiry(): InqErrorCode|Inquiry', async t => {
       const emptyTest       = readFileSync(`${mocks}/emptyTest.txt`         , 'utf-8');
       const noMatter        = readFileSync(`${mocks}/noMatterTest.txt`      , 'utf-8');
       const isInvalid       = readFileSync(`${mocks}/invalidDocTest.txt`    , 'utf-8');
@@ -125,50 +127,50 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
       const missingA        = readFileSync(`${mocks}/missingAnsTest.txt`    , 'utf-8');
       const invalidCharTest = readFileSync(`${mocks}/invalidCharTest.txt`   , 'utf-8');
       const passingDoc      = readFileSync(`${mocks}/passingDocTest.txt`    , 'utf-8');
-      const passingVal      = repo.toInquiryItem(passingDoc) as Inquiry;
+      const passingVal      = inquiryMan.toInquiry(passingDoc) as Inquiry;
       t.is(
-        repo.toInquiryItem(emptyTest), IqErrorCode.Empty,
+        inquiryMan.toInquiry(emptyTest), InqErrorCode.Empty,
         'returns Error Code on white-space-only documents.'
       );
       t.is(
-        repo.toInquiryItem(noMatter), IqErrorCode.Head,
+        inquiryMan.toInquiry(noMatter), InqErrorCode.Head,
         'returns Error Code when missing front-matter head.'
       );
       t.is(
-        repo.toInquiryItem(isInvalid), IqErrorCode.HeadSyntax,
+        inquiryMan.toInquiry(isInvalid), InqErrorCode.HeadSyntax,
         'returns Error Code with invalid front-matter syntax.'
       );
       t.is(
-        repo.toInquiryItem(missingQ), IqErrorCode.Question,
+        inquiryMan.toInquiry(missingQ), InqErrorCode.Question,
         'returns Error Code when missing questions block.'
       );
       t.is(
-        repo.toInquiryItem(invalidQArray), IqErrorCode.Question,
+        inquiryMan.toInquiry(invalidQArray), InqErrorCode.Question,
         'returns Error Code when questions are not an Array.'
       );
       t.is(
-        repo.toInquiryItem(invalidCharTest), IqErrorCode.Question,
+        inquiryMan.toInquiry(invalidCharTest), InqErrorCode.Question,
         'returns Error Code when questions contain invalid chars.'
       );
-      t.is(repo.toInquiryItem(missingTitle), IqErrorCode.Title,
+      t.is(inquiryMan.toInquiry(missingTitle), InqErrorCode.Title,
         'returns Error Code when missing title.'
       );
-      t.is(repo.toInquiryItem(missingAuthor), IqErrorCode.Author,
+      t.is(inquiryMan.toInquiry(missingAuthor), InqErrorCode.Author,
         'returns Error Code when missing author.'
       );
-      t.is(repo.toInquiryItem(missingLevel), IqErrorCode.Level,
+      t.is(inquiryMan.toInquiry(missingLevel), InqErrorCode.Level,
         'returns Error Code when missing level.'
       );
-      t.is(repo.toInquiryItem(negativeLevel), IqErrorCode.Level,
+      t.is(inquiryMan.toInquiry(negativeLevel), InqErrorCode.Level,
         'returns Error Code with a negative level value.'
       );
       t.is(
-        repo.toInquiryItem(missingA), IqErrorCode.Answer,
+        inquiryMan.toInquiry(missingA), InqErrorCode.Answer,
         'returns Error Code when missing answer.'
       );
       t.is(
         passingVal.answer, "A lovely bunch of cocoanuts",
-        'returns an ItemDoc object.'
+        'returns a valid Inquiry.'
       );
       t.is(passingVal.ids.length, 4,
         'question count should match question entry.'
@@ -179,7 +181,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
     });
 
     t.test('toInquiryDoc(): string', async t => {
-      const doc = repo.toInquiryDoc(testData[0]);
+      const doc = inquiryMan.toInquiryDoc(testData[0]);
       const matter = fm<InquiryDocObj>(doc);
       t.ok(fm.test(doc),
         'returns a document with valid Front Matter.'
@@ -204,102 +206,102 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
       );
     });
 
-    t.test('editItem(): RepErrorCode|RepoItem', async t => {
-      repo.inquiries = testData.slice();
-      const createdDate = repo.inquiries[0].dateCreated;
+    t.test('editInquiry(): RepErrorCode|Inquiry', async t => {
+      inquiryMan.inquiries = testData.slice();
+      const createdDate = inquiryMan.inquiries[0].dateCreated;
       const doc = readFileSync(`${mocks}/editItemTest.txt`, 'utf-8');
       const missEditId = readFileSync(`${mocks}/missingEditIdTest.txt`, 'utf-8');
-      const invalidItem = readFileSync(`${mocks}/invalidEditItemTest.txt`, 'utf-8');
-      const itemNoExist = readFileSync(`${mocks}/editItemNoExistTest.txt`, 'utf-8');
+      const invalidInquiry = readFileSync(`${mocks}/invalidEditItemTest.txt`, 'utf-8');
+      const inquiryNotExist = readFileSync(`${mocks}/editItemNoExistTest.txt`, 'utf-8');
       const authorExists = readFileSync(`${mocks}/editItemAuthorExistsTest.txt`, 'utf-8');
-      const isEdited = repo.editInquiry(doc);
-      const item = repo.inquiries[0];
+      const isEdited = inquiryMan.editInquiry(doc);
+      const inquiry = inquiryMan.inquiries[0];
       const isUpdated =
-           item.ids[0] == 'Q3xjaGlja2Vu'
-        && item.answer == 'hello chickens!'
-        && repo.getInquiryById('Q3xsb3Zl') == undefined
+           inquiry.ids[0] == 'Q3xjaGlja2Vu'
+        && inquiry.answer == 'hello chickens!'
+        && inquiryMan.getInquiryById('Q3xsb3Zl') == undefined
       ;
       t.ok(typeof isEdited != 'number',
-        'returns the edited RepoItem when edited successfully.'
+        'returns the edited Inquiry when edited successfully.'
       );
       t.ok(isUpdated,
-        'replaces old item with new edited item.'
+        'replaces old inquiry with new edited inquiry.'
       );
-      t.ok(item.dateCreated < item.dateEdited,
+      t.ok(inquiry.dateCreated < inquiry.dateEdited,
         'edited date should be greater than created date.'
       );
-      t.is(createdDate, item.dateCreated,
-        'will copy the dateCreated property from the original item.'
+      t.is(createdDate, inquiry.dateCreated,
+        'will copy the dateCreated property from the original inquiry.'
       );
-      t.same(repo.inquiries[0].authors, ['blah', 'unique'],
+      t.same(inquiryMan.inquiries[0].authors, ['blah', 'unique'],
         'appends unique authors to the authors Array.'
       );
-      t.is(repo.editInquiry(missEditId), IqErrorCode.EditId,
+      t.is(inquiryMan.editInquiry(missEditId), InqErrorCode.EditId,
         'returns an Error Code when missing editId property.'
       );
-      t.is(repo.editInquiry(invalidItem), IqErrorCode.Author,
+      t.is(inquiryMan.editInquiry(invalidInquiry), InqErrorCode.Author,
         'returns an Error Code if the document is invalid.'
       );
-      t.is(repo.editInquiry(itemNoExist), IqErrorCode.BadEditId,
+      t.is(inquiryMan.editInquiry(inquiryNotExist), InqErrorCode.BadEditId,
         'returns an Error Code if the id is not found.'
       );
-      repo.editInquiry(authorExists);
-      t.is(repo.inquiries[0].answer, 'I am a new message',
-        'updates item successfully when author already exists.'
+      inquiryMan.editInquiry(authorExists);
+      t.is(inquiryMan.inquiries[0].answer, 'I am a new message',
+        'updates inquiry successfully when author already exists.'
       );
-      t.same(repo.inquiries[0].authors, ['blah', 'unique'],
+      t.same(inquiryMan.inquiries[0].authors, ['blah', 'unique'],
         'ignores edit author if author already exists.'
       );
-      repo.inquiries = [];
+      inquiryMan.inquiries = [];
     });
 
-    t.test('addItemDoc(): RepErrorCode|RepoItem', async t => {
+    t.test('addInquiryDoc(): RepErrorCode|Inquiry', async t => {
       const errorDoc      = readFileSync(`${mocks}/invalidCharTest.txt` , 'utf-8');
       const passingDoc    = readFileSync(`${mocks}/passingDocTest.txt`  , 'utf-8');
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`  , 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`    , 'utf-8');
       const handToEdit    = readFileSync(`${mocks}/handToEditTest.txt`  , 'utf-8');
       dict.words          = [['large', 'big', 'enormous', 'giant']];
-      const identicalVal  = repo.addInquiry(identicalQDoc) as IqErrorCode;
+      const identicalVal  = inquiryMan.addInquiry(identicalQDoc) as InqErrorCode;
       t.is(
-        typeof repo.addInquiry(errorDoc), 'number',
+        typeof inquiryMan.addInquiry(errorDoc), 'number',
         'returns Error Code if parseReplyDoc() fails.'
       );
-      t.is((repo.addInquiry(passingDoc) as Inquiry).answer, 'A lovely bunch of cocoanuts',
-        'returns a RepoItem when reply doc added successfully.'
+      t.is((inquiryMan.addInquiry(passingDoc) as Inquiry).answer, 'A lovely bunch of cocoanuts',
+        'returns a Inquiry when reply doc added successfully.'
       );
-      t.is(repo.inquiries[0].ids.length, 4,
+      t.is(inquiryMan.inquiries[0].ids.length, 4,
         'adds an id for every question in document.'
       );
       t.is(
-        repo.addInquiry(invalidQDoc), IqErrorCode.Question,
+        inquiryMan.addInquiry(invalidQDoc), InqErrorCode.Question,
         'returns Error Code with invalid questions.'
       );
       t.is(
-        identicalVal, IqErrorCode.DuplicateId,
+        identicalVal, InqErrorCode.DuplicateId,
         'returns Error Code with identical ids.'
       );
-      repo.inquiries = [editItem];
-      const editedItem = repo.addInquiry(handToEdit) as Inquiry;
-      t.ok(editedItem.dateCreated < editedItem.dateEdited,
-        'use editItem() if editId property is present.'
+      inquiryMan.inquiries = [editInquiry];
+      const editedInquiry = inquiryMan.addInquiry(handToEdit) as Inquiry;
+      t.ok(editedInquiry.dateCreated < editedInquiry.dateEdited,
+        'use editInquiry() if editId property is present.'
       );
-      repo.inquiries = [];
+      inquiryMan.inquiries = [];
     });
 
     t.test('encodeQuestions(): RepErrorCode|string[]', async t => {
       const questions   = ['what is this', 'what is that', 'what is what'];
       const invalidQs   = ['tell me what to do', 'when will it be time'];
       const identicalQs = ['how big is the world', 'how large is the world'];
-      const ids         = repo.encodeQuestions(questions) as string[];
+      const ids         = inquiryMan.encodeQuestions(questions) as string[];
 
       t.ok(Array.isArray(ids),
         'returns an array of ids on success.'
       );
-      t.is(repo.encodeQuestions(invalidQs), IqErrorCode.Question,
+      t.is(inquiryMan.encodeQuestions(invalidQs), InqErrorCode.Question,
         'returns Error Code with invalid questions.'
       );
-      t.is(repo.encodeQuestions(identicalQs), IqErrorCode.DuplicateId,
+      t.is(inquiryMan.encodeQuestions(identicalQs), InqErrorCode.DuplicateId,
         'returns Error Code with semantically identical questions.'
       );
       t.is(ids.length, 3,
@@ -310,12 +312,12 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
 
     t.test('save(): Promise<null>', t => {
       t.plan(2);
-      repo.inquiries = [editItem];
-      repo.save()
+      inquiryMan.inquiries = [editInquiry];
+      inquiryMan.save()
         .then(() => {
-          t.pass('saves repository to file.');
-          const items = fileOps.readRepoStore(`${folderPath}/replies.said.gzip`);
-          t.is(items[0].answer, 'hello chickens!',
+          t.pass('saves inquiries to file.');
+          const inquiries = fileOps.readInquiryStore(`${folderPath}/replies.said.gzip`);
+          t.is(inquiries[0].answer, 'hello chickens!',
             'saves same data that is in the in-memory object.'
           );
           del(folderPath); // Cleanup
@@ -328,16 +330,16 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
     });
 
     t.test('checkIntegrity(): null|string', async t => {
-      repo.inquiries = [
-        createItem(['Q3xsb3Zl', 'R3xnb2Q='], 'hello world'),
-        editItem
+      inquiryMan.inquiries = [
+        createInquiry(['Q3xsb3Zl', 'R3xnb2Q='], 'hello world'),
+        editInquiry
       ];
-      const goodResult = repo.checkIntegrity();
-      repo.inquiries = [
-        createItem(['Q3xsb3Zl', 'R3xnb2Q='], 'hello world'),
-        createItem(['R3xnb2Q=', 'A38aEonZ8='], 'will collide')
+      const goodResult = inquiryMan.checkIntegrity();
+      inquiryMan.inquiries = [
+        createInquiry(['Q3xsb3Zl', 'R3xnb2Q='], 'hello world'),
+        createInquiry(['R3xnb2Q=', 'A38aEonZ8='], 'will collide')
       ];
-      const badResult = repo.checkIntegrity();
+      const badResult = inquiryMan.checkIntegrity();
 
       t.is(goodResult, null,
         'returns null if the integrity is good'

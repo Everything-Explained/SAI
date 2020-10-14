@@ -43,7 +43,7 @@ export class SAI {
    * Adds a question using the **Inquiry Document**
    * syntax.
    *
-   * @param inquiryDoc A string whose content is an Item Document.
+   * @param inquiryDoc A string whose content is an Inquiry Document.
    */
   async addInquiry(inquiryDoc: string, limitSave = true) {
     const res = this._inquiryMan.addInquiry(inquiryDoc);
