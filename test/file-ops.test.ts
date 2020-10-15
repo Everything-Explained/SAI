@@ -17,123 +17,137 @@ const testScheme = AvroType.forSchema({
   name: 'test',
   type: 'array', items: 'string'
 });
+
+
+const mockInquiryData = [{
+    title: 'blah',
+    answer: 'world',
+    ids: ['aAheoadf=='],
+    tags: [],
+    authors: [],
+    level: 0,
+    dateCreated: 1234,
+    dateEdited: 4321,
+    editedBy: '',
+}] as Inquiry[];
+
+const mockDictData = [
+  ['large', 'big'],
+  ['small', 'tiny']
+];
+
+
 const writeFileAsync = promisify(writeFile);
+
+const getRndNum = (range: number) => {
+  return Math.floor(Math.random() * range);
+};
+
+const genRandomFilePath = (folderPath: string) => {
+  fileOps.createFolder(folderPath);
+  return `${folderPath}/test${getRndNum(10000)}.gzip`;
+};
 
 
 t('File Operations', async t => {
 
-  t.test('createFolder()', async t => {
-    let folderPath = `${Constants.mockDir}/createFolder`;
-    fileOps.createFolder(folderPath);
-    t.ok(existsSync(folderPath),
-      'will create specified folder.'
-    );
-    del(folderPath);
-
-    folderPath = `${Constants.mockDir}/folderPath2`;
-    fileOps.createFolder(folderPath);
-    t.ok(fileOps.createFolder(folderPath),
-      'returns if folder already exists.'
-    );
-    del(folderPath);
-  });
-
-  t.test('save(): Promise<null>', t => {
-    const path = `${Constants.mockDir}/save`;
+  t.test('createFolder() returns true on successful folder creation.', async t => {
+    const path = `${Constants.mockDir}/createFolder`;
     fileOps.createFolder(path);
-    const validPath = `${path}/test1.test`;
-    const validPath2 = `${path}/test2.gzip`;
-    const invalidPath = `./blah/blah.test`;
-    const validValue = ['valid value'];
-    const invalidValue = ['valid value', ['invalid value']];
-    t.plan(5);
-
-    fileOps.save(validPath, testScheme, validValue, false)
-      .then(data => {
-        t.equal(data, null,
-          'resolves null on success.'
-        );
-      })
-    ;
-    fileOps.save(validPath, testScheme, validValue, false)
-      .catch((err: Error) => {
-        t.ok(~err.message.indexOf('Cannot save'),
-          'rejects when saving too fast.'
-        );
-        del(validPath);
-      })
-    ;
-    fileOps.save(validPath, testScheme, invalidValue, false, false)
-      .catch((err: Error) => {
-        t.ok(~err.message.indexOf('data fails'),
-          'rejects on invalid scheme value.'
-        );
-      })
-    ;
-    fileOps.save(invalidPath, testScheme, validValue, false, false)
-      .catch((err: Error) => {
-        t.ok(~err.message.indexOf('ENOENT'),
-          'rejects on invalid file path.'
-        );
-      })
-    ;
-    fileOps.save(validPath2, testScheme, validValue, true, false)
-      .then(resp => {
-        t.equal(resp, null,
-          'resolves null on file compression and save.'
-        );
-        del(path);
-      })
-    ;
-  });
-
-  t.test('readInquiryStore()', async t => {
-    const path = `${Constants.mockDir}/readInquiryStore`;
-    fileOps.createFolder(path);
-    const goodPath = `${path}/inquiries.gzip`;
-    const badPath = `${path}/badInquiries.gzip`;
-    const inquiriesTestData = [
-      {
-        title: 'blah',
-        answer: 'world',
-        ids: ['aAheoadf=='],
-        tags: [],
-        authors: [],
-        level: 0,
-        dateCreated: 1234,
-        dateEdited: 4321,
-        editedBy: '',
-      }
-    ] as Inquiry[];
-    await fileOps.save(goodPath, inquiryScheme, inquiriesTestData, true, false);
-    await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
-    const inquiries = fileOps.readInquiryStore(goodPath);
-    t.equal(inquiries[0].answer, 'world',
-      'reads the Inquiry buffer into a JSON object'
-    );
-    t.throws(() => fileOps.readInquiryStore(badPath),
-      /(truncated buffer)|(incorrect header)/g,
-      'throws an error if data fails schema conversion.'
-    );
+    t.ok(existsSync(path));
     del(path);
   });
 
-  t.test('readDictStore()', async t => {
-    const path = `${Constants.mockDir}/readDictStore`;
+  t.test('createFolder() returns true if folder already exists.', async t => {
+    const path = `${Constants.mockDir}/duplicateFolderTest`;
     fileOps.createFolder(path);
-    const goodPath = `${path}/dictionary.gzip`;
-    const badPath = `${path}/badDictionary.gzip`;
-    const data = [['god', 'pickles'], ['love', 'lobster']];
-    await fileOps.save(goodPath, dictSchema, data, true, false);
-    await writeFileAsync(badPath, JSON.stringify({ hello: ''}), { encoding: 'binary'});
-    const dictObj = fileOps.readDictStore(goodPath);
-    t.equal(dictObj[0][0], 'god',
-      'reads a dictionary buffer into a JSON object'
-    );
-    t.throws(() => fileOps.readDictStore(badPath),
-      /(truncated buffer)|(incorrect header)/g,
-      'throws an error if data fails schema conversion.'
-    );
+    t.ok(fileOps.createFolder(path));
+    del(path);
+  });
+
+  t.test('save() returns promised null on success.', t => {
+    t.plan(1);
+    const path = genRandomFilePath(Constants.mockDir);
+    fileOps.save(path, testScheme, ['valid', 'value'], false)
+    .then(data => {
+      t.equal(data, null);
+      del(path);
+    });
+  });
+
+  t.test('save() returns promise rejection when saving too fast.', t => {
+    t.plan(1);
+    const saveFirstPath = genRandomFilePath(Constants.mockDir);
+    fileOps
+      .save(saveFirstPath, testScheme, ['valid', 'value'], false)
+      .then(() => del(saveFirstPath)) // cleanup
+    ;
+    const path = genRandomFilePath(Constants.mockDir);
+    fileOps.save(path, testScheme, ['valid value'], false)
+      .then(() => t.fail('Saved during another save operation (whoops).'))
+      .catch((err: Error) => t.ok(~err.message.indexOf('Cannot save')))
+    ;
+  });
+
+  t.test('save() returns promise rejection on invalid scheme value.', t => {
+    t.plan(1);
+    const path = genRandomFilePath(Constants.mockDir);
+    fileOps
+      .save(path, testScheme, 'invalid value', false, false)
+      .catch((err: Error) => t.ok(~err.message.indexOf('data fails')))
+    ;
+  });
+
+  t.test('save() returns promise rejection on invalid file path.', t => {
+    t.plan(1);
+    fileOps
+      .save('./invalid/path.test', testScheme, ['valid value'], false, false)
+      .catch((err: Error) => t.ok(~err.message.indexOf('ENOENT')))
+    ;
+  });
+
+  t.test('save() returns promised null on file compression and save success.', t => {
+    t.plan(1);
+    const path = genRandomFilePath(Constants.mockDir);
+    fileOps
+      .save(path, testScheme, ['valid', 'value'], true, false)
+      .then(resp => {t.equal(resp, null); del(path); })
+    ;
+  });
+
+  t.test('readInquiryStore() returns an InquiryRecord Array.', async t => {
+    const path = genRandomFilePath(Constants.mockDir);
+    await fileOps.save(path, inquiryScheme, mockInquiryData, true, false);
+    const inquiries = fileOps.readInquiryStore(path);
+    t.ok(Array.isArray(inquiries));
+    t.is(inquiries[0].compare(mockInquiryData[0]), 0);
+    del(path);
+  });
+
+  t.test('readInquiryStore() throws an error if data fails schema conversion.', async t => {
+    const path = genRandomFilePath(Constants.mockDir);
+    await writeFileAsync(path, JSON.stringify({ hello: ''}), { encoding: 'binary'});
+    t.throws(
+      () => fileOps.readInquiryStore(path),
+      /(truncated buffer)|(incorrect header)/g)
+    ;
+    del(path);
+  });
+
+  t.test('readDictStore() returns a dictionary file into a JSON object..', async t => {
+    const path = genRandomFilePath(Constants.mockDir);
+    await fileOps.save(path, dictSchema, mockDictData, true, false);
+    t.same(mockDictData, mockDictData);
+    del(path);
+  });
+
+  t.test('readDictStore() throws an error if data fails schema conversion.', async t => {
+    const path = genRandomFilePath(Constants.mockDir);
+    await writeFileAsync(path, JSON.stringify({ hello: ''}), { encoding: 'binary'});
+    t.throws(
+      () => fileOps.readDictStore(path),
+      /(truncated buffer)|(incorrect header)/g)
+    ;
     del(path);
   });
 });
