@@ -98,10 +98,10 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
 
     t.test('indexOfInquiry(): number', async t => {
       inquiryMan.inquiries = testData;
-      t.is(inquiryMan.indexOfInquiry('R3xnb2Q='), 0,
+      t.is(inquiryMan.indexOf('R3xnb2Q='), 0,
         'returns index of Inquiry by id.'
       );
-      t.is(inquiryMan.indexOfInquiry('3Aeq71='), -1,
+      t.is(inquiryMan.indexOf('3Aeq71='), -1,
         'returns -1 if index is not found'
       );
       inquiryMan.inquiries = [];
@@ -109,7 +109,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
 
     t.test('questionsFromInquiry(): string[]', async t => {
       inquiryMan.inquiries = testData;
-      const questions = inquiryMan.questionsFromInquiry(testData[0]);
+      const questions = inquiryMan.questionsOf(testData[0]);
       t.same(questions, ['what love', 'who god'],
         'returns an Array of decoded questions from an inquiry.'
       );

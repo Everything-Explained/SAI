@@ -135,7 +135,7 @@ export class InquiryManager {
   }
 
 
-  indexOfInquiry(id: string) {
+  indexOf(id: string) {
     for (let i = 0, l = this._inquiries.length; i < l; i++) {
       if (~this._inquiries[i].ids.indexOf(id)) {
         return i;
@@ -145,7 +145,7 @@ export class InquiryManager {
   }
 
 
-  questionsFromInquiry(inquiry: Inquiry) {
+  questionsOf(inquiry: Inquiry) {
     return inquiry.ids.map(id => this._contemplate.toQueryTokens(id));
   }
 
@@ -164,7 +164,7 @@ export class InquiryManager {
     if (typeof newInquiry == 'number') return newInquiry;
     if (!newInquiry.editId) return InqErrorCode.EditId
     ;
-    const oldInquiryIndex = this.indexOfInquiry(newInquiry.editId);
+    const oldInquiryIndex = this.indexOf(newInquiry.editId);
     const oldInquiry      = this._inquiries[oldInquiryIndex];
     if (!oldInquiry) return InqErrorCode.BadEditId
     ;
