@@ -4,7 +4,7 @@ import tape from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { DictionaryManager, dictSchema } from '../lib/database/dictionaryman';
 import { InquiryManager, Inquiry, inquiryScheme, InqErrorCode, InquiryDocObj } from '../lib/database/inquiryman';
-import { mockDir } from '../lib/variables/constants';
+import { Constants } from '../lib/variables/constants';
 import fm from 'front-matter';
 import smap from 'source-map-support';
 
@@ -13,8 +13,8 @@ smap.install();
 
 
 const fileOps    = new FileOps();
-const folderPath = `${mockDir}/inquiries`;
-const mocks      = `${mockDir}/doctests`;
+const folderPath = `${Constants.mockDir}/inquiries`;
+const mocks      = `${Constants.mockDir}/doctests`;
 const dateNow    = Date.now();
 
 function createInquiry(ids: string[], answer: string) {

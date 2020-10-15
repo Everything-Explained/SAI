@@ -1,4 +1,4 @@
-import { contextTokens, optionalTokens, queryTokens } from "../lib/variables/constants";
+import { Constants } from "../lib/variables/constants";
 import { intersection as _intersection } from 'lodash/fp';
 import t from 'tape';
 import smap from 'source-map-support';
@@ -51,35 +51,35 @@ t('Constants', async t => {
   });
 
   t.test('queryTokens should be unique', async t => {
-    t.ok(tokensAreUnique(queryTokens, 'query'));
+    t.ok(tokensAreUnique(Constants.queryTokens, 'query'));
   });
 
   t.test('queryTokens should contain no spaces', async t => {
-    t.ok(tokensHaveNoSpaces(queryTokens, 'query'));
+    t.ok(tokensHaveNoSpaces(Constants.queryTokens, 'query'));
   });
 
   t.test('queryTokens should have less than 26 items.', async t => {
-    t.ok(queryTokens.length < 26);
+    t.ok(Constants.queryTokens.length < 26);
   });
 
   t.test('contextTokens should be unique.', async t => {
-    t.ok(tokensAreUnique(contextTokens, 'context'));
+    t.ok(tokensAreUnique(Constants.contextTokens, 'context'));
   });
 
   t.test('contextTokens should contain no spaces.', async t => {
-    t.ok(tokensHaveNoSpaces(contextTokens, 'context'));
+    t.ok(tokensHaveNoSpaces(Constants.contextTokens, 'context'));
   });
 
   t.test('optionalTokens should be unique.', async t => {
-    t.ok(tokensAreUnique(optionalTokens, 'optional'));
+    t.ok(tokensAreUnique(Constants.optionalTokens, 'optional'));
   });
 
   t.test('optionalTokens should contain no spaces.', async t => {
-    t.ok(tokensHaveNoSpaces(optionalTokens, 'optional'));
+    t.ok(tokensHaveNoSpaces(Constants.optionalTokens, 'optional'));
   });
 
   t.test('optionalTokens should not intersect with contextual tokens.', async t => {
-    const diff = _intersection(optionalTokens, contextTokens);
+    const diff = _intersection(Constants.optionalTokens, Constants.contextTokens);
     t.equal(diff.length, 0);
   });
 });

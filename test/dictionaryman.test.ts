@@ -2,13 +2,13 @@ import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { DictionaryManager, dictSchema } from '../lib/database/dictionaryman';
 import del from 'del';
-import { mockDir } from '../lib/variables/constants';
+import { Constants } from '../lib/variables/constants';
 import smap from 'source-map-support';
 
 smap.install();
 
 const fileOps = new FileOps();
-const folderPath = `${mockDir}/dictionary`;
+const folderPath = `${Constants.mockDir}/dictionary`;
 fileOps.createFolder(folderPath);
 fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true)
 .then(() => {

@@ -6,7 +6,7 @@ import { Type as AvroType } from 'avsc';
 import { dictSchema } from "../lib/database/dictionaryman";
 import { Inquiry, inquiryScheme } from "../lib/database/inquiryman";
 import { promisify } from "util";
-import { mockDir } from "../lib/variables/constants";
+import { Constants } from "../lib/variables/constants";
 import smap from 'source-map-support';
 
 smap.install();
@@ -23,14 +23,14 @@ const writeFileAsync = promisify(writeFile);
 t('File Operations', async t => {
 
   t.test('createFolder()', async t => {
-    let folderPath = `${mockDir}/createFolder`;
+    let folderPath = `${Constants.mockDir}/createFolder`;
     fileOps.createFolder(folderPath);
     t.ok(existsSync(folderPath),
       'will create specified folder.'
     );
     del(folderPath);
 
-    folderPath = `${mockDir}/folderPath2`;
+    folderPath = `${Constants.mockDir}/folderPath2`;
     fileOps.createFolder(folderPath);
     t.ok(fileOps.createFolder(folderPath),
       'returns if folder already exists.'
@@ -39,7 +39,7 @@ t('File Operations', async t => {
   });
 
   t.test('save(): Promise<null>', t => {
-    const path = `${mockDir}/save`;
+    const path = `${Constants.mockDir}/save`;
     fileOps.createFolder(path);
     const validPath = `${path}/test1.test`;
     const validPath2 = `${path}/test2.gzip`;
@@ -88,7 +88,7 @@ t('File Operations', async t => {
   });
 
   t.test('readInquiryStore()', async t => {
-    const path = `${mockDir}/readInquiryStore`;
+    const path = `${Constants.mockDir}/readInquiryStore`;
     fileOps.createFolder(path);
     const goodPath = `${path}/inquiries.gzip`;
     const badPath = `${path}/badInquiries.gzip`;
@@ -119,7 +119,7 @@ t('File Operations', async t => {
   });
 
   t.test('readDictStore()', async t => {
-    const path = `${mockDir}/readDictStore`;
+    const path = `${Constants.mockDir}/readDictStore`;
     fileOps.createFolder(path);
     const goodPath = `${path}/dictionary.gzip`;
     const badPath = `${path}/badDictionary.gzip`;

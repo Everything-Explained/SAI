@@ -3,14 +3,14 @@ import { existsSync, readFileSync } from 'fs';
 import del from 'del';
 import t from 'tape';
 import { InqErrorCode, Inquiry } from "../lib/database/inquiryman";
-import { mockDir } from "../lib/variables/constants";
+import { Constants } from "../lib/variables/constants";
 import { FileOps } from "../lib/core/file-ops";
 import smap from 'source-map-support';
 
 
 smap.install(); // typescript file stack tracing
 
-const mocks = `${mockDir}/sai`;
+const mocks = `${Constants.mockDir}/sai`;
 const fileOps = new FileOps();
 const dateNow = Date.now();
 

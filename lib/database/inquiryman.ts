@@ -1,7 +1,7 @@
 import { FileOps } from "../core/file-ops";
 import { Type as AvroType } from 'avsc';
 import { existsSync } from "fs";
-import { Contemplator } from "../core/contemplator";
+import { QueryProcessor } from "../core/query-processor";
 import { DictionaryManager } from "./dictionaryman";
 import frontMatter, { FrontMatterResult } from 'front-matter';
 
@@ -71,7 +71,7 @@ export enum InqErrorCode {
 
 export class InquiryManager {
   private _inquiries: Inquiry[];
-  private _contemplate: Contemplator;
+  private _contemplate: QueryProcessor;
 
   /**
    * Setting this value is **destructive**.
@@ -90,7 +90,7 @@ export class InquiryManager {
 
   get questions() {
     return this._inquiries.map(inquiry => {
-      return inquiry.ids.map(id => this._contemplate.decode(id));
+      return inquiry.ids.map(id => this._contemplate.toQueryTokens(id));
     });
   }
 
@@ -114,7 +114,7 @@ export class InquiryManager {
       throw Error(`Path to inquiries: "${_path}" does NOT exist.`)
     ;
     this._inquiries   = _fileOps.readInquiryStore(_path);
-    this._contemplate = new Contemplator(_dict);
+    this._contemplate = new QueryProcessor(_dict);
     this.inquiries;
   }
 
@@ -130,7 +130,7 @@ export class InquiryManager {
     if (!this._contemplate.isQuery(qTokens))
       return InqErrorCode.Question
     ;
-    const id = this._contemplate.encodeQuery(qTokens, false)!;
+    const id = this._contemplate.toQueryId(qTokens, false)!;
     return this.getInquiryById(id);
   }
 
@@ -146,7 +146,7 @@ export class InquiryManager {
 
 
   questionsFromInquiry(inquiry: Inquiry) {
-    return inquiry.ids.map(id => this._contemplate.decode(id));
+    return inquiry.ids.map(id => this._contemplate.toQueryTokens(id));
   }
 
 
@@ -242,7 +242,7 @@ export class InquiryManager {
 
   toInquiryDoc(inquiry: Inquiry) {
     const questions =
-      inquiry.ids.map(id => `- ${this.contemplate.decode(id)}`)
+      inquiry.ids.map(id => `- ${this.contemplate.toQueryTokens(id)}`)
     ;
     const frontMatter =
 `---
@@ -290,7 +290,7 @@ ${inquiry.answer}`
     const ids: string[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const id = this._contemplate.encodeQuery(q.split(' '));
+      const id = this._contemplate.toQueryId(q.split(' '));
       if (!id) return InqErrorCode.Question
       ;
       const idIndex = ids.indexOf(id);
