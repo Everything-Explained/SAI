@@ -116,12 +116,12 @@ export class Contemplator {
   }
 
   /**
-   * Uses the `dict` to replace any found tokens
+   * Uses the `dictionary` to replace any found tokens
    * with a unique code.
    */
-  setDictCode(dict: DictionaryManager) {
+  setDictCode(dictionary: DictionaryManager) {
     return (tokens: string[]) => {
-      return tokens.map(token => dict.encodeWord(token));
+      return tokens.map(token => dictionary.encodeWord(token));
     };
   }
 
