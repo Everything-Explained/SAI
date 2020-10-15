@@ -1,9 +1,10 @@
 import { FileOps } from "../core/file-ops";
-import { Type as AvroType } from 'avsc';
+import { schema, Type as AvroType } from 'avsc';
 import { existsSync } from "fs";
 import { QueryProcessor } from "../core/query-processor";
 import { DictionaryManager } from "./dictionaryman";
 import frontMatter, { FrontMatterResult } from 'front-matter';
+import avro from 'avsc';
 
 
 export interface Inquiry {
@@ -18,6 +19,8 @@ export interface Inquiry {
   editedBy    : string;
   editId     ?: string;
 }
+
+export interface InquiryRecord extends Inquiry, schema.RecordReturnType<Inquiry> {}
 
 
 export interface InquiryDocObj {
@@ -36,7 +39,7 @@ export const inquiryScheme = AvroType.forSchema({
   type: 'array', items: [
     {
       type: 'record',
-      name: 'InquiryItem',
+      name: 'InquiryRecord',
       fields: [
         { name: 'title'       , type: 'string' },
         { name: 'answer'      , type: 'string' },

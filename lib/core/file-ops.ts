@@ -3,7 +3,8 @@ import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
 import { dictSchema } from "../database/dictionaryman";
-import { Inquiry, inquiryScheme } from "../database/inquiryman";
+import { InquiryRecord, Inquiry, inquiryScheme } from "../database/inquiryman";
+import avro from 'avsc';
 
 
 const gzipAsync = promisify(gzip);
@@ -35,7 +36,7 @@ export class FileOps {
   }
 
 
-  readInquiryStore(filePath: string): Inquiry[] {
+  readInquiryStore(filePath: string): InquiryRecord[] {
     const zippedInquiries = readFileSync(filePath);
     const unzippedInquiries = gunzipSync(zippedInquiries);
     return inquiryScheme.fromBuffer(unzippedInquiries);
