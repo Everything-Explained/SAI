@@ -24,29 +24,29 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
 
   t('QueryProcessor{}', async t => {
 
-    t.test('isQuery() returns false with < 2 tokens.', async t => {
-      t.notOk(contemplate.isQuery([`what's`]));
+    t.test('isValidQuery() returns false with < 2 words.', async t => {
+      t.notOk(contemplate.isValidQuery([`what's`]));
     });
 
-    t.test('isQuery() returns true even when contractions are used within a query.', async t => {
-      t.ok(contemplate.isQuery([`what's`, 'good']));
+    t.test('isValidQuery() returns true even when contractions are used within a query.', async t => {
+      t.ok(contemplate.isValidQuery([`what's`, 'good']));
     });
 
-    t.test('isQuery() returns true when query word is found.', async t => {
-      t.ok(contemplate.isQuery(['what', 'is', 'good']));
+    t.test('isValidQuery() returns true when query word is found.', async t => {
+      t.ok(contemplate.isValidQuery(['what', 'is', 'good']));
     });
 
     t.test('filterContractions() returns an array with contractions normalized.', async t => {
-      const testTokens = `I cannot won't don't can't and haven't they're`.split(' ');
+      const testWords = `I cannot won't don't can't and haven't they're`.split(' ');
       t.same(
-        contemplate.filterContractions(testTokens),
+        contemplate.filterContractions(testWords),
         ['I', 'can', 'not', 'will', 'not', 'do', 'not', 'can', 'not', 'and', 'have', 'not', 'they', 'are'],
       );
     });
 
     t.test('filterContractions() returns a new array.', async t => {
-      const testTokens = `I cannot won't don't can't and haven't they're`.split(' ');
-      t.isNot(contemplate.filterContractions(testTokens), testTokens);
+      const testWords = `I cannot won't don't can't and haven't they're`.split(' ');
+      t.isNot(contemplate.filterContractions(testWords), testWords);
     });
 
     t.test('filterContractions() filters query-word is-contractions.', async t => {
@@ -54,65 +54,65 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('trimUnknownChars() returns lowercase characters only, given a string[] of any characters.', async t => {
-      const testTokens = '!+=tL@#a\\$%C^&,/e*@#&$.b%^B&*l:(),[D}<>c?'.split('');
-      t.is(contemplate.trimUnknownChars(testTokens).join(''),'taeblc');
+      const testWords = '!+=tL@#a\\$%C^&,/e*@#&$.b%^B&*l:(),[D}<>c?'.split('');
+      t.is(contemplate.trimUnknownChars(testWords).join(''),'taeblc');
     });
 
     t.test('trimUnknownChars() returns a new array.', async t => {
-      const testTokens = '!+=tL@#a\\$%C^&,/e*@#&$.b%^B&*l:(),[D}<>c?'.split('');
-      t.isNot(contemplate.trimUnknownChars(testTokens), testTokens);
+      const testWords = '!+=tL@#a\\$%C^&,/e*@#&$.b%^B&*l:(),[D}<>c?'.split('');
+      t.isNot(contemplate.trimUnknownChars(testWords), testWords);
     });
 
-    t.test('applyQueryCode() replaces a query token with a relative uppercase char.', async t => {
-      const testToken = [Constants.queryTokens[3]];
-      t.same(contemplate.applyQueryCode(testToken), ['D']);
+    t.test('applyQuestionCode() replaces a question word with a relative uppercase char.', async t => {
+      const testWord = [Constants.questionWords[3]];
+      t.same(contemplate.applyQuestionCode(testWord), ['D']);
     });
 
-    t.test('applyQueryCode() returns a new array when changed.', async t => {
-      const testToken = [Constants.queryTokens[3]];
-      t.isNot(contemplate.applyQueryCode(testToken), testToken);
+    t.test('applyQuestionCode() returns a new array when code is applied.', async t => {
+      const testWord = [Constants.questionWords[3]];
+      t.isNot(contemplate.applyQuestionCode(testWord), testWord);
     });
 
-    t.test('applyQueryCode() returns new array when unchanged.', async t => {
-      const testToken = ['nonToken'];
-      t.isNot(contemplate.applyQueryCode(testToken), testToken);
+    t.test('applyQuestionCode() returns new array even when no code is applied.', async t => {
+      const testWord = ['notAQuestionWord'];
+      t.isNot(contemplate.applyQuestionCode(testWord), testWord);
     });
 
-    t.test('trimOptional() returns tokens with optional tokens removed.', async t => {
-      const testTokens = ['what', 'is', 'the', 'name'];
-      t.same(contemplate.trimOptional(testTokens), ['what', 'name']);
+    t.test('trimOptionalWords() returns words with optional words removed.', async t => {
+      const testWord = ['what', 'is', 'the', 'name'];
+      t.same(contemplate.trimOptionalWords(testWord), ['what', 'name']);
     });
 
-    t.test('trimOptional() returns new array.', async t => {
-      const testTokens = ['what', 'is', 'the', 'name'];
-      t.isNot(contemplate.trimOptional(testTokens), testTokens);
+    t.test('trimOptionalWords() returns new array.', async t => {
+      const testWord = ['what', 'is', 'the', 'name'];
+      t.isNot(contemplate.trimOptionalWords(testWord), testWord);
     });
 
-    t.test('applyContextCodes() returns token array with contextual tokens replaced by a code.', async t => {
-      t.same(contemplate.applyContextCodes([Constants.contextTokens[10]]), ['%10']);
+    t.test('applyContextCodes() returns word array with contextual words replaced by a code.', async t => {
+      t.same(contemplate.applyContextCodes([Constants.contextWords[10]]), ['%10']);
     });
 
-    t.test('applyContextCodes() adds 0 placeholder to codes when context-token index < 10.', async t => {
-      t.same(contemplate.applyContextCodes([Constants.contextTokens[5]]), ['%05']);
+    t.test('applyContextCodes() adds 0 placeholder to codes when context-word index < 10.', async t => {
+      t.same(contemplate.applyContextCodes([Constants.contextWords[5]]), ['%05']);
     });
 
-    t.test('applyContextCodes() returns a new array of tokens when tokens are mutated.', async t => {
-      const mutates = [Constants.contextTokens[3]];
+    t.test('applyContextCodes() returns a new array of words when words are mutated.', async t => {
+      const mutates = [Constants.contextWords[3]];
       t.isNot(contemplate.applyContextCodes(mutates), mutates);
     });
 
-    t.test('applyContextCodes() returns a new array of tokens when tokens are NOT mutated.', async t => {
+    t.test('applyContextCodes() returns a new array of words when words are NOT mutated.', async t => {
       const notMutated = ['willnotmutate'];
       t.isNot(contemplate.applyContextCodes(notMutated), notMutated);
     });
 
-    t.test('applyDictionaryCodes() returns token array with dictionary words replaced by a code.', async t => {
+    t.test('applyDictionaryCodes() returns word array with dictionary words replaced by a code.', async t => {
       dict.words = testWords;
       const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
       t.same(dictCodeFunc(['i', 'am', 'test11']), ['i', 'am', '&11']);
     });
 
-    t.test('applyDictionaryCodes() adds 0 placeholder to codes when dictionary-token index < 10.', async t => {
+    t.test('applyDictionaryCodes() adds 0 placeholder to codes when dictionary-word index < 10.', async t => {
       dict.words = testWords;
       const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
       t.same(dictCodeFunc(['test5']), ['&05']);
@@ -124,65 +124,61 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
       t.same(dictCodeFunc(['sidetest1']), ['&01']);
     });
 
-    t.test('applyDictionaryCodes() returns a new array of tokens when tokens are mutated.', async t => {
+    t.test('applyDictionaryCodes() returns a new array of words when words are mutated.', async t => {
       dict.words = testWords;
       const mutates = [dict.words[0][1]];
       const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
       t.isNot(dictCodeFunc(mutates), mutates);
     });
 
-    t.test('applyDictionaryCodes() returns a new array of tokens when tokens are NOT mutated.', async t => {
+    t.test('applyDictionaryCodes() returns a new array of words when words are NOT mutated.', async t => {
       const notMutated = ['willnotmutate'];
       const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
       t.isNot(dictCodeFunc(notMutated), notMutated);
     });
 
-    t.test('toBase64WithPipe() returns a base64 encoded string.', async t => {
-      const code = contemplate.toBase64WithPipe(['some', 'tokens']);
+    t.test('convertWordsToId() returns a base64 encoded string.', async t => {
+      const code = contemplate.convertWordsToId(['some', 'words']);
       const str = Buffer.from(code, 'base64').toString('utf-8');
-      t.ok(str.includes('some|tokens'));
+      t.ok(str.includes('some|words'));
     });
 
-    t.test('toBase64WithPipe() concatenates all tokens with a pipe character.', async t => {
-      const code = contemplate.toBase64WithPipe(['some', 'tokens']);
+    t.test('convertWordsToId() concatenates all words with a pipe character.', async t => {
+      const code = contemplate.convertWordsToId(['some', 'words']);
       const str = Buffer.from(code, 'base64').toString('utf-8');
-      t.is(str, 'some|tokens');
+      t.is(str, 'some|words');
     });
 
-    t.test('encodeQuery() returns undefined if question NOT detected.', async t => {
-      t.is(contemplate.toQueryId(['not', 'a', 'question']), undefined);
+    t.test('encodeQueryToId() returns undefined if question NOT detected.', async t => {
+      t.is(contemplate.encodeQueryToId('not a question'), undefined);
     });
 
-    t.test('encodeQuery() converts a complex question to an encoded base64 string.', async t => {
+    t.test('encodeQueryToId() converts a complex question to an encoded base64 string.', async t => {
       dict.words = [['large', 'big']];
-      const q = "why \"can't\" i see how large @god is".split(' ');
-      const res = contemplate.toQueryId(q)!;
+      const res = contemplate.encodeQueryToId(`why "can't" i see how large @god is`)!;
       t.is(res, 'RnwlMTd8JTAzfHNlZXwlMTZ8JjAwfGdvZA==');
       dict.words = [];
     });
 
-    t.test('encodeQuery() combines similar questions to a single code.', async t => {
+    t.test('encodeQueryToId() combines similar words to a single code.', async t => {
       dict.words = [['large', 'big']];
-      const q = "why \"can't\" i see how large @god is".split(' ');
-      const q2 = "why can't; i see how big |\\god is".split(' ');
-      const res1 = contemplate.toQueryId(q)!;
-      const res2 = contemplate.toQueryId(q2)!;
+      const res1 = contemplate.encodeQueryToId(`why "can't" i see how large @god is`)!;
+      const res2 = contemplate.encodeQueryToId(`why can't; i see how big |\\god is`)!;
       t.is(res1, res2);
       dict.words = [];
     });
 
-    t.test('toQueryId() uses all internal functions to encode query.', async t => {
+    t.test('encodeQueryToId() uses all internal functions to encode query.', async t => {
       dict.words = [['large', 'big']];
-      const q = "why can't; i see how big |\\god is".split(' ');
-      const res = contemplate.toQueryId(q)!;
-      t.is(contemplate.toQueryTokens(res), 'why not i see how large god');
+      const res = contemplate.encodeQueryToId(`why can't; i see how big |\\god is`)!;
+      t.is(contemplate.decodeIdToQuery(res), 'why not i see how large god');
       dict.words = [];
     });
 
-    t.test('toQueryTokens() returns a question relative to the provided code.', async t => {
+    t.test('decodeIdToQuery() returns a question relative to the provided code.', async t => {
       dict.words = [['large', 'big']];
-      const str = contemplate.toQueryTokens(
-        contemplate.toQueryId('how big is this sun'.split(' '), false)!)
+      const str = contemplate.decodeIdToQuery(
+        contemplate.encodeQueryToId('how big is this sun', false)!)
       ;
       t.is(str, 'how large this sun');
     });

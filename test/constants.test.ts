@@ -7,22 +7,22 @@ smap.install();
 
 
 
-function tokensAreUnique(tokens: string[], tokenType: string) {
-  const clonedTokens = tokens.slice();
+function wordsAreUnique(words: string[], wordType: string) {
+  const clonedTokens = words.slice();
   while (clonedTokens.length) {
     const token = clonedTokens.shift() as string;
     if (~clonedTokens.indexOf(token)) {
-      throw new Error(`Duplicate ${tokenType} token found: "${token}"`);
+      throw new Error(`Duplicate ${wordType} token found: "${token}"`);
     }
   }
   return true;
 }
 
 
-function tokensHaveNoSpaces(tokens: string[], tokenType: string) {
-  tokens.forEach(v => {
+function wordsHaveNoSpaces(words: string[], wordType: string) {
+  words.forEach(v => {
     if (v.includes(' '))
-      throw new Error(`Whitespace found within ${tokenType} token: "${v}"`)
+      throw new Error(`Whitespace found within ${wordType} token: "${v}"`)
     ;
   });
   return true;
@@ -30,56 +30,56 @@ function tokensHaveNoSpaces(tokens: string[], tokenType: string) {
 
 t('Constants', async t => {
 
-  t.test('[setup]:tokensAreUnique() returns true when there are NO duplicate tokens.', async t => {
+  t.test('[setup]:wordsAreUnique() returns true when there are NO duplicate tokens.', async t => {
     const tokens = ['1', '2', '3', '4', '5'];
-    t.ok(tokensAreUnique(tokens, 'validation'));
+    t.ok(wordsAreUnique(tokens, 'validation'));
   });
 
-  t.test('[setup]:tokensAreUnique() throws an error when duplicate tokens are found.', async t => {
+  t.test('[setup]:wordsAreUnique() throws an error when duplicate tokens are found.', async t => {
     const tokens = ['1', '2', '3', '4', '5', '3'];
-    t.throws(() => tokensAreUnique(tokens, 'invalidation'));
+    t.throws(() => wordsAreUnique(tokens, 'invalidation'));
   });
 
-  t.test('[setup]:tokensHaveNoSpaces() returns true when there are NO spaces between tokens.', async t => {
+  t.test('[setup]:wordsHaveNoSpaces() returns true when there are NO spaces between tokens.', async t => {
     const tokens = ['1', '2', '3', '4', '5'];
-    t.ok(tokensHaveNoSpaces(tokens, 'NoSpaces'));
+    t.ok(wordsHaveNoSpaces(tokens, 'NoSpaces'));
   });
 
-  t.test('[setup]:tokensHaveNoSpaces() throws an error when spaces are found in tokens.', async t => {
+  t.test('[setup]:wordsHaveNoSpaces() throws an error when spaces are found in tokens.', async t => {
     const tokens = ['1', '2', '3 ', '4', '5'];
-    t.throws(() => tokensHaveNoSpaces(tokens, 'HaveSpaces'));
+    t.throws(() => wordsHaveNoSpaces(tokens, 'HaveSpaces'));
   });
 
   t.test('queryTokens should be unique', async t => {
-    t.ok(tokensAreUnique(Constants.queryTokens, 'query'));
+    t.ok(wordsAreUnique(Constants.questionWords, 'query'));
   });
 
   t.test('queryTokens should contain no spaces', async t => {
-    t.ok(tokensHaveNoSpaces(Constants.queryTokens, 'query'));
+    t.ok(wordsHaveNoSpaces(Constants.questionWords, 'query'));
   });
 
   t.test('queryTokens should have less than 26 items.', async t => {
-    t.ok(Constants.queryTokens.length < 26);
+    t.ok(Constants.questionWords.length < 26);
   });
 
   t.test('contextTokens should be unique.', async t => {
-    t.ok(tokensAreUnique(Constants.contextTokens, 'context'));
+    t.ok(wordsAreUnique(Constants.contextWords, 'context'));
   });
 
   t.test('contextTokens should contain no spaces.', async t => {
-    t.ok(tokensHaveNoSpaces(Constants.contextTokens, 'context'));
+    t.ok(wordsHaveNoSpaces(Constants.contextWords, 'context'));
   });
 
   t.test('optionalTokens should be unique.', async t => {
-    t.ok(tokensAreUnique(Constants.optionalTokens, 'optional'));
+    t.ok(wordsAreUnique(Constants.optionalWords, 'optional'));
   });
 
   t.test('optionalTokens should contain no spaces.', async t => {
-    t.ok(tokensHaveNoSpaces(Constants.optionalTokens, 'optional'));
+    t.ok(wordsHaveNoSpaces(Constants.optionalWords, 'optional'));
   });
 
   t.test('optionalTokens should not intersect with contextual tokens.', async t => {
-    const diff = _intersection(Constants.optionalTokens, Constants.contextTokens);
+    const diff = _intersection(Constants.optionalWords, Constants.contextWords);
     t.equal(diff.length, 0);
   });
 });

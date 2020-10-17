@@ -1,6 +1,7 @@
 import { DictionaryManager } from "../database/dictionaryman";
 import { Constants } from "../variables/constants";
 import { flow as _flow } from 'lodash/fp';
+import { padNumber } from "./utils";
 
 
 
@@ -9,30 +10,30 @@ export class QueryProcessor {
   private processorFuncs = [
     this.filterContractions,
     this.trimUnknownChars,
-    this.applyQueryCode,
+    this.applyQuestionCode,
     this.applyContextCodes,
     this.applyDictionaryCodes(this.dict),
-    this.trimOptional,
-    this.toBase64WithPipe
+    this.trimOptionalWords,
+    this.convertWordsToId
   ]
 
   constructor(private dict: DictionaryManager) {}
 
 
-  /** Converts a tokenized query (question) into a unique id. */
-  toQueryId(queryTokens: string[], checkQuery = true): string|undefined {
-    if (checkQuery && !this.isQuery(queryTokens)) return undefined;
-    return _flow(...this.processorFuncs)(queryTokens);
+  encodeQueryToId(query: string, checkQuery = true): string|undefined {
+    const words = query.split(' ');
+    if (checkQuery && !this.isValidQuery(words)) return undefined;
+    return _flow(...this.processorFuncs)(words);
   }
 
-  /** Decodes a query id into a relative form of its original tokens. */
-  toQueryTokens(id: string) {
-    const tokens = this._fromIdToTokens(id);
+  /** Decodes a query id into a **relative form** of its original query. */
+  decodeIdToQuery(id: string) {
+    const words = this.convertIdToRawWords(id);
     return (
-      tokens.map((t, i) => {
-        if (~t.indexOf('%')) return Constants.contextTokens[+t.substr(1)];
-        if (~t.indexOf('&')) return this.dict.words[+t.substr(1)][0];
-        if          (i == 0) return Constants.queryTokens[t.charCodeAt(0) - 65];
+      words.map((t, i) => {
+        if (t.includes('%')) return Constants.contextWords[+t.substr(1)];
+        if (t.includes('&')) return this.dict.words[+t.substr(1)][0];
+        if          (i == 0) return Constants.questionWords[t.charCodeAt(0) - 65];
         return t;
       })
       .join(' ')
@@ -40,27 +41,30 @@ export class QueryProcessor {
   }
 
 
-  partialEncodeQuery(tokens: string[]) {
-    return _flow(...this.processorFuncs.slice(0, -1))(tokens);
+  partialEncodeQuery(words: string[]) {
+    return _flow(...this.processorFuncs.slice(0, -1))(words);
   }
 
 
-  isQuery(queryTokens: string[]) {
-    if (queryTokens.length < 2 || !queryTokens[0].trim())
+  isValidQuery(query: string|string[]) {
+    const queryWords =
+      (typeof query == 'string') ? query.split(' ') : query
+    ;
+    if (queryWords.length < 2 || !queryWords[0].trim())
       return false
     ;
-    const queryToken = this.filterContractions([queryTokens[0], queryTokens[1]])[0];
-    return !!~Constants.queryTokens.indexOf(queryToken);
+    const queryWord = this.filterContractions([queryWords[0]])[0];
+    return Constants.questionWords.includes(queryWord);
   }
 
   /**
    * Replace all contractions with their word counterparts
    * (ex: `can't => can not`)
    */
-  filterContractions(queryTokens: string[]) {
-    // First token is always a query word.
-    queryTokens[0] = queryTokens[0].replace(/'s/g, ' is');
-    const queryTokenStr = queryTokens.join(' ');
+  filterContractions(words: string[]) {
+    // First word is always a question word.
+    words[0] = words[0].replace(/'s/g, ' is');
+    const queryTokenStr = words.join(' ');
     return Constants.contractionMatrix.reduce(
       (queryStr, matrix) => (queryStr.replace(matrix[0], matrix[1])),
       queryTokenStr
@@ -68,52 +72,54 @@ export class QueryProcessor {
   }
 
   /** Filters characters that don't belong in a query. */
-  trimUnknownChars(queryTokens: string[]) {
-    return queryTokens.map(v => v.replace(Constants.matchInvalidChars, ''));
+  trimUnknownChars(words: string[]) {
+    return words.map(v => v.replace(Constants.matchInvalidChars, ''));
   }
 
-  /** Replaces the query word with a unique uppercase character. */
-  applyQueryCode(queryTokens: string[]) {
-    const index = Constants.queryTokens.indexOf(queryTokens[0]);
+  /** Replaces the question word with a unique uppercase character. */
+  applyQuestionCode(words: string[]) {
+    const index = Constants.questionWords.indexOf(words.shift()!);
     return (
       ~index
-        ? [String.fromCharCode(65 + index), ...queryTokens.slice(1)]
-        : queryTokens.slice()
+        ? [String.fromCharCode(65 + index), ...words]
+        : words.slice()
     );
   }
 
+
   /** Removes optional words from a query. */
-  trimOptional(queryTokens: string[]) {
-    return queryTokens.filter(token => !~Constants.optionalTokens.indexOf(token));
+  trimOptionalWords(words: string[]) {
+    return words.filter(token => !~Constants.optionalWords.indexOf(token));
   }
 
+
   /** Replaces all contextual words with a unique code. */
-  applyContextCodes(queryTokens: string[]) {
-    return queryTokens.map(token => {
-      const index = Constants.contextTokens.indexOf(token);
-      return (
-        ~index
-          ? (index < 10) ? `%0${index}` : `%${index}`
-          : token
-      );
+  applyContextCodes(words: string[]) {
+    return words.map(token => {
+      const index = Constants.contextWords.indexOf(token);
+      return ~index ? `%${padNumber(index)}` : token;
     });
   }
 
+
   /** Replaces all `dictionary` words with a unique code */
   applyDictionaryCodes(dictionary: DictionaryManager) {
-    return (tokens: string[]) => {
-      return tokens.map(token => dictionary.encodeWord(token));
+    return (words: string[]) => {
+      return words.map(word => {
+        const pos = dictionary.findWordPosition(word);
+        return pos ? `&${padNumber(pos[0])}` : word;
+      });
     };
   }
 
 
-  toBase64WithPipe(tokens: string[]) {
-    return Buffer.from(tokens.join('|')).toString('base64');
+  convertWordsToId(words: string[]) {
+    return Buffer.from(words.join('|')).toString('base64');
   }
 
 
-  /** Decodes a query id back to its original tokens. */
-  private _fromIdToTokens(id: string) {
+  /** Converts a query id back to its encoded word array. */
+  convertIdToRawWords(id: string) {
     return (
       Buffer
         .from(id, 'base64')
@@ -121,6 +127,8 @@ export class QueryProcessor {
         .split('|')
     );
   }
+
+
 }
 
 

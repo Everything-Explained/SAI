@@ -93,7 +93,7 @@ export class InquiryManager {
 
   get questions() {
     return this._inquiries.map(inquiry => {
-      return inquiry.ids.map(id => this._contemplate.toQueryTokens(id));
+      return inquiry.ids.map(id => this._contemplate.decodeIdToQuery(id));
     });
   }
 
@@ -129,11 +129,10 @@ export class InquiryManager {
 
 
   getInquiryByQuestion(question: string) {
-    const qTokens = question.split(' ');
-    if (!this._contemplate.isQuery(qTokens))
+    if (!this._contemplate.isValidQuery(question))
       return InqErrorCode.Question
     ;
-    const id = this._contemplate.toQueryId(qTokens, false)!;
+    const id = this._contemplate.encodeQueryToId(question, false)!;
     return this.getInquiryById(id);
   }
 
@@ -149,7 +148,7 @@ export class InquiryManager {
 
 
   questionsOf(inquiry: Inquiry) {
-    return inquiry.ids.map(id => this._contemplate.toQueryTokens(id));
+    return inquiry.ids.map(id => this._contemplate.decodeIdToQuery(id));
   }
 
 
@@ -245,7 +244,7 @@ export class InquiryManager {
 
   toInquiryDoc(inquiry: Inquiry) {
     const questions =
-      inquiry.ids.map(id => `- ${this.contemplate.toQueryTokens(id)}`)
+      inquiry.ids.map(id => `- ${this.contemplate.decodeIdToQuery(id)}`)
     ;
     const frontMatter =
 `---
@@ -293,7 +292,7 @@ ${inquiry.answer}`
     const ids: string[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const id = this._contemplate.toQueryId(q.split(' '));
+      const id = this._contemplate.encodeQueryToId(q);
       if (!id) return InqErrorCode.Question
       ;
       const idIndex = ids.indexOf(id);
