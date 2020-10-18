@@ -1,5 +1,8 @@
 
 export function padStr(str: string, amount: number, char: string) {
+  if (amount < 0)
+    throw Error('Amount must be greater than 0.')
+  ;
   while (amount--) { str = `${char}${str}`; }
   return str;
 }
