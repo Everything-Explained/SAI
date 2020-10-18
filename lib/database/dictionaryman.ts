@@ -1,6 +1,7 @@
 import { FileOps } from "../core/file-ops";
 import { existsSync } from 'fs';
 import { Type as AvroType } from 'avsc';
+import { padNumber } from "../core/utils";
 
 
 
@@ -9,6 +10,22 @@ export const dictSchema = AvroType.forSchema({
   type: 'array', items: { type: 'array', items: 'string' }
 });
 
+
+export enum DictErrorCode {
+  AlreadyExists,
+  IndexLessThanZero,
+  IndexNotFound,
+  WordNotFound,
+}
+
+type AddWordError = DictErrorCode.AlreadyExists;
+type AddWordToIndexError =
+  DictErrorCode.AlreadyExists |
+  DictErrorCode.IndexLessThanZero |
+  DictErrorCode.IndexNotFound
+;
+type DelWordError = DictErrorCode.WordNotFound;
+type DelWordAtIndexError = DictErrorCode.IndexNotFound;
 
 
 export class DictionaryManager {
@@ -47,8 +64,7 @@ export class DictionaryManager {
 
   hasWord(word: string): boolean {
     if (!this._wordsRef.length) return false;
-    if (~this._wordsRef.indexOf(word)) return true;
-    return false;
+    return this._wordsRef.includes(word);
   }
 
   /**
@@ -82,56 +98,45 @@ export class DictionaryManager {
   }
 
 
-  addWord(word: string): Error|null {
-    if (this.hasWord(word)) { return Error('Word already exists.'); }
+  addWord(word: string): AddWordError|true {
+    if (this.hasWord(word)) { return DictErrorCode.AlreadyExists; }
     this._words.push([word]);
     this._updateWordRef();
-    return null;
+    return true;
   }
 
 
-  addWordToIndex(word: string, index: number): Error|null {
-    if (this.hasWord(word)) { return Error('Word already exists.'); }
-    if (index < 0)          { return Error('Index must be greater than -1.'); }
-    if (!this._words[index]) { return Error(`The index "${index}" does NOT exist.`); }
+  addWordToIndex(word: string, index: number): AddWordToIndexError|true {
+    if (this.hasWord(word))  { return DictErrorCode.AlreadyExists; }
+    if (index < 0)           { return DictErrorCode.IndexLessThanZero; }
+    if (!this._words[index]) { return DictErrorCode.IndexNotFound; }
     this._words[index].push(word);
     this._updateWordRef();
-    return null;
+    return true;
   }
 
 
-  delWord(word: string): Error|null {
+  delWord(word: string): DelWordError|true {
     const wordPos = this.findWordPosition(word);
-    if (!wordPos) { return Error('Word does NOT exist at.'); }
+    if (!wordPos) { return DictErrorCode.WordNotFound; }
     const [row, col] = wordPos;
     this._words[row].splice(col, 1)
     ;
-    // Delete entire index if it's empty
+    // Delete entire row if it's empty
     if (!this._words[row].length) {
       this._words.splice(row, 1);
     }
     this._updateWordRef();
-    return null;
+    return true;
   }
 
 
-  delWordsAtIndex(index: number): Error|null {
+  delWordsAtIndex(index: number): DelWordAtIndexError|true {
     const words = this.findWordsAtIndex(index);
-    if (!words) { return Error(`Index "${index}" NOT found.`); }
+    if (!words) { return DictErrorCode.IndexNotFound; }
     this._words.splice(index, 1);
     this._updateWordRef();
-    return null;
-  }
-
-
-  /**
-   * Encodes a `word` based on its index position in
-   * the words Array.
-   */
-  encodeWord(word: string) {
-    const pos = this.findWordPosition(word);
-    if (!pos) return word;
-    return pos[0] < 10 ? `&0${pos[0]}` : `&${pos[0]}`;
+    return true;
   }
 
 

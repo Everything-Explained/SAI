@@ -1,6 +1,6 @@
 import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
-import { DictionaryManager, dictSchema } from '../lib/database/dictionaryman';
+import { DictionaryManager, dictSchema, DictErrorCode } from '../lib/database/dictionaryman';
 import del from 'del';
 import { Constants } from '../lib/variables/constants';
 import smap from 'source-map-support';
@@ -8,170 +8,184 @@ import smap from 'source-map-support';
 smap.install();
 
 const fileOps = new FileOps();
-const folderPath = `${Constants.mockDir}/dictionary`;
-fileOps.createFolder(folderPath);
-fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true)
+const mockFolderPath = `${Constants.mockDir}/dictionary`;
+fileOps.createFolder(mockFolderPath);
+fileOps.save(`${mockFolderPath}/dictionary.said.gzip`, dictSchema, [], true)
 .then(() => {
-  const dict = new DictionaryManager(fileOps, `${folderPath}/dictionary.said.gzip`);
+  const dict = new DictionaryManager(fileOps, `${mockFolderPath}/dictionary.said.gzip`);
   t('Dictionary{}', async t => {
-    t.test('constructor()' , async t => {
-      t.throws(() => new DictionaryManager(fileOps, './invalid/path'),
-        'throws error on invalid path.'
-      );
+    t.test('constructor() throws error on invalid path.', async t => {
+      t.throws(() => new DictionaryManager(fileOps, './invalid/path'));
     });
 
-    t.test('addWord(): Error|null', async t => {
-      t.is(dict.addWord('test'), null,
-        'returns null if no errors occur.'
-      );
-      t.ok(dict.addWord('test'),
-        'returns Error() if word exists.'
-      );
-      t.same(dict.words, [['test']],
-        'adds a word to the internal word list.'
-      );
-      t.is(dict.flatWords[0], 'test',
-        'updates wordsRefList with added word.'
-      );
+    t.test('addWord() returns true if no errors occur.', async t => {
+      t.is(dict.addWord('test'), true);
+      dict.words = [];
     });
 
-    t.test('addWordToIndex(): Error|null', async t => {
+    t.test('addWord() returns an Error{} if word exists.', async t => {
+      dict.addWord('test');
+      t.is(dict.addWord('test'), DictErrorCode.AlreadyExists);
+      dict.words = [];
+    });
+
+    t.test('addWord() adds a word to the internal word list.', async t => {
+      dict.addWord('test');
+      t.same(dict.words, [['test']]);
+      dict.words = [];
+    });
+
+    t.test('addWord() updates internal word reference with added word.', async t => {
+      dict.addWord('test');
+      dict.addWord('test2');
+      t.same(dict.flatWords, ['test', 'test2']);
+      dict.words = [];
+    });
+
+    t.test('addWordToIndex() appends word to specified index and returns true.', async t => {
       dict.words = [['test']];
-      const goodWordAdd = dict.addWordToIndex('test2', 0);
-      t.is(goodWordAdd, null,
-        'returns null on success.'
-      );
-      t.ok(~dict.addWordToIndex('blah', -1)!.message.indexOf('-1'),
-        'returns an Error() if index is < 0'
-      );
-      t.ok(dict.addWordToIndex('test', 0)!.message,
-        'returns an Error() if word already exists.'
-      );
-      t.ok(dict.addWordToIndex('blah', 10)!.message,
-        'returns an Error() if index not found.'
-      );
-      t.same(dict.words[0], ['test', 'test2'],
-        'updates word list with new word'
-      );
-      t.ok(dict.flatWords.includes('test2'),
-        'updates word reference list with new word'
-      );
+      t.is(dict.addWordToIndex('test2', 0), true);
+      t.same(dict.words, [['test', 'test2']]);
+      dict.words = [];
     });
 
-    t.test('findWordPosition(): [number, number] | undefined', async t => {
-      dict.words = [['test'], ['test2', 'test4', 'test5'], ['test3']];
-      const goodResult = dict.findWordPosition('test5');
-      const errorResult = dict.findWordPosition('invalid');
-
-      t.ok(goodResult![0] == 1 && goodResult![1] == 2,
-        'returns the exact row and column of a found word.'
-      );
-      t.is(dict.findWordPosition('test')![0], 0,
-        'finds word at beginning of array.'
-      );
-      t.is(dict.findWordPosition('test3')![0], 2,
-        'finds word at end of array.');
-      t.is(errorResult, undefined,
-        'returns undefined when word is NOT found.'
-      );
+    t.test('addWordToIndex() returns an error code for all expected errors.', async t => {
+      dict.words = [['test']];
+      t.is(dict.addWordToIndex('blah', -1), DictErrorCode.IndexLessThanZero);
+      t.is(dict.addWordToIndex('test',  0), DictErrorCode.AlreadyExists);
+      t.is(dict.addWordToIndex('blah', 10), DictErrorCode.IndexNotFound);
+      dict.words = [];
     });
 
-    t.test('findWordsAtIndex(): string[] | undefined', async t => {
+    t.test('addWordToIndex() updates word reference list with new word.', async t => {
+      dict.words = [['test']];
+      dict.addWordToIndex('test2', 0);
+      t.same(dict.flatWords, ['test', 'test2']);
+      dict.words = [];
+    });
+
+    t.test('findWordPosition() returns the exact row and column of a found word.', async t => {
+      dict.words = [['test'], ['test2', 'test3']];
+      t.same(dict.findWordPosition('test3'), [1, 1]);
+      dict.words = [];
+    });
+
+    t.test('findWordPosition() returns position of word at beginning of array.', async t => {
+      dict.words = [['test'], ['test2', 'test3']];
+      t.same(dict.findWordPosition('test'), [0, 0]);
+      dict.words = [];
+    });
+
+    t.test('findWordPosition() returns position of word at end of array.', async t => {
+      dict.words = [['test'], ['test2', 'test3'], ['test5']];
+      t.same(dict.findWordPosition('test5'), [2, 0]);
+      dict.words = [];
+    });
+
+    t.test('findWordPosition() returns undefined when word is NOT found.', async t => {
+      dict.words = [['test'], ['test2', 'test3']];
+      t.same(dict.findWordPosition('willNotFind'), undefined);
+      dict.words = [];
+    });
+
+    t.test('findWordsAtIndex() returns array of words at specified index position.', async t => {
       dict.words = [['test'], ['test2'], ['test3']];
-      const goodResult = dict.findWordsAtIndex(1);
-      const badResult = dict.findWordsAtIndex(10);
-
-      t.same(goodResult, ['test2'],
-        'returns an array of words where the specified word was found.'
-      );
-      t.notEqual(goodResult, dict.words[1],
-        'returns a new array.'
-      );
-      t.is(dict.findWordsAtIndex(-12), undefined,
-        'returns undefined on negative numbers as they are NOT truthy.'
-      );
-      t.is(badResult, undefined,
-        'returns undefined when word is NOT found.'
-      );
+      t.same(dict.findWordsAtIndex(1), ['test2']);
+      dict.words = [];
     });
 
-    t.test('delWord(): Error|null', async t => {
+    t.test('findWordsAtIndex() returns a new array.', async t => {
+      dict.words = [['test'], ['test2'], ['test3']];
+      t.isNot(dict.findWordsAtIndex(1), dict.words[1]);
+      dict.words = [];
+    });
+
+    t.test('findWordsAtIndex() returns undefined when word is NOT found.', async t => {
+      dict.words = [['test'], ['test2'], ['test3']];
+      t.is(dict.findWordsAtIndex(-12), undefined);
+      t.is(dict.findWordsAtIndex(5), undefined);
+      dict.words = [];
+    });
+
+    t.test('delWord() returns an error code if word does NOT exist.', async t => {
+      dict.words = [['test', 'test4']];
+      t.is(dict.delWord('test7'), DictErrorCode.WordNotFound);
+      dict.words = [];
+    });
+
+    t.test('delWord() returns true if word was deleted.', async t => {
+      dict.words = [['test', 'test4'], ['test2', 'test5']];
+      t.is(dict.delWord('test2'), true);
+      dict.words = [];
+    });
+
+    t.test('delWord() updates word list on success.', async t => {
+      dict.words = [['test', 'test4'], ['test2', 'test5']];
+      dict.delWord('test2');
+      t.same(dict.words[1], ['test5']);
+      dict.words = [];
+    });
+
+    t.test('delWord() updates word reference list on success.', async t => {
+      dict.words = [['test', 'test4'], ['test2', 'test5']];
+      dict.delWord('test2');
+      t.notOk(dict.flatWords.includes('test2'));
+      dict.words = [];
+    });
+
+    t.test('delWord() deletes word array if specified word is the only value in array.', async t => {
       dict.words = [['test', 'test4'], ['test2', 'test5'], ['test3']];
-      t.ok(dict.delWord('test7')!.message,
-        'returns an Error() if word does NOT exist.'
-      );
-      t.is(dict.delWord('test2'), null,
-        'returns null if word was deleted.'
-      );
-      t.notOk(dict.words[1].includes('test2'),
-        'updates word list on success.'
-      );
-      t.notOk(dict.flatWords.includes('test2'),
-        'updates word reference list on success.'
-      );
-      t.ok(dict.words[1].includes('test5'),
-        'deletes a word using column-index, leaving the row-index.'
-      );
-
-      dict.delWord('test5');
-      t.same(dict.words[1], ['test3'],
-        'deletes row-index if word is the only column-index in row.'
-      );
+      dict.delWord('test3');
+      t.is(dict.words.length, 2);
+      dict.words = [];
     });
 
-    t.test('delWordsAtIndex(): Error|null', async t => {
+    t.test('delWordsAtIndex() return error code when index NOT found.', async t => {
       dict.words = [['test'], ['test2', 'test3'], ['test4']];
-      const goodDelete = dict.delWordsAtIndex(1);
-      t.ok(~dict.delWordsAtIndex(5)!.message.indexOf('NOT found'),
-        'returns Error() when index NOT found.'
-      );
-      t.is(goodDelete, null,
-        'returns null on success.'
-      );
-      t.same(dict.words[1], ['test4'],
-        'deletes row index when word is found.'
-      );
-      t.is(dict.words.length, 2,
-        'deletes words from word list'
-      );
-      t.is(dict.flatWords.length, 2,
-        'deletes words from word list reference.'
-      );
+      t.is(dict.delWordsAtIndex(5), DictErrorCode.IndexNotFound);
+      dict.words = [];
     });
 
-    t.test('encodeWord(): string', async t => {
-      dict.words = [['a'],['b'],['c'],['d'],['e'],['f'],['g'],['h'],['i'],['j'],['k']];
-      t.is(dict.encodeWord('z'), 'z',
-        'returns the word unmodified if not in Dictionary.'
-      );
-      t.is(dict.encodeWord('a'), '&00',
-        'encodes a word based on its index position.'
-      );
-      t.is(dict.encodeWord('d'), '&03',
-        'will pad encodings that are found with an index < 10.'
-      );
-      t.is(dict.encodeWord('k'), '&10',
-        'will stop padding values when index > 9.'
-      );
+    t.test('delWordsAtIndex() returns true on success.', async t => {
+      dict.words = [['test'], ['test2', 'test3'], ['test4']];
+      t.is(dict.delWordsAtIndex(1), true);
+      dict.words = [];
     });
 
-    t.test('save(): Pomise<null>', t => {
-      dict.words = [['test', 'test1']];
+    t.test('delWordsAtIndex() deletes specified word at index when found.', async t => {
+      dict.words = [['test'], ['test2', 'test3'], ['test4']];
+      dict.delWordsAtIndex(1);
+      t.same(dict.words[1], ['test4']);
+      dict.words = [];
+    });
+
+    t.test('delWordsAtIndex() removes deleted words from word list.', async t => {
+      dict.words = [['test'], ['test2', 'test3'], ['test4']];
+      dict.delWordsAtIndex(1);
+      t.same(dict.words, [['test'], ['test4']]);
+      dict.words = [];
+    });
+
+    t.test('delWordsAtIndex() removes deleted words from word reference list.', async t => {
+      dict.words = [['test'], ['test2', 'test3'], ['test4']];
+      dict.delWordsAtIndex(1);
+      t.is(dict.flatWords.length, 2);
+      dict.words = [];
+    });
+
+
+    t.test('save() Successfully saves the files.', t => {
       t.plan(2);
+      dict.words = [['test', 'test1'], ['pickles']];
       dict.save()
         .then(() => {
-          t.pass('saves dictionary file.');
-          const words = fileOps.readDictStore(`${folderPath}/dictionary.said.gzip`);
-          t.same(words, [['test', 'test1']],
-            'saves same data that is in the in-memory object.'
-          );
-          del(folderPath);
+          t.pass('save completed without errors');
+          const words = fileOps.readDictStore(`${mockFolderPath}/dictionary.said.gzip`);
+          t.same(words, [['test', 'test1'], ['pickles']]);
         })
-        .catch(err => {
-          console.log(err);
-          t.fail(err.message);
-          del(folderPath);
-        });
+        .catch((err) => t.fail(err.message))
+        .finally(() => del(mockFolderPath))
+      ;
     });
 
   });
