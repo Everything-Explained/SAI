@@ -49,7 +49,7 @@ t('SAI Class', async t => {
 
       t.test('constructor() creates default storage files.', async t => {
         t.ok(existsSync(`${folderPath}/inquiries.said.gzip`));
-        t.ok(existsSync(`${folderPath}/dictionary.said.gzip`));
+        t.ok(existsSync(`${folderPath}/parity.said.gzip`));
       });
 
       t.test('constructor() should ignore file creation if they already exist.', t => {
@@ -60,8 +60,8 @@ t('SAI Class', async t => {
         });
       });
 
-      t.test('get dictionaryManager(): returns dictionary manager object', async t => {
-        t.ok(Array.isArray(sai.dictionaryManager.words));
+      t.test('get parityManager(): returns parity manager object', async t => {
+        t.ok(Array.isArray(sai.parityManager.words));
       });
 
       t.test('get inquiryManager(): returns inquiry manager object.', async t => {

@@ -1,41 +1,41 @@
 import { FileOps } from './core/file-ops';
-import { ParityManager, dictSchema } from './database/parity_manager';
+import { ParityManager, paritySchema } from './database/parity_manager';
 import { InquiryManager, inquiryScheme } from './database/inquiry_manager';
 
 
 export class SAI {
   private _dataFolder  : string;
   private _inquiryPath : string;
-  private _dictPath    : string;
-  private _dictMan!    : ParityManager;     // set in init()
-  private _inquiryMan! : InquiryManager; // set in init()
+  private _parityPath  : string;
+  private _parityMngr! : ParityManager;     // set in init()
+  private _inquiryMngr!: InquiryManager; // set in init()
   private _fileOps     : FileOps;
 
 
-  get dictionaryManager() {
-    return this._dictMan;
+  get parityManager() {
+    return this._parityMngr;
   }
 
   get inquiryManager() {
-    return this._inquiryMan;
+    return this._inquiryMngr;
   }
 
   get questions() {
-    return this._inquiryMan.questions;
+    return this._inquiryMngr.questions;
   }
 
 
   constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
     this._dataFolder  = dataFolderPath;
     this._inquiryPath = `${dataFolderPath}/inquiries.said.gzip`;
-    this._dictPath    = `${dataFolderPath}/dictionary.said.gzip`;
+    this._parityPath    = `${dataFolderPath}/parity.said.gzip`;
     this._fileOps     = new FileOps();
     this.init(isReady);
   }
 
 
   ask(question: string) {
-    return this._inquiryMan.getInquiryByQuestion(question);
+    return this._inquiryMngr.getInquiryByQuestion(question);
   }
 
 
@@ -46,10 +46,10 @@ export class SAI {
    * @param inquiryDoc A string whose content is an Inquiry Document.
    */
   async addInquiry(inquiryDoc: string, limitSave = true) {
-    const res = this._inquiryMan.addInquiry(inquiryDoc);
+    const res = this._inquiryMngr.addInquiry(inquiryDoc);
     if (typeof res == 'number') return Promise.reject(res)
     ;
-    await this._inquiryMan.save(limitSave);
+    await this._inquiryMngr.save(limitSave);
     return Promise.resolve(res);
   }
 
@@ -59,10 +59,10 @@ export class SAI {
    * syntax.
    */
   async editInquiry(inquiryDoc: string, limitSave = true) {
-    const res = this._inquiryMan.editInquiry(inquiryDoc);
+    const res = this._inquiryMngr.editInquiry(inquiryDoc);
     if (typeof res == 'number') return Promise.reject(res)
     ;
-    await this._inquiryMan.save(limitSave);
+    await this._inquiryMngr.save(limitSave);
     return Promise.resolve(res);
   }
 
@@ -71,8 +71,8 @@ export class SAI {
     try {
       this._fileOps.createFolder(this._dataFolder);
       await this._createFiles();
-      this._dictMan = new ParityManager(this._fileOps, this._dictPath);
-      this._inquiryMan = new InquiryManager(this._fileOps, this._dictMan, this._inquiryPath);
+      this._parityMngr = new ParityManager(this._fileOps, this._parityPath);
+      this._inquiryMngr = new InquiryManager(this._fileOps, this._parityMngr, this._inquiryPath);
       isReadyCallback(null);
     }
     catch(e) {
@@ -85,8 +85,8 @@ export class SAI {
     if (!this._fileOps.fileExists(this._inquiryPath)) {
       await this._fileOps.save(this._inquiryPath, inquiryScheme, [], true, false);
     }
-    if (!this._fileOps.fileExists(this._dictPath)) {
-      await this._fileOps.save(this._dictPath, dictSchema, [], true, false);
+    if (!this._fileOps.fileExists(this._parityPath)) {
+      await this._fileOps.save(this._parityPath, paritySchema, [], true, false);
     }
   }
 }

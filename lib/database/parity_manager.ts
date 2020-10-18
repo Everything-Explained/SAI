@@ -4,8 +4,8 @@ import { Type as AvroType } from 'avsc';
 
 
 
-export const dictSchema = AvroType.forSchema({
-  name: 'dictionary',
+export const paritySchema = AvroType.forSchema({
+  name: 'parityTable',
   type: 'array', items: { type: 'array', items: 'string' }
 });
 
@@ -44,7 +44,7 @@ export class ParityManager {
   }
 
   /**
-   * Retrieves Array of all dictionary words
+   * Retrieves Array of all parity words
    * pushed into a single dimension array.
    */
   get flatWords(): string[] {
@@ -54,9 +54,9 @@ export class ParityManager {
 
   constructor(private _fileOps: FileOps, private _path: string) {
     if (!existsSync(_path))
-      throw Error(`Path to dictionary: "${_path}" does NOT exist.`)
+      throw Error(`Path to parity storage: "${_path}" does NOT exist.`)
     ;
-    this._words = _fileOps.readDictStore(_path);
+    this._words = _fileOps.readParityStore(_path);
     this._updateWordRef();
   }
 
@@ -140,7 +140,7 @@ export class ParityManager {
 
 
   save() {
-    return this._fileOps.save(this._path, dictSchema, this._words, true);
+    return this._fileOps.save(this._path, paritySchema, this._words, true);
   }
 
 

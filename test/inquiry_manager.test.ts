@@ -2,7 +2,7 @@ import del from 'del';
 import { readFileSync } from 'fs';
 import tape from 'tape';
 import { FileOps } from '../lib/core/file-ops';
-import { ParityManager, dictSchema } from '../lib/database/parity_manager';
+import { ParityManager, paritySchema } from '../lib/database/parity_manager';
 import { InquiryManager, Inquiry, inquiryScheme, InqErrorCode, InquiryDocObj } from '../lib/database/inquiry_manager';
 import { Constants } from '../lib/variables/constants';
 import fm from 'front-matter';
@@ -47,22 +47,22 @@ const testData = [
 
 
 fileOps.createFolder(folderPath);
-fileOps.save(`${folderPath}/dictionary.said.gzip`, dictSchema, [], true, false);
+fileOps.save(`${folderPath}/parity.said.gzip`, paritySchema, [], true, false);
 fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, false)
 .then(err => {
   if (err) {
     console.log(err);
     throw err; // We want to kill testing
   }
-  const dict = new ParityManager(fileOps, `${folderPath}/dictionary.said.gzip`);
+  const parityMngr = new ParityManager(fileOps, `${folderPath}/parity.said.gzip`);
   tape('Inquiry{}', async t => {
     let inquiryMan: InquiryManager;
     t.test('contructor()', async t => {
       t.doesNotThrow(
-        () => inquiryMan = new InquiryManager(fileOps, dict, `${folderPath}/replies.said.gzip`),
+        () => inquiryMan = new InquiryManager(fileOps, parityMngr, `${folderPath}/replies.said.gzip`),
         'finds existing replies path.'
       );
-      t.throws(() => new InquiryManager(fileOps, dict, 'blah/blah.asdf'),
+      t.throws(() => new InquiryManager(fileOps, parityMngr, 'blah/blah.asdf'),
         'throws an error if the path does not exist.'
       );
     });
@@ -263,7 +263,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
       const identicalQDoc = readFileSync(`${mocks}/qTruncatedTest.txt`  , 'utf-8');
       const invalidQDoc   = readFileSync(`${mocks}/qInvalidTest.txt`    , 'utf-8');
       const handToEdit    = readFileSync(`${mocks}/handToEditTest.txt`  , 'utf-8');
-      dict.words          = [['large', 'big', 'enormous', 'giant']];
+      parityMngr.words          = [['large', 'big', 'enormous', 'giant']];
       const identicalVal  = inquiryMan.addInquiry(identicalQDoc) as InqErrorCode;
       t.is(
         typeof inquiryMan.addInquiry(errorDoc), 'number',

@@ -1,7 +1,7 @@
 import { QueryProcessor } from "../lib/core/query-processor";
 import t from 'tape';
 import { Constants } from "../lib/variables/constants";
-import { ParityManager, dictSchema } from "../lib/database/parity_manager";
+import { ParityManager, paritySchema } from "../lib/database/parity_manager";
 import { FileOps } from "../lib/core/file-ops";
 import del from "del";
 import smap from 'source-map-support';
@@ -17,10 +17,10 @@ const testWords = [
   ['test7'], ['test8'], ['test9'], ['test10'], ['test11']
 ];
 fileOps.createFolder('./test/contemplator');
-fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
+fileOps.save('./test/contemplator/parity.said.gzip', paritySchema, [], true)
 .then((err) => {
-  const dict = new ParityManager(fileOps, './test/contemplator/dictionary.said.gzip');
-  const contemplate = new QueryProcessor(dict);
+  const parityMngr = new ParityManager(fileOps, './test/contemplator/parity.said.gzip');
+  const contemplate = new QueryProcessor(parityMngr);
 
   t('QueryProcessor{}', async t => {
 
@@ -106,35 +106,35 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
       t.isNot(contemplate.applyContextCodes(notMutated), notMutated);
     });
 
-    t.test('applyDictionaryCodes() returns word array with dictionary words replaced by a code.', async t => {
-      dict.words = testWords;
-      const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
-      t.same(dictCodeFunc(['i', 'am', 'test11']), ['i', 'am', '&11']);
+    t.test('applyParityCodes() returns word array with parity words replaced by a code.', async t => {
+      parityMngr.words = testWords;
+      const parityCodeFunc = contemplate.applyParityCodes(parityMngr);
+      t.same(parityCodeFunc(['i', 'am', 'test11']), ['i', 'am', '&11']);
     });
 
-    t.test('applyDictionaryCodes() adds 0 placeholder to codes when dictionary-word index < 10.', async t => {
-      dict.words = testWords;
-      const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
-      t.same(dictCodeFunc(['test5']), ['&05']);
+    t.test('applyParityCodes() adds 0 placeholder to codes when parity-word index < 10.', async t => {
+      parityMngr.words = testWords;
+      const parityCodeFunc = contemplate.applyParityCodes(parityMngr);
+      t.same(parityCodeFunc(['test5']), ['&05']);
     });
 
-    t.test('applyDictionaryCodes() uses dictionary row position to create code.', async t => {
-      dict.words = testWords;
-      const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
-      t.same(dictCodeFunc(['sidetest1']), ['&01']);
+    t.test('applyParityCodes() uses parity-word row position to create code.', async t => {
+      parityMngr.words = testWords;
+      const parityCodeFunc = contemplate.applyParityCodes(parityMngr);
+      t.same(parityCodeFunc(['sidetest1']), ['&01']);
     });
 
-    t.test('applyDictionaryCodes() returns a new array of words when words are mutated.', async t => {
-      dict.words = testWords;
-      const mutates = [dict.words[0][1]];
-      const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
-      t.isNot(dictCodeFunc(mutates), mutates);
+    t.test('applyParityCodes() returns a new array of words when words are mutated.', async t => {
+      parityMngr.words = testWords;
+      const mutates = [parityMngr.words[0][1]];
+      const parityCodeFunc = contemplate.applyParityCodes(parityMngr);
+      t.isNot(parityCodeFunc(mutates), mutates);
     });
 
-    t.test('applyDictionaryCodes() returns a new array of words when words are NOT mutated.', async t => {
+    t.test('applyParityCodes() returns a new array of words when words are NOT mutated.', async t => {
       const notMutated = ['willnotmutate'];
-      const dictCodeFunc = contemplate.applyDictionaryCodes(dict);
-      t.isNot(dictCodeFunc(notMutated), notMutated);
+      const parityCodeFunc = contemplate.applyParityCodes(parityMngr);
+      t.isNot(parityCodeFunc(notMutated), notMutated);
     });
 
     t.test('convertWordsToId() returns a base64 encoded string.', async t => {
@@ -154,29 +154,29 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('encodeQueryToId() converts a complex question to an encoded base64 string.', async t => {
-      dict.words = [['large', 'big']];
+      parityMngr.words = [['large', 'big']];
       const res = contemplate.encodeQueryToId(`why "can't" i see how large @god is`)!;
       t.is(res, 'RnwlMTd8JTAzfHNlZXwlMTZ8JjAwfGdvZA==');
-      dict.words = [];
+      parityMngr.words = [];
     });
 
     t.test('encodeQueryToId() combines similar words to a single code.', async t => {
-      dict.words = [['large', 'big']];
+      parityMngr.words = [['large', 'big']];
       const res1 = contemplate.encodeQueryToId(`why "can't" i see how large @god is`)!;
       const res2 = contemplate.encodeQueryToId(`why can't; i see how big |\\god is`)!;
       t.is(res1, res2);
-      dict.words = [];
+      parityMngr.words = [];
     });
 
     t.test('encodeQueryToId() uses all internal functions to encode query.', async t => {
-      dict.words = [['large', 'big']];
+      parityMngr.words = [['large', 'big']];
       const res = contemplate.encodeQueryToId(`why can't; i see how big |\\god is`)!;
       t.is(contemplate.decodeIdToQuery(res), 'why not i see how large god');
-      dict.words = [];
+      parityMngr.words = [];
     });
 
     t.test('decodeIdToQuery() returns a question relative to the provided code.', async t => {
-      dict.words = [['large', 'big']];
+      parityMngr.words = [['large', 'big']];
       const str = contemplate.decodeIdToQuery(
         contemplate.encodeQueryToId('how big is this sun', false)!)
       ;
@@ -184,11 +184,11 @@ fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
     });
 
     t.test('partialEncodeQuery() returns a unique id without base64 encoding.', async t => {
-      dict.words = [['god']];
+      parityMngr.words = [['god']];
       const q = 'what is the love of god'.split(' ');
       const test = contemplate.partialEncodeQuery(q).join('');
       t.is(test, 'Clove%04&00');
-      dict.words = [];
+      parityMngr.words = [];
     });
 
 

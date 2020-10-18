@@ -3,7 +3,7 @@ import del from 'del';
 import { existsSync, writeFile } from "fs";
 import t from 'tape';
 import { Type as AvroType } from 'avsc';
-import { dictSchema } from "../lib/database/parity_manager";
+import { paritySchema } from "../lib/database/parity_manager";
 import { Inquiry, inquiryScheme } from "../lib/database/inquiry_manager";
 import { promisify } from "util";
 import { Constants } from "../lib/variables/constants";
@@ -31,7 +31,7 @@ const mockInquiryData = [{
     editedBy: '',
 }] as Inquiry[];
 
-const mockDictData = [
+const mockParityData = [
   ['large', 'big'],
   ['small', 'tiny']
 ];
@@ -128,17 +128,18 @@ t('File Operations', async t => {
     ;
   });
 
-  t.test('readDictStore() returns a dictionary file into a JSON object..', async t => {
+  t.test('readParityStore() returns a parity storage file into a JSON object..', async t => {
     const path = genRandomFilePath();
-    await fileOps.save(path, dictSchema, mockDictData, true, false);
-    t.same(mockDictData, mockDictData);
+    await fileOps.save(path, paritySchema, mockParityData, true, false);
+    const savedParityData = fileOps.readParityStore(path);
+    t.same(mockParityData, savedParityData);
   });
 
-  t.test('readDictStore() throws an error if data fails schema conversion.', async t => {
+  t.test('readParityStore() throws an error if data fails schema conversion.', async t => {
     const path = genRandomFilePath();
     await writeFileAsync(path, JSON.stringify({ hello: ''}), { encoding: 'binary'});
     t.throws(
-      () => fileOps.readDictStore(path),
+      () => fileOps.readParityStore(path),
       /(truncated buffer)|(incorrect header)/g)
     ;
     del(mockFolder); // ############# Cleanup for ALL tests #############

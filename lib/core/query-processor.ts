@@ -12,12 +12,12 @@ export class QueryProcessor {
     this.trimUnknownChars,
     this.applyQuestionCode,
     this.applyContextCodes,
-    this.applyDictionaryCodes(this.dict),
+    this.applyParityCodes(this.parityMngr),
     this.trimOptionalWords,
     this.convertWordsToId
   ]
 
-  constructor(private dict: ParityManager) {}
+  constructor(private parityMngr: ParityManager) {}
 
 
   encodeQueryToId(query: string, checkQuery = true): string|undefined {
@@ -32,7 +32,7 @@ export class QueryProcessor {
     return (
       words.map((t, i) => {
         if (t.includes('%')) return Constants.contextWords[+t.substr(1)];
-        if (t.includes('&')) return this.dict.words[+t.substr(1)][0];
+        if (t.includes('&')) return this.parityMngr.words[+t.substr(1)][0];
         if          (i == 0) return Constants.questionWords[t.charCodeAt(0) - 65];
         return t;
       })
@@ -102,11 +102,11 @@ export class QueryProcessor {
   }
 
 
-  /** Replaces all `dictionary` words with a unique code */
-  applyDictionaryCodes(dictionary: ParityManager) {
+  /** Replaces all parity-words with a unique code */
+  applyParityCodes(parityMngr: ParityManager) {
     return (words: string[]) => {
       return words.map(word => {
-        const pos = dictionary.findWordPosition(word);
+        const pos = parityMngr.findWordPosition(word);
         return pos ? `&${padNumber(pos[0])}` : word;
       });
     };

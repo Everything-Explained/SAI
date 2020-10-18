@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFile } from "fs";
 import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
-import { dictSchema } from "../database/parity_manager";
+import { paritySchema } from "../database/parity_manager";
 import { InquiryRecord, Inquiry, inquiryScheme } from "../database/inquiry_manager";
 import avro from 'avsc';
 
@@ -43,10 +43,10 @@ export class FileOps {
   }
 
 
-  readDictStore(filePath: string): string[][] {
+  readParityStore(filePath: string): string[][] {
     const zippedWords = readFileSync(filePath);
     const unzippedWords = gunzipSync(zippedWords);
-    return dictSchema.fromBuffer(unzippedWords);
+    return paritySchema.fromBuffer(unzippedWords);
   }
 
 

@@ -110,14 +110,14 @@ export class InquiryManager {
 
 
   constructor(private _fileOps: FileOps,
-              private _dict: ParityManager,
+              private _parityMngr: ParityManager,
               private _path: string)
   {
     if (!existsSync(_path))
       throw Error(`Path to inquiries: "${_path}" does NOT exist.`)
     ;
     this._inquiries   = _fileOps.readInquiryStore(_path);
-    this._contemplate = new QueryProcessor(_dict);
+    this._contemplate = new QueryProcessor(_parityMngr);
     this.inquiries;
   }
 
