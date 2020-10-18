@@ -1,7 +1,6 @@
 import { FileOps } from "../core/file-ops";
 import { existsSync } from 'fs';
 import { Type as AvroType } from 'avsc';
-import { padNumber } from "../core/utils";
 
 
 
