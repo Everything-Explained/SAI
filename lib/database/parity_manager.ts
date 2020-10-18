@@ -11,24 +11,24 @@ export const dictSchema = AvroType.forSchema({
 });
 
 
-export enum DictErrorCode {
+export enum ParityErrorCode {
   AlreadyExists,
   IndexLessThanZero,
   IndexNotFound,
   WordNotFound,
 }
 
-type AddWordError = DictErrorCode.AlreadyExists;
+type AddWordError = ParityErrorCode.AlreadyExists;
 type AddWordToIndexError =
-  DictErrorCode.AlreadyExists |
-  DictErrorCode.IndexLessThanZero |
-  DictErrorCode.IndexNotFound
+  ParityErrorCode.AlreadyExists |
+  ParityErrorCode.IndexLessThanZero |
+  ParityErrorCode.IndexNotFound
 ;
-type DelWordError = DictErrorCode.WordNotFound;
-type DelWordAtIndexError = DictErrorCode.IndexNotFound;
+type DelWordError = ParityErrorCode.WordNotFound;
+type DelWordAtIndexError = ParityErrorCode.IndexNotFound;
 
 
-export class DictionaryManager {
+export class ParityManager {
   private _words!     : string[][];    // set in init()
   private _wordsRef!  : string[];      // set in init()
 
@@ -71,7 +71,7 @@ export class DictionaryManager {
    * Retrieves an Array of synonyms at the given `index`; or
    * _undefined_ if the `index` is not found.
    */
-  findWordsAtIndex(index: number): undefined | string[] {
+  findWordsAt(index: number): undefined | string[] {
     const words = this._words[index];
     return (
       words
@@ -99,7 +99,7 @@ export class DictionaryManager {
 
 
   addWord(word: string): AddWordError|true {
-    if (this.hasWord(word)) { return DictErrorCode.AlreadyExists; }
+    if (this.hasWord(word)) { return ParityErrorCode.AlreadyExists; }
     this._words.push([word]);
     this._updateWordRef();
     return true;
@@ -107,9 +107,9 @@ export class DictionaryManager {
 
 
   addWordToIndex(word: string, index: number): AddWordToIndexError|true {
-    if (this.hasWord(word))  { return DictErrorCode.AlreadyExists; }
-    if (index < 0)           { return DictErrorCode.IndexLessThanZero; }
-    if (!this._words[index]) { return DictErrorCode.IndexNotFound; }
+    if (this.hasWord(word))  { return ParityErrorCode.AlreadyExists; }
+    if (index < 0)           { return ParityErrorCode.IndexLessThanZero; }
+    if (!this._words[index]) { return ParityErrorCode.IndexNotFound; }
     this._words[index].push(word);
     this._updateWordRef();
     return true;
@@ -118,7 +118,7 @@ export class DictionaryManager {
 
   delWord(word: string): DelWordError|true {
     const wordPos = this.findWordPosition(word);
-    if (!wordPos) { return DictErrorCode.WordNotFound; }
+    if (!wordPos) { return ParityErrorCode.WordNotFound; }
     const [row, col] = wordPos;
     this._words[row].splice(col, 1)
     ;
@@ -132,8 +132,8 @@ export class DictionaryManager {
 
 
   delWordsAtIndex(index: number): DelWordAtIndexError|true {
-    const words = this.findWordsAtIndex(index);
-    if (!words) { return DictErrorCode.IndexNotFound; }
+    const words = this.findWordsAt(index);
+    if (!words) { return ParityErrorCode.IndexNotFound; }
     this._words.splice(index, 1);
     this._updateWordRef();
     return true;

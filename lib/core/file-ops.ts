@@ -2,8 +2,8 @@ import { existsSync, mkdirSync, readFileSync, writeFile } from "fs";
 import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
-import { dictSchema } from "../database/dictionaryman";
-import { InquiryRecord, Inquiry, inquiryScheme } from "../database/inquiryman";
+import { dictSchema } from "../database/parity_manager";
+import { InquiryRecord, Inquiry, inquiryScheme } from "../database/inquiry_manager";
 import avro from 'avsc';
 
 

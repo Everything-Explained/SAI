@@ -1,4 +1,4 @@
-import { DictionaryManager } from "../database/dictionaryman";
+import { ParityManager } from "../database/parity_manager";
 import { Constants } from "../variables/constants";
 import { flow as _flow } from 'lodash/fp';
 import { padNumber } from "./utils";
@@ -17,7 +17,7 @@ export class QueryProcessor {
     this.convertWordsToId
   ]
 
-  constructor(private dict: DictionaryManager) {}
+  constructor(private dict: ParityManager) {}
 
 
   encodeQueryToId(query: string, checkQuery = true): string|undefined {
@@ -103,7 +103,7 @@ export class QueryProcessor {
 
 
   /** Replaces all `dictionary` words with a unique code */
-  applyDictionaryCodes(dictionary: DictionaryManager) {
+  applyDictionaryCodes(dictionary: ParityManager) {
     return (words: string[]) => {
       return words.map(word => {
         const pos = dictionary.findWordPosition(word);

@@ -1,7 +1,7 @@
 import { QueryProcessor } from "../lib/core/query-processor";
 import t from 'tape';
 import { Constants } from "../lib/variables/constants";
-import { DictionaryManager, dictSchema } from "../lib/database/dictionaryman";
+import { ParityManager, dictSchema } from "../lib/database/parity_manager";
 import { FileOps } from "../lib/core/file-ops";
 import del from "del";
 import smap from 'source-map-support';
@@ -19,7 +19,7 @@ const testWords = [
 fileOps.createFolder('./test/contemplator');
 fileOps.save('./test/contemplator/dictionary.said.gzip', dictSchema, [], true)
 .then((err) => {
-  const dict = new DictionaryManager(fileOps, './test/contemplator/dictionary.said.gzip');
+  const dict = new ParityManager(fileOps, './test/contemplator/dictionary.said.gzip');
   const contemplate = new QueryProcessor(dict);
 
   t('QueryProcessor{}', async t => {

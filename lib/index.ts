@@ -1,13 +1,13 @@
 import { FileOps } from './core/file-ops';
-import { DictionaryManager, dictSchema } from './database/dictionaryman';
-import { InquiryManager, inquiryScheme } from './database/inquiryman';
+import { ParityManager, dictSchema } from './database/parity_manager';
+import { InquiryManager, inquiryScheme } from './database/inquiry_manager';
 
 
 export class SAI {
   private _dataFolder  : string;
   private _inquiryPath : string;
   private _dictPath    : string;
-  private _dictMan!    : DictionaryManager;     // set in init()
+  private _dictMan!    : ParityManager;     // set in init()
   private _inquiryMan! : InquiryManager; // set in init()
   private _fileOps     : FileOps;
 
@@ -71,7 +71,7 @@ export class SAI {
     try {
       this._fileOps.createFolder(this._dataFolder);
       await this._createFiles();
-      this._dictMan = new DictionaryManager(this._fileOps, this._dictPath);
+      this._dictMan = new ParityManager(this._fileOps, this._dictPath);
       this._inquiryMan = new InquiryManager(this._fileOps, this._dictMan, this._inquiryPath);
       isReadyCallback(null);
     }

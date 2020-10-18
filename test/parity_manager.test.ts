@@ -1,6 +1,6 @@
 import t from 'tape';
 import { FileOps } from '../lib/core/file-ops';
-import { DictionaryManager, dictSchema, DictErrorCode } from '../lib/database/dictionaryman';
+import { ParityManager, dictSchema, ParityErrorCode } from '../lib/database/parity_manager';
 import del from 'del';
 import { Constants } from '../lib/variables/constants';
 import smap from 'source-map-support';
@@ -12,10 +12,10 @@ const mockFolderPath = `${Constants.mockDir}/dictionary`;
 fileOps.createFolder(mockFolderPath);
 fileOps.save(`${mockFolderPath}/dictionary.said.gzip`, dictSchema, [], true)
 .then(() => {
-  const dict = new DictionaryManager(fileOps, `${mockFolderPath}/dictionary.said.gzip`);
+  const dict = new ParityManager(fileOps, `${mockFolderPath}/dictionary.said.gzip`);
   t('Dictionary{}', async t => {
     t.test('constructor() throws error on invalid path.', async t => {
-      t.throws(() => new DictionaryManager(fileOps, './invalid/path'));
+      t.throws(() => new ParityManager(fileOps, './invalid/path'));
     });
 
     t.test('addWord() returns true if no errors occur.', async t => {
@@ -25,7 +25,7 @@ fileOps.save(`${mockFolderPath}/dictionary.said.gzip`, dictSchema, [], true)
 
     t.test('addWord() returns an Error{} if word exists.', async t => {
       dict.addWord('test');
-      t.is(dict.addWord('test'), DictErrorCode.AlreadyExists);
+      t.is(dict.addWord('test'), ParityErrorCode.AlreadyExists);
       dict.words = [];
     });
 
@@ -51,9 +51,9 @@ fileOps.save(`${mockFolderPath}/dictionary.said.gzip`, dictSchema, [], true)
 
     t.test('addWordToIndex() returns an error code for all expected errors.', async t => {
       dict.words = [['test']];
-      t.is(dict.addWordToIndex('blah', -1), DictErrorCode.IndexLessThanZero);
-      t.is(dict.addWordToIndex('test',  0), DictErrorCode.AlreadyExists);
-      t.is(dict.addWordToIndex('blah', 10), DictErrorCode.IndexNotFound);
+      t.is(dict.addWordToIndex('blah', -1), ParityErrorCode.IndexLessThanZero);
+      t.is(dict.addWordToIndex('test',  0), ParityErrorCode.AlreadyExists);
+      t.is(dict.addWordToIndex('blah', 10), ParityErrorCode.IndexNotFound);
       dict.words = [];
     });
 
@@ -90,26 +90,26 @@ fileOps.save(`${mockFolderPath}/dictionary.said.gzip`, dictSchema, [], true)
 
     t.test('findWordsAtIndex() returns array of words at specified index position.', async t => {
       dict.words = [['test'], ['test2'], ['test3']];
-      t.same(dict.findWordsAtIndex(1), ['test2']);
+      t.same(dict.findWordsAt(1), ['test2']);
       dict.words = [];
     });
 
     t.test('findWordsAtIndex() returns a new array.', async t => {
       dict.words = [['test'], ['test2'], ['test3']];
-      t.isNot(dict.findWordsAtIndex(1), dict.words[1]);
+      t.isNot(dict.findWordsAt(1), dict.words[1]);
       dict.words = [];
     });
 
     t.test('findWordsAtIndex() returns undefined when word is NOT found.', async t => {
       dict.words = [['test'], ['test2'], ['test3']];
-      t.is(dict.findWordsAtIndex(-12), undefined);
-      t.is(dict.findWordsAtIndex(5), undefined);
+      t.is(dict.findWordsAt(-12), undefined);
+      t.is(dict.findWordsAt(5), undefined);
       dict.words = [];
     });
 
     t.test('delWord() returns an error code if word does NOT exist.', async t => {
       dict.words = [['test', 'test4']];
-      t.is(dict.delWord('test7'), DictErrorCode.WordNotFound);
+      t.is(dict.delWord('test7'), ParityErrorCode.WordNotFound);
       dict.words = [];
     });
 
@@ -142,7 +142,7 @@ fileOps.save(`${mockFolderPath}/dictionary.said.gzip`, dictSchema, [], true)
 
     t.test('delWordsAtIndex() return error code when index NOT found.', async t => {
       dict.words = [['test'], ['test2', 'test3'], ['test4']];
-      t.is(dict.delWordsAtIndex(5), DictErrorCode.IndexNotFound);
+      t.is(dict.delWordsAtIndex(5), ParityErrorCode.IndexNotFound);
       dict.words = [];
     });
 

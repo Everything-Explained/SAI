@@ -2,7 +2,7 @@ import { FileOps } from "../core/file-ops";
 import { schema, Type as AvroType } from 'avsc';
 import { existsSync } from "fs";
 import { QueryProcessor } from "../core/query-processor";
-import { DictionaryManager } from "./dictionaryman";
+import { ParityManager } from "./parity_manager";
 import frontMatter, { FrontMatterResult } from 'front-matter';
 import avro from 'avsc';
 
@@ -77,8 +77,8 @@ export class InquiryManager {
   private _contemplate: QueryProcessor;
 
   /**
-   * Setting this value is **destructive**.
-   * *Do not set this value manually unless you know what you're doing.*
+   * Setting this value manually is **destructive**.
+   * *Do not set this value unless you know what you're doing.*
    */
   get inquiries() {
     return this._inquiries.slice();
@@ -98,8 +98,8 @@ export class InquiryManager {
   }
 
   /**
-   * Gets or sets inquiry file path. Setting this value is **destructive**.
-   * *Do not set this value manually unless you know what you're doing.*
+   * Setting this value manually is **destructive**.
+   * *Do not set this value unless you know what you're doing.*
    */
   get path() {
     return this._path;
@@ -110,7 +110,7 @@ export class InquiryManager {
 
 
   constructor(private _fileOps: FileOps,
-              private _dict: DictionaryManager,
+              private _dict: ParityManager,
               private _path: string)
   {
     if (!existsSync(_path))

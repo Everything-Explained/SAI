@@ -2,8 +2,8 @@ import del from 'del';
 import { readFileSync } from 'fs';
 import tape from 'tape';
 import { FileOps } from '../lib/core/file-ops';
-import { DictionaryManager, dictSchema } from '../lib/database/dictionaryman';
-import { InquiryManager, Inquiry, inquiryScheme, InqErrorCode, InquiryDocObj } from '../lib/database/inquiryman';
+import { ParityManager, dictSchema } from '../lib/database/parity_manager';
+import { InquiryManager, Inquiry, inquiryScheme, InqErrorCode, InquiryDocObj } from '../lib/database/inquiry_manager';
 import { Constants } from '../lib/variables/constants';
 import fm from 'front-matter';
 import smap from 'source-map-support';
@@ -54,7 +54,7 @@ fileOps.save(`${folderPath}/replies.said.gzip`, inquiryScheme, testData, true, f
     console.log(err);
     throw err; // We want to kill testing
   }
-  const dict = new DictionaryManager(fileOps, `${folderPath}/dictionary.said.gzip`);
+  const dict = new ParityManager(fileOps, `${folderPath}/dictionary.said.gzip`);
   tape('Inquiry{}', async t => {
     let inquiryMan: InquiryManager;
     t.test('contructor()', async t => {
