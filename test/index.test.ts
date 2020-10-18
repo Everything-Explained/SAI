@@ -2,7 +2,7 @@ import { SAI } from "../lib";
 import { existsSync, readFileSync } from 'fs';
 import del from 'del';
 import t from 'tape';
-import { InqErrorCode, Inquiry } from "../lib/database/inquiryman";
+import { InqErrorCode, Inquiry } from "../lib/database/inquiry_manager";
 import { Constants } from "../lib/variables/constants";
 import { FileOps } from "../lib/core/file-ops";
 import smap from 'source-map-support';
@@ -50,6 +50,14 @@ t('SAI Class', async t => {
       t.test('constructor() creates default storage files.', async t => {
         t.ok(existsSync(`${folderPath}/inquiries.said.gzip`));
         t.ok(existsSync(`${folderPath}/dictionary.said.gzip`));
+      });
+
+      t.test('constructor() should ignore file creation if they already exist.', t => {
+        t.plan(1);
+        new SAI(folderPath, (err) => {
+          if (err) t.fail('failed.');
+          else t.pass('passed');
+        });
       });
 
       t.test('get dictionaryManager(): returns dictionary manager object', async t => {
