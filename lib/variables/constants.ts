@@ -1,13 +1,14 @@
 export class Constants {
-  static readonly queryTokens = [
-      'how',  'has', 'what', 'when',
-    'where',  'why',  'who', 'does',
-      'can',  'are',   'is',   'do',
-      'did', 'will',
+  static readonly questionWords = [
+       'how',   'has',  'what', 'when',
+     'where',   'why',   'who', 'does',
+       'can',   'are',    'is',   'do',
+       'did',  'will', 'which',   'am',
+    'should', 'would',
   ];
 
 
-  static readonly contextTokens = [
+  static readonly contextWords = [
     'this',   'was',  'like',     'i',
       'of',  'have',   'and',  'here',
       'in',   'you',    'me',  'your',
@@ -19,7 +20,7 @@ export class Constants {
   ];
 
 
-  static readonly optionalTokens = [
+  static readonly optionalWords = [
     'a',    'an',    'do',   'can', 'the',
     'are',  'does',  'it',   'is',
     'that', 'could', 'would', 'did'
