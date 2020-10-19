@@ -227,7 +227,7 @@ export class InquiryManager {
     const ids = this.encodeQuestions(questions);
     if (!Array.isArray(ids)) return ids
     ;
-    return {
+    const inquiryObj = {
       title,
       ids,
       authors: [author],
@@ -237,8 +237,9 @@ export class InquiryManager {
       dateCreated: 0,
       dateEdited: 0,
       editedBy: author,
-      editId,
-    };
+    } as Inquiry;
+    if (editId) inquiryObj.editId = editId;
+    return inquiryObj;
   }
 
 
