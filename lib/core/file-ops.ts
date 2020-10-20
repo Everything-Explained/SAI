@@ -3,8 +3,7 @@ import { gunzipSync, gzip } from 'zlib';
 import { Type as SchemaType } from 'avsc';
 import { promisify } from "util";
 import { paritySchema } from "../database/parity_manager";
-import { InquiryRecord, Inquiry, inquiryScheme } from "../database/inquiry_manager";
-import avro from 'avsc';
+import { InquiryRecord, inquiryScheme } from "../database/inquiry_manager";
 
 
 const gzipAsync = promisify(gzip);

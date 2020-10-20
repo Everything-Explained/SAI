@@ -7,7 +7,7 @@ export class SAI {
   private _dataFolder  : string;
   private _inquiryPath : string;
   private _parityPath  : string;
-  private _parityMngr! : ParityManager;     // set in init()
+  private _parityMngr! : ParityManager;  // set in init()
   private _inquiryMngr!: InquiryManager; // set in init()
   private _fileOps     : FileOps;
 

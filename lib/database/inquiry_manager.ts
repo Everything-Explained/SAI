@@ -4,7 +4,6 @@ import { existsSync } from "fs";
 import { QueryProcessor } from "../core/query-processor";
 import { ParityManager } from "./parity_manager";
 import frontMatter, { FrontMatterResult } from 'front-matter';
-import avro from 'avsc';
 
 
 export interface Inquiry {
