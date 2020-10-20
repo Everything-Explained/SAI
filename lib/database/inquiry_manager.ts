@@ -42,14 +42,14 @@ export const inquiryScheme = AvroType.forSchema({
       name: 'InquiryRecord',
       fields: [
         { name: 'title'       , type: 'string' },
-        { name: 'answer'      , type: 'string' },
         { name: 'ids'         , type: { type: 'array', items: 'string'}},
-        { name: 'tags'        , type: { type: 'array', items: 'string'}},
+        { name: 'answer'      , type: 'string' },
         { name: 'authors'     , type: { type: 'array', items: 'string'}},
+        { name: 'editedBy'    , type: 'string' },
         { name: 'level'       , type: 'int' },
+        { name: 'tags'        , type: { type: 'array', items: 'string'}},
         { name: 'dateCreated' , type: 'long' },
         { name: 'dateEdited'  , type: 'long' },
-        { name: 'editedBy'    , type: 'string' }
       ]
     }
   ]
@@ -74,7 +74,7 @@ export enum InqErrorCode {
 
 export class InquiryManager {
   private _inquiries: Inquiry[];
-  private _contemplate: QueryProcessor;
+  private _queryProc: QueryProcessor;
 
   /**
    * Setting this value manually is **destructive**.
@@ -87,13 +87,13 @@ export class InquiryManager {
     this._inquiries = val;
   }
 
-  get contemplate() {
-    return this._contemplate;
+  get queryProcessor() {
+    return this._queryProc;
   }
 
   get questions() {
     return this._inquiries.map(inquiry => {
-      return inquiry.ids.map(id => this._contemplate.decodeIdToQuery(id));
+      return inquiry.ids.map(id => this._queryProc.decodeIdToQuery(id));
     });
   }
 
@@ -117,7 +117,7 @@ export class InquiryManager {
       throw Error(`Path to inquiries: "${_path}" does NOT exist.`)
     ;
     this._inquiries   = _fileOps.readInquiryStore(_path);
-    this._contemplate = new QueryProcessor(_parityMngr);
+    this._queryProc = new QueryProcessor(_parityMngr);
     this.inquiries;
   }
 
@@ -129,10 +129,10 @@ export class InquiryManager {
 
 
   getInquiryByQuestion(question: string) {
-    if (!this._contemplate.isValidQuery(question))
+    if (!this._queryProc.isValidQuery(question))
       return InqErrorCode.Question
     ;
-    const id = this._contemplate.encodeQueryToId(question, false)!;
+    const id = this._queryProc.encodeQueryToId(question, false)!;
     return this.getInquiryById(id);
   }
 
@@ -147,8 +147,8 @@ export class InquiryManager {
   }
 
 
-  questionsOf(inquiry: Inquiry) {
-    return inquiry.ids.map(id => this._contemplate.decodeIdToQuery(id));
+  getQuestionsFrom(inquiry: Inquiry) {
+    return inquiry.ids.map(id => this._queryProc.decodeIdToQuery(id));
   }
 
 
@@ -160,7 +160,7 @@ export class InquiryManager {
   editInquiry(inquiryDoc: string|Inquiry) {
     const newInquiry =
       typeof inquiryDoc == 'string'
-        ? this.toInquiry(inquiryDoc)
+        ? this.getInquiryFrom(inquiryDoc)
         : inquiryDoc
     ;
     if (typeof newInquiry == 'number') return newInquiry;
@@ -187,7 +187,7 @@ export class InquiryManager {
 
 
   addInquiry(inquiryDoc: string): InqErrorCode|Inquiry {
-    const inquiry = this.toInquiry(inquiryDoc);
+    const inquiry = this.getInquiryFrom(inquiryDoc);
     if (typeof inquiry == 'number') return inquiry;
     if (inquiry.editId) return this.editInquiry(inquiry)
     ;
@@ -200,14 +200,14 @@ export class InquiryManager {
   }
 
 
-  toInquiry(inquiryDoc: string): InqErrorCode | Inquiry {
+  getInquiryFrom(inquiryDoc: string): InqErrorCode | Inquiry {
     const doc          = inquiryDoc.trim();
     const matchInvalid = /[^a-z\u0020'(\n|\r)]+/g
     ;
     if (!doc)                   return InqErrorCode.Empty;
     if (!frontMatter.test(doc)) return InqErrorCode.Head
     ;
-    const docFrontMatter = this.getFrontMatter(doc);
+    const docFrontMatter = this._getFrontMatter(doc);
     if (!docFrontMatter) return InqErrorCode.HeadSyntax
     ;
     const answer = docFrontMatter.body.trim();
@@ -245,7 +245,7 @@ export class InquiryManager {
 
   toInquiryDoc(inquiry: Inquiry) {
     const questions =
-      inquiry.ids.map(id => `- ${this.contemplate.decodeIdToQuery(id)}`)
+      inquiry.ids.map(id => `- ${this.queryProcessor.decodeIdToQuery(id)}`)
     ;
     const frontMatter =
 `---
@@ -262,7 +262,7 @@ ${inquiry.answer}`
   }
 
 
-  getFrontMatter(doc: string): FrontMatterResult<InquiryDocObj>|undefined {
+  private _getFrontMatter(doc: string): FrontMatterResult<InquiryDocObj>|undefined {
     try { return frontMatter<InquiryDocObj>(doc); }
     catch (err) { return undefined; }
   }
@@ -293,7 +293,7 @@ ${inquiry.answer}`
     const ids: string[] = [];
     for (let i = 0, l = questions.length; i < l; i++) {
       const q = questions[i];
-      const id = this._contemplate.encodeQueryToId(q);
+      const id = this._queryProc.encodeQueryToId(q);
       if (!id) return InqErrorCode.Question
       ;
       const idIndex = ids.indexOf(id);
