@@ -126,7 +126,6 @@ export class InquiryManager {
     return this._inquiries.find(r => r.ids.includes(id));
   }
 
-
   getInquiryByQuestion(question: string) {
     if (!this._queryProc.isValidQuery(question))
       return InqErrorCode.Question
@@ -135,21 +134,16 @@ export class InquiryManager {
     return this.getInquiryById(id);
   }
 
-
   indexOf(id: string) {
     for (let i = 0, l = this._inquiries.length; i < l; i++) {
-      if (~this._inquiries[i].ids.indexOf(id)) {
-        return i;
-      }
+      if (this._inquiries[i].ids.includes(id)) return i;
     }
     return -1;
   }
 
-
   getQuestionsFrom(inquiry: Inquiry) {
     return inquiry.ids.map(id => this._queryProc.decodeIdToQuery(id));
   }
-
 
   /**
    * Edits an Inquiry based on the inquiry document string
@@ -184,7 +178,6 @@ export class InquiryManager {
     return (this._inquiries[oldInquiryIndex] = newInquiry);
   }
 
-
   addInquiry(inquiryDoc: string): InqErrorCode|Inquiry {
     const inquiry = this.getInquiryFrom(inquiryDoc);
     if (typeof inquiry == 'number') return inquiry;
@@ -197,7 +190,6 @@ export class InquiryManager {
     ;
     return inquiry;
   }
-
 
   getInquiryFrom(inquiryDoc: string): InqErrorCode | Inquiry {
     const doc          = inquiryDoc.trim();
@@ -241,7 +233,6 @@ export class InquiryManager {
     return inquiryObj;
   }
 
-
   getInquiryDocFrom(inquiry: Inquiry) {
     const questions =
       inquiry.ids.map(id => `- ${this.queryProcessor.decodeIdToQuery(id)}`)
@@ -260,22 +251,16 @@ ${inquiry.answer}`
     return frontMatter;
   }
 
-
   private _getFrontMatter(doc: string): FrontMatterResult<InquiryDocObj>|undefined {
     try { return frontMatter<InquiryDocObj>(doc); }
     catch (err) { return undefined; }
   }
 
-
   save(limit = true) {
     return this._fileOps.save(this._path, inquiryScheme, this._inquiries, limit);
   }
 
-
-  /**
-   * Returns any inquiries which contain duplicate ids, otherwise
-   * it returns null.
-   */
+  /** Returns the first failed **Inquiry**, otherwise **null**. */
   checkIntegrity() {
     const inquiries = this.inquiries.slice();
     while (inquiries.length) {
@@ -286,7 +271,6 @@ ${inquiry.answer}`
     }
     return null;
   }
-
 
   encodeQuestions(questions: string[])  {
     const ids: string[] = [];
