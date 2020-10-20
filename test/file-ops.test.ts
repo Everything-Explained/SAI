@@ -20,15 +20,15 @@ const testScheme = AvroType.forSchema({
 
 
 const mockInquiryData = [{
-    title: 'blah',
-    answer: 'world',
-    ids: ['aAheoadf=='],
-    tags: [],
-    authors: [],
-    level: 0,
-    dateCreated: 1234,
-    dateEdited: 4321,
-    editedBy: '',
+  title: 'blah',
+  answer: 'world',
+  ids: ['aAheoadf=='],
+  tags: [],
+  authors: [],
+  level: 0,
+  dateCreated: 1234,
+  dateEdited: 4321,
+  editedBy: '',
 }] as Inquiry[];
 
 const mockParityData = [
@@ -58,7 +58,6 @@ t('File Operations', async t => {
     fileOps.createFolder(path);
     t.ok(existsSync(path));
   });
-
   t.test('createFolder() returns true if folder already exists.', async t => {
     const path = `${mockFolder}`;
     fileOps.createFolder(path);
@@ -71,7 +70,6 @@ t('File Operations', async t => {
     fileOps.save(path, testScheme, ['valid', 'value'], false)
     .then(data => t.equal(data, null));
   });
-
   t.test('save() returns promise rejection when saving too fast.', t => {
     t.plan(1);
     const saveFirstPath = genRandomFilePath();
@@ -84,7 +82,6 @@ t('File Operations', async t => {
       .catch((err: Error) => t.ok(~err.message.indexOf('Cannot save')))
     ;
   });
-
   t.test('save() returns promise rejection on invalid scheme value.', t => {
     t.plan(1);
     const path = genRandomFilePath();
@@ -93,7 +90,6 @@ t('File Operations', async t => {
       .catch((err: Error) => t.ok(~err.message.indexOf('data fails')))
     ;
   });
-
   t.test('save() returns promise rejection on invalid file path.', t => {
     t.plan(1);
     fileOps
@@ -101,7 +97,6 @@ t('File Operations', async t => {
       .catch((err: Error) => t.ok(~err.message.indexOf('ENOENT')))
     ;
   });
-
   t.test('save() returns promised null on file compression and save success.', t => {
     t.plan(1);
     const path = genRandomFilePath();
@@ -118,7 +113,6 @@ t('File Operations', async t => {
     t.ok(Array.isArray(inquiries));
     t.is(inquiries[0].compare(mockInquiryData[0]), 0);
   });
-
   t.test('readInquiryStore() throws an error if data fails schema conversion.', async t => {
     const path = genRandomFilePath();
     await writeFileAsync(path, JSON.stringify({ hello: ''}), { encoding: 'binary'});
@@ -134,7 +128,6 @@ t('File Operations', async t => {
     const savedParityData = fileOps.readParityStore(path);
     t.same(mockParityData, savedParityData);
   });
-
   t.test('readParityStore() throws an error if data fails schema conversion.', async t => {
     const path = genRandomFilePath();
     await writeFileAsync(path, JSON.stringify({ hello: ''}), { encoding: 'binary'});
