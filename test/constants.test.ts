@@ -34,7 +34,6 @@ t('Constants', async t => {
     const tokens = ['1', '2', '3', '4', '5'];
     t.ok(wordsAreUnique(tokens, 'validation'));
   });
-
   t.test('[setup]:wordsAreUnique() throws an error when duplicate tokens are found.', async t => {
     const tokens = ['1', '2', '3', '4', '5', '3'];
     t.throws(() => wordsAreUnique(tokens, 'invalidation'));
@@ -44,7 +43,6 @@ t('Constants', async t => {
     const tokens = ['1', '2', '3', '4', '5'];
     t.ok(wordsHaveNoSpaces(tokens, 'NoSpaces'));
   });
-
   t.test('[setup]:wordsHaveNoSpaces() throws an error when spaces are found in tokens.', async t => {
     const tokens = ['1', '2', '3 ', '4', '5'];
     t.throws(() => wordsHaveNoSpaces(tokens, 'HaveSpaces'));
@@ -53,11 +51,9 @@ t('Constants', async t => {
   t.test('queryTokens should be unique', async t => {
     t.ok(wordsAreUnique(Constants.questionWords, 'query'));
   });
-
   t.test('queryTokens should contain no spaces', async t => {
     t.ok(wordsHaveNoSpaces(Constants.questionWords, 'query'));
   });
-
   t.test('queryTokens should have less than 26 items.', async t => {
     t.ok(Constants.questionWords.length < 26);
   });
@@ -65,7 +61,6 @@ t('Constants', async t => {
   t.test('contextTokens should be unique.', async t => {
     t.ok(wordsAreUnique(Constants.contextWords, 'context'));
   });
-
   t.test('contextTokens should contain no spaces.', async t => {
     t.ok(wordsHaveNoSpaces(Constants.contextWords, 'context'));
   });
@@ -73,11 +68,9 @@ t('Constants', async t => {
   t.test('optionalTokens should be unique.', async t => {
     t.ok(wordsAreUnique(Constants.optionalWords, 'optional'));
   });
-
   t.test('optionalTokens should contain no spaces.', async t => {
     t.ok(wordsHaveNoSpaces(Constants.optionalWords, 'optional'));
   });
-
   t.test('optionalTokens should not intersect with contextual tokens.', async t => {
     const diff = _intersection(Constants.optionalWords, Constants.contextWords);
     t.equal(diff.length, 0);

@@ -37,21 +37,17 @@ t('SAI Class', async t => {
         t.equal(err, null);
         if (err) console.log(err);
       });
-
       t.test('constructor() executes isReady() callback after instantiation.', async t => {
         // We're already executing all tests within the isReady callback.
         t.pass('passes');
       });
-
       t.test('constructor() creates specified folder.', async t => (
         t.ok(existsSync(folderPath))
       ));
-
       t.test('constructor() creates default storage files.', async t => {
         t.ok(existsSync(`${folderPath}/inquiries.said.gzip`));
         t.ok(existsSync(`${folderPath}/parity.said.gzip`));
       });
-
       t.test('constructor() should ignore file creation if they already exist.', t => {
         t.plan(1);
         new SAI(folderPath, (err) => {
@@ -60,15 +56,13 @@ t('SAI Class', async t => {
         });
       });
 
-      t.test('get parityManager(): returns parity manager object', async t => {
+      t.test('get parityManager():  returns parity manager object', async t => {
         t.ok(Array.isArray(sai.parityManager.words));
       });
-
       t.test('get inquiryManager(): returns inquiry manager object.', async t => {
         t.ok(Array.isArray(sai.inquiryManager.inquiries));
       });
-
-      t.test('get questions(): returns an array of arrays of questions.', async t => {
+      t.test('get questions():      returns an array of arrays of questions.', async t => {
         const inquiryDoc = readFileSync(`${mocks}/addQuestionTest.txt`);
         sai.addInquiry(inquiryDoc.toString('utf-8'), false);
         t.same(sai.questions[0], ['where penguin', 'how big penguin']);
@@ -90,12 +84,10 @@ t('SAI Class', async t => {
         t.is(goodQuestion.answer, 'blah blah');
         sai.inquiryManager.inquiries = [];
       });
-
       t.test('ask() returns an Error Code on invalid question.', async t => {
         const invalidQuestion = sai.ask('tell me about something');
         t.is(invalidQuestion, InqErrorCode.Question);
       });
-
       t.test('ask() returns undefined if question not found.', async t => {
         sai.inquiryManager.inquiries = [createInquiry(['Q3xnb29k'], 'blah blah')];
         t.is(sai.ask('what is a test'), undefined);
@@ -112,7 +104,6 @@ t('SAI Class', async t => {
         ;
         sai.inquiryManager.path = `${folderPath}/inq.said.gzip`;
       });
-
       t.test('addInquiry() returns a promised Error Code on empty inquiryDoc.', async t => {
         await sai.addInquiry('')
         .catch((errCode: InqErrorCode) => {
@@ -121,18 +112,15 @@ t('SAI Class', async t => {
           );
         });
       });
-
       t.test('addInquiry() returns the added Inquiry as a promise.', async t => {
         const inquiryDoc = readFileSync(`${mocks}/addQuestionTest.txt`, 'utf-8');
         const res = await sai.addInquiry(inquiryDoc);
         t.is(res.answer, 'hello penguins!!');
       });
-
       t.test('addInquiry() saves the inquiryDoc to the database.', async t => {
         const inquiries = fileOps.readInquiryStore(sai.inquiryManager.path);
         t.is(inquiries[0].answer, 'hello penguins!!');
       });
-
 
       t.test('editInquiry() throws an Error if save operation throws.', async t => {
         const inquiryDoc = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
@@ -143,21 +131,18 @@ t('SAI Class', async t => {
           });
         sai.inquiryManager.path = `${folderPath}/inq.said.gzip`;
       });
-
       t.test('editInquiry() returns an Error Code with an Invalid Document.', async t => {
         await sai.editInquiry('')
           .catch((err: InqErrorCode) => {
             t.is(err, InqErrorCode.Empty);
           });
       });
-
       t.test('editInquiry() returns a promised Inquiry on success.', async t => {
         const inquiryDoc = readFileSync(`${mocks}/editQuestionTest.txt`, 'utf-8');
         const res = await sai.editInquiry(inquiryDoc);
         t.is(res.answer, 'hello lobsters!!');
         sai.inquiryManager.inquiries = [];
       });
-
       t.test('editInquiry() saves an edited Inquiry into the database.', async t => {
         const inquiryDocToAdd = readFileSync(`${mocks}/addQuestionTest.txt`).toString('utf-8');
         await sai.addInquiry(inquiryDocToAdd);
