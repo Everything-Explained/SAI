@@ -28,7 +28,7 @@ export class SAI {
   constructor(dataFolderPath: string, isReady: (err: Error|null) => void) {
     this._dataFolder  = dataFolderPath;
     this._inquiryPath = `${dataFolderPath}/inquiries.said.gzip`;
-    this._parityPath    = `${dataFolderPath}/parity.said.gzip`;
+    this._parityPath  = `${dataFolderPath}/parity.said.gzip`;
     this._fileOps     = new FileOps();
     this.init(isReady);
   }

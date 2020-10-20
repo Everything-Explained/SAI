@@ -242,7 +242,7 @@ export class InquiryManager {
   }
 
 
-  toInquiryDoc(inquiry: Inquiry) {
+  getInquiryDocFrom(inquiry: Inquiry) {
     const questions =
       inquiry.ids.map(id => `- ${this.queryProcessor.decodeIdToQuery(id)}`)
     ;

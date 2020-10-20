@@ -1,5 +1,5 @@
 import del from 'del';
-import { readFileSync } from 'fs';
+import { readFile, readFileSync } from 'fs';
 import tape from 'tape';
 import { FileOps } from '../lib/core/file-ops';
 import { ParityManager, paritySchema } from '../lib/database/parity_manager';
@@ -40,6 +40,7 @@ const testData = [
 ];
 
 // Properties must match scheme field order
+// Mocked from ./test/mocks/doctests/passingDocTest.txt
 const passingMockData = {
   title: 'Sexy title!',
   ids: [
@@ -57,7 +58,22 @@ const passingMockData = {
   dateEdited: 1603069729272,
 } as Inquiry;
 
+// Mocked from ./test/mocks/doctests/passingDocTest.txt
+const passingInquiryDoc = `---
+title: Sexy title!
+questions:
+- what sky
+- where sky
+- when i see sky
+- how sky so bright
+author: Test
+level: 0
+editId: Q3xza3k=
+---
+A lovely bunch of cocoanuts`;
+
 // Properties must match scheme field order
+// Mocked from ./test/mocks/doctest/editItemTest.txt
 const passingEditMockData = {
   title: 'chicken',
   ids: [ 'Q3xjaGlja2Vu', 'RXxjaGlja2Vu', 'QXxjaGlja2VufG1hZGU=' ],
@@ -190,6 +206,11 @@ fileOps.save(inquiriesPath, inquiryScheme, testData, true, false)
       const passingDoc = readFileSync(`${mocks}/passingDocTest.txt`, 'utf-8');
       const passingVal = inquiryMngr.getInquiryFrom(passingDoc) as Inquiry;
       t.is(passingVal.editId, undefined);
+    });
+
+    t.test('getInquiryDocFrom() ', async t => {
+      const doc = inquiryMngr.getInquiryDocFrom(passingMockData);
+      t.is(doc, passingInquiryDoc);
     });
 
     t.test('editInquiry() returns a valid Inquiry Object on edit success.', async t => {

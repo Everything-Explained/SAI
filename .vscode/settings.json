@@ -25,6 +25,7 @@
     "Mngr",
     "Strat",
     "avsc",
+    "doctests",
     "hasher"
   ],
 }
