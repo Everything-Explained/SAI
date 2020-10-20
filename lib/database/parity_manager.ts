@@ -27,6 +27,8 @@ type DelWordError = ParityErrorCode.WordNotFound;
 type DelWordAtIndexError = ParityErrorCode.IndexNotFound;
 
 
+
+
 export class ParityManager {
   private _words!     : string[][];    // set in init()
   private _wordsRef!  : string[];      // set in init()
@@ -79,7 +81,6 @@ export class ParityManager {
     );
   }
 
-
   /**
    * Retrieves the row and column indexes of the
    * specified `word`; or _undefined_ if the `word`
@@ -96,14 +97,12 @@ export class ParityManager {
     return undefined;
   }
 
-
   addWord(word: string): AddWordError|true {
     if (this.hasWord(word)) { return ParityErrorCode.AlreadyExists; }
     this._words.push([word]);
     this._updateWordRef();
     return true;
   }
-
 
   addWordToIndex(word: string, index: number): AddWordToIndexError|true {
     if (this.hasWord(word))  { return ParityErrorCode.AlreadyExists; }
@@ -113,7 +112,6 @@ export class ParityManager {
     this._updateWordRef();
     return true;
   }
-
 
   delWord(word: string): DelWordError|true {
     const wordPos = this.findWordPosition(word);
@@ -129,7 +127,6 @@ export class ParityManager {
     return true;
   }
 
-
   delWordsAtIndex(index: number): DelWordAtIndexError|true {
     const words = this.findWordsAt(index);
     if (!words) { return ParityErrorCode.IndexNotFound; }
@@ -138,11 +135,9 @@ export class ParityManager {
     return true;
   }
 
-
   save() {
     return this._fileOps.save(this._path, paritySchema, this._words, true);
   }
-
 
   private _updateWordRef() {
     this._wordsRef = this._words.flat();

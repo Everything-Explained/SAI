@@ -7,7 +7,6 @@ export function padStr(str: string, amount: number, char: string) {
   return str;
 }
 
-
 /**
  * Pads a number based on an expected magnitude.
  *

@@ -27,13 +27,11 @@ export class FileOps {
     return existsSync(path);
   }
 
-
   save(path: string, schema: SchemaType, data: unknown, compress: boolean, limitSave = true): Promise<null> {
     const [bufErr, buf] = this.bufferFromSchema(data, schema);
     if (bufErr) return Promise.reject(bufErr);
     return this.writeBinary(path, buf, compress, limitSave);
   }
-
 
   readInquiryStore(filePath: string): InquiryRecord[] {
     const zippedInquiries = readFileSync(filePath);
@@ -41,13 +39,11 @@ export class FileOps {
     return inquiryScheme.fromBuffer(unzippedInquiries);
   }
 
-
   readParityStore(filePath: string): string[][] {
     const zippedWords = readFileSync(filePath);
     const unzippedWords = gunzipSync(zippedWords);
     return paritySchema.fromBuffer(unzippedWords);
   }
-
 
   private bufferFromSchema(data: unknown, schema: SchemaType): [Error|null, Buffer] {
     if (schema.isValid(data)) {
@@ -58,7 +54,6 @@ export class FileOps {
       'compare data with schema for inconsistencies.'
     ), Buffer.from('')];
   }
-
 
   private async writeBinary(path: string, data: Buffer, compress: boolean, limitSave: boolean) {
     if (limitSave && this._isSaving) {

@@ -40,11 +40,9 @@ export class QueryProcessor {
     );
   }
 
-
   partialEncodeQuery(words: string[]) {
     return _flow(...this.processorFuncs.slice(0, -1))(words);
   }
-
 
   isValidQuery(query: string|string[]) {
     const queryWords =
@@ -86,12 +84,10 @@ export class QueryProcessor {
     );
   }
 
-
   /** Removes optional words from a query. */
   trimOptionalWords(words: string[]) {
     return words.filter(token => !~Constants.optionalWords.indexOf(token));
   }
-
 
   /** Replaces all contextual words with a unique code. */
   applyContextCodes(words: string[]) {
@@ -100,7 +96,6 @@ export class QueryProcessor {
       return ~index ? `%${padNumber(index)}` : token;
     });
   }
-
 
   /** Replaces all parity-words with a unique code */
   applyParityCodes(parityMngr: ParityManager) {
@@ -112,11 +107,9 @@ export class QueryProcessor {
     };
   }
 
-
   convertWordsToId(words: string[]) {
     return Buffer.from(words.join('|')).toString('base64');
   }
-
 
   /** Converts a query id back to its encoded word array. */
   convertIdToRawWords(id: string) {
