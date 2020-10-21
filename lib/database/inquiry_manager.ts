@@ -33,7 +33,9 @@ export interface InquiryDocObj {
   editId   ?: string;
 }
 
-
+/*  ######################################### */
+/** **FIELD ORDER MATTERS WHEN LOADING DATA** */
+/*  ######################################### */
 export const inquiryScheme = AvroType.forSchema({
   type: 'array', items: [
     {
