@@ -5,10 +5,10 @@
   "main": "./dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "tape ./test/*.js | tap-spec-emoji",
-    "stest": "tape ./test/repository.test.js | tap-spec-emoji",
+    "test": "tape ./test/*.js | tap-diff",
+    "stest": "tape ./test/inquiry_manager.test.js | tap-diff",
     "covstest": "nyc --reporter=lcov tape ./test/repository.test.js | tap-spec-emoji",
-    "cov": "nyc --reporter=lcov tape ./test/*.js | tap-spec-emoji"
+    "cov": "nyc --reporter=lcov tape ./test/*.js | tap-diff"
   },
   "repository": {
     "type": "git",
