@@ -56,7 +56,8 @@
     "delWordsAtIndex",
     "encodeWord",
     "findWordsAtIndex",
-    "hashObj"
+    "hashObj",
+    "Contemplator"
   ],
   "alwaysUpdateLinks": true,
   "hotkeys": {
